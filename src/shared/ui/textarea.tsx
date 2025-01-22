@@ -16,7 +16,7 @@ interface TextareaProps {
   placeholder: string
   onChange: (value: string) => void
   onScroll?: (isScrolling: boolean) => void
-  className?: string
+  className?: React.HTMLAttributes<HTMLDivElement>['className']
 }
 
 const Textarea: FC<TextareaProps> = ({

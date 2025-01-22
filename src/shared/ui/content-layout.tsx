@@ -10,7 +10,7 @@ import { cn } from '../lib/tailwind-merge'
  *   2. 중앙(content): 남은 공간 차지
  */
 interface ContentLayoutProps extends PropsWithChildren {
-  className?: string
+  className?: React.HTMLAttributes<HTMLElement>['className']
 }
 
 const ContentLayout: FC<ContentLayoutProps> = ({ children, className }) => {
