@@ -19,7 +19,7 @@ const ErrorInfoSection = ({ errorInfo }: ErrorInfoSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const { correctMethod, orgStr, candWord, help } = errorInfo ?? {}
-  const candidateWords = candWord.split('|')
+  const candidateWords = candWord.split('|').map((word, id) => ({ id, word }))
 
   return (
     <div className='my-[1.125rem]'>
@@ -59,9 +59,9 @@ const ErrorInfoSection = ({ errorInfo }: ErrorInfoSectionProps) => {
             </div>
           </CustomTextEditor>
           <div className='mt-2 flex max-h-[5.625rem] flex-col overflow-y-auto rounded-lg border border-slate-200 bg-slate-100 p-2 tab:mt-3 tab:max-h-[6rem] pc:max-h-[6.5rem]'>
-            {candidateWords.map(word => (
+            {candidateWords.map(({ id, word }) => (
               <Button
-                key={crypto.randomUUID()}
+                key={id}
                 variant={null}
                 className='h-auto justify-start p-0 text-base font-medium hover:underline tab:text-base pc:text-lg'
               >
