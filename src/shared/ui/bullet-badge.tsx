@@ -1,4 +1,4 @@
-import { type CorrectMethod } from '@/entities/speller'
+import { CorrectMethod } from '@/entities/speller'
 import { cn } from '@/shared/lib/tailwind-merge'
 
 interface BulletBadgeProps {
@@ -10,13 +10,13 @@ const BulletBadge = ({ className, method }: BulletBadgeProps) => {
   return (
     <i
       className={cn(
-        'h-2 w-2 rounded-full',
+        'h-2 w-2 rounded-full bg-purple-100',
         className,
-        method === 1 && 'bg-green-100',
-        method === 2 && 'bg-red-100',
-        method >= 3 && 'bg-purple-100',
+        method === CorrectMethod.띄어쓰기 && 'bg-green-100',
+        method === CorrectMethod.오탈자 && 'bg-red-100',
+        method === CorrectMethod.문맥 && 'bg-purple-100',
       )}
-    ></i>
+    />
   )
 }
 

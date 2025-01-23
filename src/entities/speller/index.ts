@@ -1,6 +1,6 @@
-export type {
-  CheckResponse,
-  ErrorInfo,
+export {
+  type CheckResponse,
+  type ErrorInfo,
   CorrectMethod,
 } from './model/api-interface'
 export { checkApiServiceInstance } from './model/api-service'

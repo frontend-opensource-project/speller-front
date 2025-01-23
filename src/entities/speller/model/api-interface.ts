@@ -6,10 +6,11 @@ export interface CheckPayload {
   pageIdx?: number // 현재 페이지 번호
 }
 
-export type CorrectMethod =
-  | 1 // 띄어쓰기 오류
-  | 2 // 오탈자 오류
-  | 3 // 문맥상 오류
+export enum CorrectMethod {
+  띄어쓰기 = 1,
+  오탈자 = 2,
+  문맥 = 3,
+}
 
 export interface ErrorInfo {
   errorIdx: number // 에러 번호(0~n)
