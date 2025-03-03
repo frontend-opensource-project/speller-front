@@ -1,13 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
-const DEFAULT_TIMEOUT = 30000
-
 const defaultConfig: AxiosRequestConfig = {
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-  timeout: DEFAULT_TIMEOUT,
-  headers: {
-    'x-api-key': process.env.NEXT_PUBLIC_API_KEY,
-  },
 }
 
 const defaultAxiosInstance = axios.create(defaultConfig)
