@@ -9,7 +9,7 @@ const Header = () => {
       <header className='flex flex-1 items-center justify-between px-6 py-4 pc:container tab:px-[3.75rem] tab:py-5 pc:p-[2rem_3.75rem]'>
         <div className='flex items-center gap-5'>
           <h1 className='text-xl font-bold tab:text-2xl'>
-            <div className='relative h-[1.375rem] w-[11.625rem] tab:h-[1.75rem] tab:w-[14.75rem] pc:h-[2rem] pc:w-[17rem]'>
+            <div className='relative h-[1.375rem] w-[11.625rem] tab:h-[1.75rem] tab:w-[14rem] pc:h-[1.75rem] pc:w-[14.25rem]'>
               <Image
                 src='/logo.svg'
                 alt='한국어 맞춤법 검사기'
@@ -18,16 +18,19 @@ const Header = () => {
               />
             </div>
           </h1>
-          <Link href='/' className={`hidden tab:text-xl ${classes.linkButton}`}>
-            이전 버전 사용하기
-          </Link>
         </div>
         <div className='hidden items-center gap-4 pc:flex'>
           <Link href='/' className={classes.linkButton}>
-            검사기 사용법
+            사용법
           </Link>
           <Link href='/feedback' className={classes.linkButton}>
             문의하기
+          </Link>
+          <Link
+            href='/'
+            className='hidden rounded-lg border border-[#B8B8BE] p-3 font-semibold !leading-none text-slate-500 hover:bg-accent tab:inline-flex tab:text-xl pc:text-base'
+          >
+            이전 버전 사용하기
           </Link>
         </div>
         <Popover>
@@ -49,7 +52,7 @@ const Header = () => {
                   <i
                     className={`${classes.popoverIcon} bg-icon-info group-hover:bg-icon-info-white`}
                   />
-                  검사기 사용법
+                  사용법
                 </Link>
               </li>
               <li className='group'>
@@ -60,7 +63,7 @@ const Header = () => {
                   문의하기
                 </Link>
               </li>
-              <li className='group tab:hidden'>
+              <li className='group'>
                 <Link
                   href='/'
                   className={`${classes.popoverButton} border-none`}
@@ -81,7 +84,7 @@ const Header = () => {
 
 const classes = {
   linkButton:
-    'rounded-md p-[0.625rem_0.75rem] !leading-none hover:bg-accent tab:inline-flex pc:text-xl',
+    'rounded-md p-[0.625rem_0.75rem] font-semibold !leading-none hover:bg-accent tab:inline-flex pc:text-xl',
   popoverButton:
     'flex items-center gap-2 border-b border-slate-200 px-2 py-2.5 pr-3 text-sm leading-none group-hover:text-primary tab:text-base',
   popoverIcon:
