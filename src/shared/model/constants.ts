@@ -5,6 +5,7 @@ const ENDPOINT = {
   CLICK_REPLACE: '/clickReplace',
   NOT_CHANGE: '/notChange',
   SEND_REPORT_MAIL: '/sendReportMail',
+  FILTER_IP: '/filterIP',
 }
 
 export { ENDPOINT }
