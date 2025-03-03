@@ -23,7 +23,7 @@ const Header = () => {
           </Link>
         </div>
         <div className='hidden items-center gap-4 pc:flex'>
-          <Link href='/' className={classes.linkButton}>
+          <Link href='/guide' className={classes.linkButton}>
             검사기 사용법
           </Link>
           <Link href='/feedback' className={classes.linkButton}>
