@@ -14,6 +14,7 @@ import { getWordsAroundIndex } from '@/shared/lib/util'
 
 const ResultsControl = () => {
   const {
+    displayText,
     response: { str },
     correctInfo,
   } = useSpeller()
@@ -21,7 +22,7 @@ const ResultsControl = () => {
   const { copyText } = useClipboard()
 
   const handleCopy = () => {
-    copyText(str)
+    copyText(displayText)
     toast({
       description: '복사 완료!\n원하는 곳에 붙여넣어 보세요.',
     })

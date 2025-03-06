@@ -3,11 +3,13 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { CheckResponse, CorrectInfo } from './speller-schema'
+import { applyCorrections } from '../lib/apply-corrections'
 
 type Response = CheckResponse & { requestedWithStrictMode: boolean }
 
 interface SpellerState {
-  text: string
+  text: string // 입력된 텍스트 원본
+  displayText: string // 교정문서에 표시되는 텍스트
   response: Response
   responseMap: Record<number, Response>
   correctInfo: Record<number, CorrectInfo>
@@ -16,6 +18,7 @@ interface SpellerState {
 
 const initialState: SpellerState = {
   text: '',
+  displayText: '',
   response: {
     str: '',
     errInfo: [],
@@ -37,6 +40,7 @@ const spellerSlice = createSlice({
     },
 
     updateResponse: (state, action: PayloadAction<Response>) => {
+      state.displayText = action.payload.str
       state.response = action.payload
       state.correctInfo = action.payload.errInfo.reduce(
         (acc, info) => ({ ...acc, [info.errorIdx]: info }),
@@ -46,6 +50,11 @@ const spellerSlice = createSlice({
 
     updateCorrectInfo: (state, action: PayloadAction<CorrectInfo>) => {
       state.correctInfo[action.payload.errorIdx] = action.payload
+
+      state.displayText = applyCorrections(
+        state.response.str,
+        state.correctInfo,
+      )
     },
 
     setSelectedErrIdx: (state, action: PayloadAction<number>) => {
