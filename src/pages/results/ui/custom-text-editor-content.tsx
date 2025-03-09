@@ -1,6 +1,9 @@
+import { BulletBadge } from '@/shared/ui/bullet-badge'
 import { useUserReplace } from '../model/use-user-replace'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
+import { cn } from '@/shared/lib/tailwind-merge'
+import { CorrectMethodEnum } from '@/entities/speller'
 
 interface CustomTextEditorContent {
   handleClose: () => void
@@ -9,28 +12,40 @@ interface CustomTextEditorContent {
 export const CustomTextEditorContent = ({
   handleClose,
 }: CustomTextEditorContent) => {
-  const { handleChange, handleEdit, value, errorWord } = useUserReplace({
-    handleClose,
-  })
+  const { handleChange, handleEdit, value, errorWord, correctMethod } =
+    useUserReplace({
+      handleClose,
+    })
 
   return (
     <>
       <div className='flex flex-col items-center justify-center'>
-        <p className='flex items-center justify-center gap-[0.44rem] text-lg text-green-100 pc:gap-[0.42rem] pc:text-[19.2px] pc:leading-normal'>
-          <span className='inline-block h-[11px] w-[11px] rounded-full bg-green-100 pc:h-[0.66rem] pc:w-[0.66rem]'></span>
+        <p
+          className={cn(
+            'flex items-center justify-center text-[0.95rem] tab:text-lg pc:text-base pc:leading-normal',
+            correctMethod === CorrectMethodEnum.enum.띄어쓰기 &&
+              'text-green-100',
+            correctMethod === CorrectMethodEnum.enum.오탈자 && 'text-red-100',
+            correctMethod === CorrectMethodEnum.enum.문맥 && 'text-purple-100',
+          )}
+        >
+          <BulletBadge
+            method={correctMethod}
+            className='mx-1.5 tab:size-3 pc:size-2'
+          />
           {errorWord}
         </p>
         <div className='h-[1.125rem] w-[1.125rem] bg-chevron-down bg-contain bg-center bg-no-repeat focus-visible:ring-0 pc:h-[0.96rem] pc:w-[0.96rem]' />
       </div>
       <Input
         placeholder='직접 수정해 보세요!'
-        className='w-full placeholder:text-slate-300 pc:h-[2.4rem] pc:rounded-[0.36rem] pc:px-[0.42rem] pc:py-[0.17rem] pc:text-[1.2rem] pc:leading-[170%] pc:placeholder:text-[1.2rem]'
+        className='h-[2.125rem] w-full text-[0.85rem] placeholder:text-slate-300 tab:text-base pc:h-[2.4rem] pc:rounded-[0.36rem] pc:px-[0.42rem] pc:py-[0.17rem] pc:text-base pc:leading-[170%]'
         value={value}
         onChange={handleChange}
       />
       <Button
         disabled={!value}
-        className='h-[3.125rem] py-[0.88rem] text-[1.125rem] pc:h-[3rem] pc:rounded-[0.31rem] pc:py-[0.84rem] pc:text-[1.2rem]'
+        className='h-[2.65rem] py-[0.88rem] text-[0.95rem] tab:h-[3.125rem] tab:text-[1.125rem] pc:h-[2.5rem] pc:rounded-[0.31rem] pc:py-[0.84rem] pc:text-base'
         onClick={handleEdit}
       >
         수정하기

@@ -2,6 +2,7 @@ import { getWordsAroundIndex } from '@/shared/lib/util'
 import { ChangeEvent, useState } from 'react'
 import { useAppSelector } from '@/shared/lib/use-redux'
 import { logUserReplaceAction } from '../api/log-user-replace-action'
+import { useSpeller } from '@/entities/speller'
 
 interface useUserReplaceParams {
   handleClose: () => void
@@ -12,8 +13,9 @@ export const useUserReplace = ({ handleClose }: useUserReplaceParams) => {
     response: { errInfo, str },
     selectedErrIdx,
   } = useAppSelector(state => state.speller)
+  const { handleUpdateCorrectInfo } = useSpeller()
 
-  const { orgStr: errorWord, start } = errInfo[selectedErrIdx]
+  const { orgStr: errorWord, start, correctMethod } = errInfo[selectedErrIdx]
 
   const [value, setValue] = useState('')
 
@@ -24,6 +26,8 @@ export const useUserReplace = ({ handleClose }: useUserReplaceParams) => {
   }
 
   const handleEdit = async () => {
+    handleUpdateCorrectInfo({ ...errInfo[selectedErrIdx], crtStr: value })
+
     try {
       await logUserReplaceAction({
         errorWord,
@@ -38,5 +42,5 @@ export const useUserReplace = ({ handleClose }: useUserReplaceParams) => {
     }
   }
 
-  return { handleChange, handleEdit, value, errorWord }
+  return { handleChange, handleEdit, value, errorWord, correctMethod }
 }

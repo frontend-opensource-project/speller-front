@@ -12,6 +12,7 @@ import {
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import React, { ReactNode, useState } from 'react'
 import { ReportFormContent } from './report-form-content'
+import SendIcon from '@/shared/ui/icon/icon-send-black.svg'
 
 interface ReportFormProps {
   children: ReactNode
@@ -32,7 +33,7 @@ export const ReportForm = ({ children }: ReportFormProps) => {
           {children}
         </PopoverTrigger>
         <PopoverContent
-          className='w-[21.66rem] rounded-2xl px-[1.08rem] pb-[1.2rem] pt-[0.9rem]'
+          className='w-[21.66rem] rounded-2xl px-[0.9rem] pb-4 pt-[0.9rem]'
           sideOffset={0.5}
           align='end'
         >
@@ -54,7 +55,7 @@ export const ReportForm = ({ children }: ReportFormProps) => {
         <DialogTrigger asChild className='pc:hidden'>
           {children}
         </DialogTrigger>
-        <DialogContent className='w-[22.5625rem] rounded-2xl bg-white px-4'>
+        <DialogContent className='max-w-[19.1781rem] rounded-2xl bg-white p-[0.95rem] tab:max-w-[22.5625rem] tab:px-4'>
           <DialogHeader>
             <DialogTitle>
               <VisuallyHidden>제보 작성하기</VisuallyHidden>
@@ -70,9 +71,11 @@ export const ReportForm = ({ children }: ReportFormProps) => {
 
 const ReportFormTitle = () => {
   return (
-    <h4 className='flex items-center gap-3 text-[1.75rem] font-bold text-slate-600 pc:gap-[0.62rem] pc:text-[1.65rem]'>
-      <span className='h-7 w-7 bg-icon-send bg-contain bg-no-repeat pc:h-[1.68rem] pc:w-[1.68rem]'></span>
-      제보 작성하기
+    <h4 className='flex items-center gap-2.5 font-bold text-slate-600 tab:gap-3 pc:gap-[0.62rem]'>
+      <SendIcon className='size-[1.48rem] tab:!size-7 pc:!size-[1.375rem]' />
+      <span className='text-[1.48rem] tab:text-[1.75rem] pc:text-[1.375rem]'>
+        제보 작성하기
+      </span>
     </h4>
   )
 }

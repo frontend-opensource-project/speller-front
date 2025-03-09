@@ -12,6 +12,7 @@ import {
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import React, { ReactNode, useState } from 'react'
 import { CustomTextEditorContent } from './custom-text-editor-content'
+import EditIcon from '@/shared/ui/icon/icon-pencil-black.svg'
 
 interface CustomTextEditorProps {
   children: ReactNode
@@ -32,16 +33,16 @@ export const CustomTextEditor = ({ children }: CustomTextEditorProps) => {
           {children}
         </PopoverTrigger>
         <PopoverContent
-          className='w-[21.66rem] rounded-2xl p-[1.08rem]'
+          className='w-[18.0625rem] rounded-2xl p-[0.9rem] pt-[0.75rem]'
           sideOffset={8}
           align='start'
         >
-          <div className='grid gap-4'>
+          <div className='grid gap-[0.8rem]'>
             <div className='flex items-center justify-between'>
               <CustomTextEditorTitle />
               <Button
                 variant='ghost'
-                className='h-[1.44rem] w-[1.44rem] bg-close bg-contain bg-no-repeat p-[0.22rem] hover:bg-transparent'
+                className='h-4 w-4 bg-close bg-contain bg-no-repeat p-[0.22rem] hover:bg-transparent'
                 onClick={handlePopoverClose}
               ></Button>
             </div>
@@ -54,7 +55,7 @@ export const CustomTextEditor = ({ children }: CustomTextEditorProps) => {
         <DialogTrigger asChild className='pc:hidden'>
           {children}
         </DialogTrigger>
-        <DialogContent className='w-[22.5625rem] rounded-2xl bg-white p-[1.125rem]'>
+        <DialogContent className='max-w-[19.17rem] rounded-2xl bg-white p-[1.125rem] pt-[0.9375rem] tab:max-w-[22.5625rem]'>
           <DialogHeader>
             <DialogTitle>
               <VisuallyHidden>대치어 직접 수정하기</VisuallyHidden>
@@ -71,8 +72,10 @@ export const CustomTextEditor = ({ children }: CustomTextEditorProps) => {
 const CustomTextEditorTitle = () => {
   return (
     <h4 className='flex items-center gap-3 text-[1.75rem] font-bold text-slate-600 pc:gap-[0.62rem] pc:text-[1.65rem]'>
-      <span className='h-7 w-7 bg-icon-pencil bg-contain bg-no-repeat pc:h-[1.68rem] pc:w-[1.68rem]'></span>
-      대치어 직접 수정하기
+      <EditIcon className='!size-[1.48rem] tab:!size-7 pc:!size-[1.4rem]' />
+      <span className='text-[1.48rem] tab:text-[1.75rem] pc:text-[1.375rem]'>
+        대치어 직접 수정하기
+      </span>
     </h4>
   )
 }
