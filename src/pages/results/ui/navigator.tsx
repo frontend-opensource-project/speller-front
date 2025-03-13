@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useSpeller } from '@/entities/speller'
 import { clientSpellCheck } from '../api/client-spell-check'
+import { toast } from '@/shared/lib/use-toast'
 
 const Navigator = () => {
   const { push } = useRouter()
@@ -51,6 +52,14 @@ const Navigator = () => {
       })
     })()
   }, [currentPage, response, responseMap, updateResponseMap])
+
+  useEffect(() => {
+    toast({
+      variant: 'noIcon',
+      description: `총 ${response.totalPageCnt} 페이지입니다.\n화살표를 눌러 페이지를 이동해 주세요.`,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     response.totalPageCnt > 1 && (

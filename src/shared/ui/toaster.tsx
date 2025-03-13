@@ -26,11 +26,8 @@ export function Toaster() {
               {description && (
                 <ToastDescription>
                   <div className='flex items-center gap-[1.03rem]'>
-                    {props.variant === 'destructive' ? (
-                      <WarningIcon />
-                    ) : (
-                      <CheckIcon />
-                    )}
+                    {props.variant === 'default' && <CheckIcon />}
+                    {props.variant === 'destructive' && <WarningIcon />}
                     {typeof description === 'string'
                       ? description.split('\n').map((text, index) => (
                           <React.Fragment key={index}>
