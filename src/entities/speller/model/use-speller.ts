@@ -11,6 +11,7 @@ import {
   setResponseMap,
   resetResponseMap,
   type SpellerState,
+  setCurrentPage,
 } from './speller-slice'
 import { CorrectInfo } from './speller-schema'
 
@@ -57,6 +58,13 @@ const useSpeller = () => {
     dispatch(resetResponseMap())
   }, [dispatch])
 
+  const updateCurrentPage = useCallback(
+    (page: number) => {
+      dispatch(setCurrentPage(page))
+    },
+    [dispatch],
+  )
+
   return {
     ...state,
     handleTextChange,
@@ -65,6 +73,7 @@ const useSpeller = () => {
     updateErrInfoIndex,
     updateResponseMap,
     initResponseMap,
+    updateCurrentPage,
   }
 }
 

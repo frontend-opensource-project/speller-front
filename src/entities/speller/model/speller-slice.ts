@@ -12,8 +12,9 @@ interface SpellerState {
   displayText: string // 교정문서에 표시되는 텍스트
   response: Response
   responseMap: Record<number, Response>
-  correctInfo: Record<number, CorrectInfo>
+  correctInfo: Record<number, Record<number, CorrectInfo>>
   selectedErrIdx: number
+  currentPage: number
 }
 
 const initialState: SpellerState = {
@@ -29,6 +30,7 @@ const initialState: SpellerState = {
   responseMap: {},
   correctInfo: {},
   selectedErrIdx: -1,
+  currentPage: 1,
 }
 
 const spellerSlice = createSlice({
@@ -42,18 +44,22 @@ const spellerSlice = createSlice({
     updateResponse: (state, action: PayloadAction<Response>) => {
       state.displayText = action.payload.str
       state.response = action.payload
-      state.correctInfo = action.payload.errInfo.reduce(
-        (acc, info) => ({ ...acc, [info.errorIdx]: info }),
-        {},
-      )
+      // 이미 해당 페이지의 correctInfo가 있을 경우 수정한 내용이 초기화되지 않도록 처리
+      if (!state.correctInfo[state.currentPage]) {
+        state.correctInfo[state.currentPage] = action.payload.errInfo.reduce(
+          (acc, info) => ({ ...acc, [info.errorIdx]: info }),
+          {},
+        )
+      }
     },
 
     updateCorrectInfo: (state, action: PayloadAction<CorrectInfo>) => {
-      state.correctInfo[action.payload.errorIdx] = action.payload
+      state.correctInfo[state.currentPage][action.payload.errorIdx] =
+        action.payload
 
       state.displayText = applyCorrections(
         state.response.str,
-        state.correctInfo,
+        state.correctInfo[state.currentPage],
       )
     },
 
@@ -72,6 +78,10 @@ const spellerSlice = createSlice({
     resetResponseMap: state => {
       state.responseMap = {}
     },
+
+    setCurrentPage: (state, action) => {
+      state.currentPage = action.payload
+    },
   },
 })
 
@@ -82,6 +92,7 @@ const {
   setSelectedErrIdx,
   setResponseMap,
   resetResponseMap,
+  setCurrentPage,
 } = spellerSlice.actions
 const spellerReducer = spellerSlice.reducer
 
@@ -93,5 +104,5 @@ export {
   setResponseMap,
   resetResponseMap,
   spellerReducer,
-  type SpellerState,
+  setCurrentPage,
 }

@@ -8,7 +8,8 @@ import { cn } from '@/shared/lib/tailwind-merge'
 
 const SpellingCorrectionText = () => {
   const { correctRefs, scrollSection } = useSpellerRefs()
-  const { response, correctInfo, handleUpdateCorrectInfo } = useSpeller()
+  const { response, correctInfo, handleUpdateCorrectInfo, currentPage } =
+    useSpeller()
   const { str: text } = response
 
   let lastIndex = 0 // useRef 대신 일반 변수 사용 - 매 렌더링마다 초기화 필요
@@ -24,7 +25,7 @@ const SpellingCorrectionText = () => {
     ))
   }
 
-  Object.values(correctInfo).forEach((pos, idx) => {
+  Object.values(correctInfo[currentPage]).forEach((pos, idx) => {
     const isResolved = !!pos.crtStr
     const recommendedWord = pos.candWord.split('|')[0]
 

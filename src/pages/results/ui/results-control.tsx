@@ -17,6 +17,7 @@ const ResultsControl = () => {
     displayText,
     response: { str },
     correctInfo,
+    currentPage,
   } = useSpeller()
   const router = useRouter()
   const { copyText } = useClipboard()
@@ -27,7 +28,7 @@ const ResultsControl = () => {
       description: '복사 완료!\n원하는 곳에 붙여넣어 보세요.',
     })
 
-    const unfixedErrors = Object.values(correctInfo)
+    const unfixedErrors = Object.values(correctInfo[currentPage])
       .filter(item => !item?.crtStr)
       .map(item => ({
         errorWord: item.orgStr,

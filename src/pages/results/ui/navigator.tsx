@@ -11,8 +11,13 @@ const Navigator = () => {
   const { push } = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const { response, responseMap, handleReceiveResponse, updateResponseMap } =
-    useSpeller()
+  const {
+    response,
+    responseMap,
+    handleReceiveResponse,
+    updateResponseMap,
+    updateCurrentPage,
+  } = useSpeller()
   const [isUpdatedResponseMap, setIsUpdatedResponseMap] = useState(false)
   const currentPage = Number(searchParams?.get('page')) || 1
   const currentPageRef = useRef<number | null>(null)
@@ -27,6 +32,7 @@ const Navigator = () => {
 
   const handlePagination = (page: number) => {
     try {
+      updateCurrentPage(page)
       handleReceiveResponse({ ...responseMap[page] })
     } catch (error) {
       throw new Error(error as string)
