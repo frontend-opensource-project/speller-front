@@ -1,8 +1,8 @@
 import 'overlayscrollbars/overlayscrollbars.css'
 import './styles/globals.css'
 
+import Script from 'next/script'
 import localFont from 'next/font/local'
-import { GoogleAdSenseScript } from '@/entities/google-ad-sense'
 import { Toaster } from '@/shared/ui/toaster'
 
 const pretendard = localFont({
@@ -23,7 +23,13 @@ const App = ({
         {children}
         <Toaster />
       </body>
-      <GoogleAdSenseScript />
+      {/* Google AdSense */}
+      <Script
+        defer
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_AD_CLIENT}`}
+        crossOrigin='anonymous'
+        strategy='afterInteractive'
+      />
     </html>
   )
 }

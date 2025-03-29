@@ -1,8 +1,35 @@
-'use server'
-
 import { headers } from 'next/headers'
+import { checkIpAccess } from '../api/check-ip-access'
+import { AccessDeniedMessage } from '../ui/access-denied-message'
 
-const getClientIP = async () => {
+const withIpRestriction = <P extends object>(
+  WrappedComponent: React.ComponentType<P>,
+) => {
+  return async function IPRestrictedComponent(props: P) {
+    const clientIP = await getClientIp()
+
+    if (process.env.NODE_ENV === 'development') {
+      return <WrappedComponent {...props} />
+    }
+
+    try {
+      const isAccessDenied = await checkIpAccess(clientIP)
+
+      return isAccessDenied ? (
+        <AccessDeniedMessage />
+      ) : (
+        <WrappedComponent {...props} />
+      )
+    } catch (error) {
+      console.error(error)
+
+      return <WrappedComponent {...props} />
+    }
+  }
+}
+
+const getClientIp = async () => {
+  'use server'
   const requestHeaders = await headers()
   const forwardedFor = requestHeaders.get('x-forwarded-for')
   const realIp = requestHeaders.get('x-real-ip')
@@ -30,4 +57,4 @@ const getClientIP = async () => {
   return ip
 }
 
-export { getClientIP }
+export { withIpRestriction }

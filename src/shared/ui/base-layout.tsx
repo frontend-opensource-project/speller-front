@@ -1,7 +1,6 @@
 import { FC, PropsWithChildren } from 'react'
-
+import GoogleAdSense from '../lib/google-ad-sense'
 import { Header } from './header'
-import { MainAd } from '@/entities/google-ad-sense'
 import { Footer } from './footer'
 
 const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
@@ -12,7 +11,12 @@ const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
         {/* 레이아웃 쉬프트 방지 */}
         <div className='flex h-full flex-1'>{children}</div>
         {/* 광고 영역 */}
-        <MainAd />
+        <div className='my-24 hidden rounded-md bg-slate-300 pc:ml-5 pc:block'>
+          <GoogleAdSense
+            slot='9725653724'
+            className='h-[37.5rem] w-40 place-content-center'
+          />
+        </div>
       </div>
       <Footer />
     </div>

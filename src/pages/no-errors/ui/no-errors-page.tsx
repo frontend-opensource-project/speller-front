@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 import { Button } from '@/shared/ui/button'
-import { SpellerSetting } from '@/pages/speller/ui/speller-setting'
+import { SpellerSetting } from '@/entities/speller'
 import { ContentLayout } from '@/shared/ui/content-layout'
 import noErrorMobileImage from '../../../../public/no-errors-mo.png'
 import noErrorTabImage from '../../../../public/no-errors-tab.png'

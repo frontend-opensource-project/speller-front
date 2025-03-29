@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 import { Button } from '@/shared/ui/button'
-import { SpellerSetting } from '@/pages/speller/ui/speller-setting'
+import { SpellerSetting } from '@/entities/speller'
 import { ContentLayout } from '@/shared/ui/content-layout'
 import timeoutMobileImage from '../../../../public/timeout-mo.png'
 import timeoutTabImage from '../../../../public/timeout-tab.png'

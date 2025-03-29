@@ -21,3 +21,4 @@ export {
   useSpellerRefs,
 } from './model/speller-refs-context'
 export { spellerReducer, type SpellerState } from './model/speller-slice'
+export { SpellerSetting } from './ui/speller-setting'

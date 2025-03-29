@@ -2,8 +2,8 @@
 
 import axios from 'axios'
 import { ZodError } from 'zod'
-
-import { FeedbackApi, feedbackPayloadSchema } from '@/entities/feedback'
+import { FeedbackApi } from './feedback-service'
+import { feedbackPayloadSchema } from '../model/feedback-schema'
 
 type ActionState = {
   data: string | null

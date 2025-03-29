@@ -3,14 +3,13 @@
 import { useActionState, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { useSpeller } from '@/entities/speller'
-import { ResultsSkeleton } from '@/entities/results'
+import { useSpeller, SpellerSetting } from '@/entities/speller'
 import { ContentLayout } from '@/shared/ui/content-layout'
-import { SpellerSetting } from './speller-setting'
-import { SpellerTextInput } from './speller-text-input'
-import { SpellerControl } from './speller-control'
 import { spellCheckAction } from '../api/spell-check-action'
 import { TIMEOUT_ERROR_CODE } from '../model/error-code'
+import { SpellerTextInput } from './speller-text-input'
+import { ResultsSkeleton } from './results-skeleton'
+import { SpellerControl } from './speller-control'
 
 const SpellerPage = () => {
   const router = useRouter()

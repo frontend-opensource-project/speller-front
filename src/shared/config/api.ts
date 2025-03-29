@@ -1,4 +1,4 @@
-const ENDPOINT = {
+export const ENDPOINT = {
   CHECK: '/check',
   BUG_REPORT: '/bugReport',
   USER_REPLACE: '/userReplace',
@@ -7,5 +7,3 @@ const ENDPOINT = {
   SEND_REPORT_MAIL: '/sendReportMail',
   FILTER_IP: '/filterIP',
 }
-
-export { ENDPOINT }

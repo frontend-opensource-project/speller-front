@@ -1,0 +1,1 @@
+export { ENDPOINT } from './api'

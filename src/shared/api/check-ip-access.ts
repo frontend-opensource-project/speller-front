@@ -1,19 +1,19 @@
 'use server'
 
-import { ENDPOINT } from '../model/constants'
+import { ENDPOINT } from '../config'
 
 type ResponseData = { denied?: 'true' | 'false' }
 
 const errorMsg = '[Error] IP 필터링 서비스를 사용할 수 없습니다.'
 const REVALIDATE_SEC = 300 // 5분(300초)
 
-const checkIpAccess = async (clientIP: string) => {
+const checkIpAccess = async (clientIp: string) => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}${ENDPOINT.FILTER_IP}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clientIP }),
+      body: JSON.stringify({ clientIp }),
       cache: 'force-cache',
       next: {
         revalidate: REVALIDATE_SEC,

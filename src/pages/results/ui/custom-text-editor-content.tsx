@@ -1,9 +1,9 @@
-import { BulletBadge } from '@/shared/ui/bullet-badge'
-import { useUserReplace } from '../model/use-user-replace'
+import { CorrectMethodEnum } from '@/entities/speller'
+import { cn } from '@/shared/lib/tailwind-merge'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
-import { cn } from '@/shared/lib/tailwind-merge'
-import { CorrectMethodEnum } from '@/entities/speller'
+import { useUserReplace } from '../model/use-user-replace'
+import { BulletBadge } from '../ui/bullet-badge'
 
 interface CustomTextEditorContent {
   handleClose: () => void

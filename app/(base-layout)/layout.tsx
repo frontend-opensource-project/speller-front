@@ -1,5 +1,5 @@
 import { ReduxProvider } from '@/app/redux/redux-provider'
-import { withIPRestriction } from '@/shared/lib/with-iP-restriction'
+import { withIpRestriction } from '@/shared/lib/with-ip-restriction'
 import { BaseLayout } from '@/shared/ui/base-layout'
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -10,4 +10,4 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-export default withIPRestriction(Layout)
+export default withIpRestriction(Layout)
