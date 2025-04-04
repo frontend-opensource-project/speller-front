@@ -64,7 +64,11 @@ const Footer = () => {
             </div>
           </div>
           {/* 광고 영역 */}
-          <GoogleAdSense className='mb-1 w-80 rounded-sm bg-slate-300 p-4 text-center tab:mb-0 tab:w-full pc:w-1/2' />
+          <GoogleAdSense
+            className='mb-1 hidden h-[50px] w-80 rounded-sm bg-slate-300 p-4 text-center tab:mb-0 tab:h-[90px] tab:w-[728px] pc:block'
+            data-ad-slot='4790060150'
+            data-full-width-responsive='true'
+          />
         </div>
       </div>
     </footer>
