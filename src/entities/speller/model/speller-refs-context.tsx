@@ -58,7 +58,7 @@ export const SpellerRefsProvider = ({
     const scrollContainerRef =
       target === 'correct' ? correctScrollContainerRef : errorScrollContainerRef
 
-    if (!refs || !scrollContainerRef) return
+    if (!refs || !scrollContainerRef.current) return
 
     const targetElement = refs[index]?.current
     const container = scrollContainerRef.current
