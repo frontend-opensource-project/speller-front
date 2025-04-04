@@ -14,15 +14,17 @@ import { useClient } from '../lib/use-client'
 import { useOptimizedScrollDetection } from '../lib/use-optimized-scroll-detection'
 
 interface ScrollContainerProps extends React.HTMLAttributes<HTMLDivElement> {
-  onScrollStatusChange?: (isScrolling: boolean) => void
   isFocused?: boolean
+  forwardRef?: React.RefObject<HTMLDivElement> | null
+  onScrollStatusChange?: (isScrolling: boolean) => void
 }
 
 const ScrollContainer: FC<PropsWithChildren<ScrollContainerProps>> = ({
+  isFocused,
+  forwardRef,
   children,
   className,
   onScrollStatusChange,
-  isFocused,
   ...props
 }) => {
   const isClient = useClient()
@@ -86,7 +88,9 @@ const ScrollContainer: FC<PropsWithChildren<ScrollContainerProps>> = ({
       )}
       {...props}
     >
-      {children}
+      <div ref={forwardRef} className='h-full overflow-y-auto'>
+        {children}
+      </div>
     </div>
   )
 }

@@ -13,7 +13,7 @@ import { ErrorInfoSection } from './error-info-section'
 import { BulletBadge } from '../ui/bullet-badge'
 
 const ErrorTrackingSection = () => {
-  const { errorRefs, scrollSection } = useSpellerRefs()
+  const { errorRefs, errorScrollContainerRef, scrollSection } = useSpellerRefs()
   const { response } = useSpeller()
   const { errInfo } = response ?? {}
 
@@ -30,6 +30,7 @@ const ErrorTrackingSection = () => {
         <span className='text-red-100'>{errInfo.length}개</span>
       </h2>
       <ScrollContainer
+        forwardRef={errorScrollContainerRef}
         onScrollStatusChange={handleScroll}
         className='-mt-[1.125rem] flex-1'
       >

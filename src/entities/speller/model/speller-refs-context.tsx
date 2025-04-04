@@ -1,12 +1,14 @@
 'use client'
 
 import { useWindowSize } from '@frontend-opensource/use-react-hooks'
-import { createContext, useContext, useCallback, createRef } from 'react'
+import { createContext, useContext, createRef, useRef } from 'react'
 import { useSpeller } from './use-speller'
 
 interface SpellerRefsContextType {
   correctRefs: React.RefObject<HTMLDivElement>[] | null
   errorRefs: React.RefObject<HTMLDivElement>[] | null
+  correctScrollContainerRef: React.RefObject<HTMLDivElement> | null
+  errorScrollContainerRef: React.RefObject<HTMLDivElement> | null
   scrollSection: (target: 'correct' | 'error', index: number) => void
 }
 
@@ -17,6 +19,8 @@ export const SpellerRefsProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const correctScrollContainerRef = useRef<HTMLDivElement>(null)
+  const errorScrollContainerRef = useRef<HTMLDivElement>(null)
   const { response, correctInfo } = useSpeller()
   const { width } = useWindowSize()
   const isDesktop = width && width >= 1377
@@ -33,17 +37,46 @@ export const SpellerRefsProvider = ({
       )
     : null
 
-  const scrollSection = useCallback(
-    (target: 'correct' | 'error', index: number) => {
-      const refs = target === 'correct' ? correctRefs : errorRefs
-      refs?.[index].current?.scrollIntoView({ behavior: 'smooth' })
-    },
-    [correctRefs, errorRefs],
-  )
+  const scrollToElement = (
+    scrollContainer: HTMLDivElement,
+    targetElement: HTMLDivElement,
+  ) => {
+    const containerRect = scrollContainer.getBoundingClientRect()
+    const targetRect = targetElement.getBoundingClientRect()
+
+    const offsetTop =
+      targetRect.top - containerRect.top + scrollContainer.scrollTop
+
+    scrollContainer.scrollTo({
+      top: offsetTop,
+      behavior: 'smooth',
+    })
+  }
+
+  const scrollSection = (target: 'correct' | 'error', index: number) => {
+    const refs = target === 'correct' ? correctRefs : errorRefs
+    const scrollContainerRef =
+      target === 'correct' ? correctScrollContainerRef : errorScrollContainerRef
+
+    if (!refs || !scrollContainerRef) return
+
+    const targetElement = refs[index]?.current
+    const container = scrollContainerRef.current
+
+    if (targetElement && container) {
+      scrollToElement(container, targetElement)
+    }
+  }
 
   return (
     <SpellerRefsContext.Provider
-      value={{ correctRefs, errorRefs, scrollSection }}
+      value={{
+        correctRefs,
+        errorRefs,
+        correctScrollContainerRef,
+        errorScrollContainerRef,
+        scrollSection,
+      }}
     >
       {children}
     </SpellerRefsContext.Provider>
