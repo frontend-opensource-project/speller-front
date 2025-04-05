@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import GoogleAdSense from '../lib/google-ad-sense'
-
+import Link from 'next/link'
 const Footer = () => {
   return (
     <footer className='bg-slate-200 pt-6 pc:py-[1.875rem]'>
@@ -10,7 +10,7 @@ const Footer = () => {
             {/* 고객센터 섹션 */}
             <div className='flex gap-2 text-slate-600'>
               <span className='text-xs font-semibold leading-[1.0425rem] tracking-[-0.015rem] tab:leading-[1.05rem] pc:text-[0.75rem] pc:leading-[1.035rem] pc:tracking-[-0.015rem]'>
-                구매문의
+                <Link href='/order'>구매문의</Link>
               </span>
               <a
                 href='tel:051-516-9268'
