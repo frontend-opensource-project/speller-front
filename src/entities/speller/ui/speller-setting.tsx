@@ -1,7 +1,12 @@
 'use client'
 
-import React, { memo } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import React, { memo, useEffect, useState } from 'react'
+import {
+  ReadonlyURLSearchParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation'
 
 import { Label } from '@/shared/ui/label'
 import { Switch } from '@/shared/ui/switch'
@@ -12,6 +17,9 @@ const SpellerSetting = memo(() => {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const { replace } = useRouter()
+  const [isChecked, setStrictCheck] = useState(() =>
+    isStrictCheckEnabled(searchParams),
+  )
 
   const handleChange = (checked: boolean) => {
     if (!searchParams) return
@@ -27,6 +35,12 @@ const SpellerSetting = memo(() => {
     replace(`${pathname}?${params.toString()}`)
   }
 
+  useEffect(() => {
+    if (!searchParams) return
+
+    setStrictCheck(isStrictCheckEnabled(searchParams))
+  }, [searchParams])
+
   return (
     <div className='flex items-center justify-end gap-2 pc:gap-4'>
       <Label
@@ -41,14 +55,18 @@ const SpellerSetting = memo(() => {
         id='airplane-mode'
         name='isStrictCheck'
         onCheckedChange={handleChange}
-        defaultChecked={Boolean(
-          searchParams?.get(QUERY)?.toString() === 'true',
-        )}
+        checked={isChecked}
       />
     </div>
   )
 })
 
 SpellerSetting.displayName = 'SpellerSetting'
+
+const isStrictCheckEnabled = (searchParams: ReadonlyURLSearchParams | null) => {
+  if (!searchParams) return false
+
+  return searchParams.get(QUERY) === 'true'
+}
 
 export { SpellerSetting }
