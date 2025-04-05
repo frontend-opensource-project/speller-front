@@ -1,6 +1,7 @@
 import React from 'react'
 import { InfoCard } from './info-card'
 import { SectionPanel } from './section-panel'
+import { CONTACT_INFO } from '@/shared/model/contact-info'
 
 export const OrderPage = () => {
   return (
@@ -31,9 +32,9 @@ export const OrderPage = () => {
                 <path
                   d='M21.027 14.2745V18.6381C21.027 19.2168 20.7971 19.7717 20.3879 20.1809C19.9788 20.5901 19.4238 20.82 18.8452 20.82H3.57244C2.99379 20.82 2.43883 20.5901 2.02966 20.1809C1.62049 19.7717 1.39063 19.2168 1.39062 18.6381V14.2745M5.75426 8.81996L11.2088 14.2745M11.2088 14.2745L16.6634 8.81996M11.2088 14.2745V1.18359'
                   stroke='white'
-                  stroke-width='2.18182'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
+                  strokeWidth='2.18182'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
                 />
               </svg>
             </span>
@@ -84,10 +85,15 @@ export const OrderPage = () => {
           <h3 className='text-[1.5rem] font-semibold leading-[2.4rem]'>
             구매 문의
           </h3>
-          <p className='text-center text-xl'>
-            우리말배움터 관리자(urimal@pusan.ac.kr) <br />
-            (주)나라인포테크(051-516-9268)
-          </p>
+          <div className='text-center text-xl'>
+            <a href={`mailto:${CONTACT_INFO.email.value}`}>
+              {CONTACT_INFO.email.label} ({CONTACT_INFO.email.value})
+            </a>{' '}
+            <br />
+            <a href={`tel:${CONTACT_INFO.tel.value}`}>
+              {CONTACT_INFO.tel.label} ({CONTACT_INFO.tel.value})
+            </a>
+          </div>
         </div>
       </div>
     </div>
