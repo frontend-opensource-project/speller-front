@@ -1,17 +1,18 @@
 import React from 'react'
 import { InfoCard } from './info-card'
 import { SectionPanel } from './section-panel'
-import { CONTACT_INFO } from '@/shared/model/contact-info'
+import { Button } from '@/shared/ui/button'
+import Link from 'next/link'
 
 export const OrderPage = () => {
   return (
-    <div className='flex min-h-screen items-center justify-center bg-white px-4 py-[5rem]'>
-      <div className='flex w-[98.25rem] flex-col'>
-        <h1 className='mb-5 text-[4rem] font-bold'>
+    <>
+      <div className='flex w-full flex-col'>
+        <h1 className='my-3 text-3xl font-bold pc:mb-5 pc:mt-[3.6rem] pc:text-[3.125rem] pc:leading-[3.75rem]'>
           바른 한글 검사기 구매 안내
         </h1>
-        <div className='mb-[2.5rem] flex flex-col justify-between pc:flex-row'>
-          <p className='text-2xl text-slate-400'>
+        <div className='mb-2 flex flex-col justify-between gap-2 pc:mb-[2.5rem] pc:flex-row'>
+          <p className='text-base text-slate-400 pc:text-[1.375rem]'>
             바른 한글 검사기는 온라인 API와 오프라인 API 2가지 형태로 서비스를
             제공하고 있습니다.
             <br /> 금액이나 관련 문의는 하단의 구매 문의 부분을 참조하여주세요.
@@ -19,20 +20,20 @@ export const OrderPage = () => {
           <a
             href='https://gdurl.com/fAjM'
             download
-            className='inline-flex h-[4rem] w-fit items-center gap-[0.625rem] rounded-full border border-[#ECEDF4] bg-[#FAFAFC] px-4 py-2 text-2xl text-slate-400'
+            className='inline-flex h-[2.75rem] w-fit items-center gap-2 rounded-full border border-[#ECEDF4] bg-[#FAFAFC] p-2 pr-3 text-slate-400 transition hover:bg-slate-300 hover:text-white'
           >
-            <span className='flex size-[3rem] items-center justify-center rounded-full bg-slate-600'>
+            <span className='flex size-[2rem] items-center justify-center rounded-full bg-slate-600'>
               <svg
-                xmlns='http://www.w3.org/2000/svg'
-                width='23'
-                height='22'
-                viewBox='0 0 23 22'
+                width='16'
+                height='16'
+                viewBox='0 0 16 16'
                 fill='none'
+                xmlns='http://www.w3.org/2000/svg'
               >
                 <path
-                  d='M21.027 14.2745V18.6381C21.027 19.2168 20.7971 19.7717 20.3879 20.1809C19.9788 20.5901 19.4238 20.82 18.8452 20.82H3.57244C2.99379 20.82 2.43883 20.5901 2.02966 20.1809C1.62049 19.7717 1.39063 19.2168 1.39062 18.6381V14.2745M5.75426 8.81996L11.2088 14.2745M11.2088 14.2745L16.6634 8.81996M11.2088 14.2745V1.18359'
+                  d='M14.8532 10.311V13.3912C14.8532 13.7996 14.6909 14.1914 14.4021 14.4802C14.1132 14.769 13.7215 14.9313 13.313 14.9313H2.53229C2.12383 14.9313 1.7321 14.769 1.44327 14.4802C1.15445 14.1914 0.992188 13.7996 0.992188 13.3912V10.311M4.0724 6.46069L7.92267 10.311M7.92267 10.311L11.7729 6.46069M7.92267 10.311V1.07031'
                   stroke='white'
-                  strokeWidth='2.18182'
+                  strokeWidth='1.54011'
                   strokeLinecap='round'
                   strokeLinejoin='round'
                 />
@@ -41,7 +42,7 @@ export const OrderPage = () => {
             소개서 내려받기
           </a>
         </div>
-        <div className='mb-5 flex flex-col gap-5 pc:flex-row'>
+        <div className='flex flex-col items-stretch gap-5 pc:flex-row'>
           <SectionPanel
             title='온라인 API'
             description='클라우드 서버를 이용한 API 서비스를 제공합니다.'
@@ -81,21 +82,15 @@ export const OrderPage = () => {
             />
           </SectionPanel>
         </div>
-        <div className='flex h-[166px] w-full flex-col items-center justify-center rounded-[1rem] bg-primary text-white'>
-          <h3 className='text-[1.5rem] font-semibold leading-[2.4rem]'>
-            구매 문의
-          </h3>
-          <div className='text-center text-xl'>
-            <a href={`mailto:${CONTACT_INFO.email.value}`}>
-              {CONTACT_INFO.email.label} ({CONTACT_INFO.email.value})
-            </a>{' '}
-            <br />
-            <a href={`tel:${CONTACT_INFO.tel.value}`}>
-              {CONTACT_INFO.tel.label} ({CONTACT_INFO.tel.value})
-            </a>
-          </div>
+        <div className='flex items-center justify-center py-5 pc:py-10'>
+          <Button
+            size='lg'
+            className='h-[3rem] text-xl pc:h-[4rem] pc:w-[9.5rem]'
+          >
+            <Link href='/'>돌아가기</Link>
+          </Button>
         </div>
       </div>
-    </div>
+    </>
   )
 }
