@@ -11,7 +11,12 @@ const Footer = () => {
             {/* 고객센터 섹션 */}
             <div className='flex gap-2 text-slate-600'>
               <span className='text-xs font-semibold leading-[1.0425rem] tracking-[-0.015rem] tab:leading-[1.05rem] pc:text-[0.75rem] pc:leading-[1.035rem] pc:tracking-[-0.015rem]'>
-                <Link href='/order'>구매문의</Link>
+                <Link
+                  href='/order'
+                  className='hover:text-primary hover:underline'
+                >
+                  구매문의
+                </Link>
               </span>
               <a
                 href={`tel:${CONTACT_INFO.tel.value}`}
