@@ -1,14 +1,15 @@
 'use client'
 
-import { useWindowSize } from '@frontend-opensource/use-react-hooks'
 import { createContext, useContext, createRef, useRef } from 'react'
+import { useWindowSize } from '@frontend-opensource/use-react-hooks'
+import { OverlayScrollbarsComponentRef } from 'overlayscrollbars-react'
 import { useSpeller } from './use-speller'
 
 interface SpellerRefsContextType {
   correctRefs: React.RefObject<HTMLDivElement>[] | null
   errorRefs: React.RefObject<HTMLDivElement>[] | null
-  correctScrollContainerRef: React.RefObject<HTMLDivElement> | null
-  errorScrollContainerRef: React.RefObject<HTMLDivElement> | null
+  correctScrollContainerRef: React.RefObject<OverlayScrollbarsComponentRef> | null
+  errorScrollContainerRef: React.RefObject<OverlayScrollbarsComponentRef> | null
   scrollSection: (target: 'correct' | 'error', index: number) => void
 }
 
@@ -19,8 +20,8 @@ export const SpellerRefsProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const correctScrollContainerRef = useRef<HTMLDivElement>(null)
-  const errorScrollContainerRef = useRef<HTMLDivElement>(null)
+  const correctScrollContainerRef = useRef<OverlayScrollbarsComponentRef>(null)
+  const errorScrollContainerRef = useRef<OverlayScrollbarsComponentRef>(null)
   const { response, correctInfo } = useSpeller()
   const { width } = useWindowSize()
   const isDesktop = width && width >= 1377
@@ -38,16 +39,20 @@ export const SpellerRefsProvider = ({
     : null
 
   const scrollToElement = (
-    scrollContainer: HTMLDivElement,
+    scrollContainer: OverlayScrollbarsComponentRef,
     targetElement: HTMLDivElement,
   ) => {
-    const containerRect = scrollContainer.getBoundingClientRect()
+    const osInstance = scrollContainer?.osInstance()
+    if (!osInstance) return
+
+    const { scrollOffsetElement } = osInstance.elements()
+    const containerRect = scrollOffsetElement.getBoundingClientRect()
     const targetRect = targetElement.getBoundingClientRect()
 
     const offsetTop =
-      targetRect.top - containerRect.top + scrollContainer.scrollTop
+      targetRect.top - containerRect.top + scrollOffsetElement.scrollTop
 
-    scrollContainer.scrollTo({
+    scrollOffsetElement.scrollTo({
       top: offsetTop,
       behavior: 'smooth',
     })

@@ -8,8 +8,9 @@ import { useSpellerRefs } from '@/entities/speller'
 
 const CorrectionContent = () => {
   const { correctScrollContainerRef } = useSpellerRefs()
-  const [isFocused, setIsFocused] = useState(false)
+
   const [showGradient, setShowGradient] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
 
   const handleScroll = useCallback((isScrolling: boolean) => {
     setShowGradient(isScrolling)

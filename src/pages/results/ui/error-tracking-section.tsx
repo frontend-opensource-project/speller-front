@@ -18,9 +18,11 @@ const ErrorTrackingSection = () => {
   const { errInfo } = response ?? {}
 
   const [showGradient, setShowGradient] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
 
   const handleScroll = useCallback((isScrolling: boolean) => {
     setShowGradient(isScrolling)
+    setIsFocused(isScrolling)
   }, [])
 
   return (
@@ -30,6 +32,7 @@ const ErrorTrackingSection = () => {
         <span className='text-red-100'>{errInfo.length}개</span>
       </h2>
       <ScrollContainer
+        isFocused={isFocused}
         containerRef={errorScrollContainerRef}
         onScrollStatusChange={handleScroll}
         className='-mt-[1.125rem] flex-1'

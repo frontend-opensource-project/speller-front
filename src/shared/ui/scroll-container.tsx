@@ -1,7 +1,11 @@
 'use client'
 
 import React, { useEffect, useState, PropsWithChildren } from 'react'
-import { useOverlayScrollbars } from 'overlayscrollbars-react'
+import {
+  OverlayScrollbarsComponent,
+  OverlayScrollbarsComponentRef,
+  useOverlayScrollbars,
+} from 'overlayscrollbars-react'
 
 import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
@@ -9,7 +13,7 @@ import { useOptimizedScrollDetection } from '../lib/use-optimized-scroll-detecti
 
 interface ScrollContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   isFocused?: boolean
-  containerRef?: React.RefObject<HTMLDivElement> | null
+  containerRef?: React.RefObject<OverlayScrollbarsComponentRef> | null
   onScrollStatusChange?: (isScrolling: boolean) => void
 }
 
@@ -67,14 +71,14 @@ const ScrollContainer = ({
   }, [isScrollVisible, isFocused])
 
   useEffect(() => {
-    if (!isClient || !containerRef?.current) return
-    initialize(containerRef.current)
-  }, [isClient, initialize])
+    if (!isClient) return
+    initialize(document.body)
+  }, [isClient])
 
   return (
-    <div
-      ref={containerRef}
+    <OverlayScrollbarsComponent
       data-overlayscrollbars-initialize
+      ref={containerRef}
       className={cn(
         'mr-[-1.25rem] resize-none overflow-y-auto pr-[1.25rem] outline-none',
         className,
@@ -82,7 +86,7 @@ const ScrollContainer = ({
       {...props}
     >
       {children}
-    </div>
+    </OverlayScrollbarsComponent>
   )
 }
 
