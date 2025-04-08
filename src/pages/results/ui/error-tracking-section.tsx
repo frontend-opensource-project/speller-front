@@ -33,7 +33,7 @@ const ErrorTrackingSection = () => {
       </h2>
       <ScrollContainer
         isFocused={isFocused}
-        containerRef={errorScrollContainerRef}
+        ref={errorScrollContainerRef}
         onScrollStatusChange={handleScroll}
         className='-mt-[1.125rem] flex-1'
       >

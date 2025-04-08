@@ -29,7 +29,7 @@ const CorrectionContent = () => {
       <div className='min-w-0 flex-1'>
         <ScrollContainer
           isFocused={isFocused}
-          containerRef={correctScrollContainerRef}
+          ref={correctScrollContainerRef}
           onScrollStatusChange={handleScroll}
           className='h-full min-h-40 flex-1'
         >
