@@ -27,6 +27,8 @@ export interface ScrollContainerHandle {
   getOsInstance: () => OverlayScrollbars | null
 }
 
+const SCROLL_VISIBILITY_DELAY = 500
+
 const ScrollContainer = forwardRef<
   ScrollContainerHandle,
   PropsWithChildren<ScrollContainerProps>
@@ -43,7 +45,7 @@ const ScrollContainer = forwardRef<
   const handleScroll = useOptimizedScrollDetection(status => {
     onScrollStatusChange?.(status)
     setIsScrollVisible(status)
-  }, 500)
+  }, SCROLL_VISIBILITY_DELAY)
 
   const [initialize, getInstance] = useOverlayScrollbars({
     options: {
@@ -124,7 +126,7 @@ const ScrollContainer = forwardRef<
       if (!isScrollVisible && !isFocused) {
         setVisibility('hidden')
       }
-    }, 500)
+    }, SCROLL_VISIBILITY_DELAY)
 
     return () => clearTimeout(timer)
   }, [isScrollVisible, isFocused])
@@ -133,7 +135,7 @@ const ScrollContainer = forwardRef<
     if (!isClient || !customScrollBarRef?.current) return
 
     initialize(customScrollBarRef.current)
-  }, [isClient, initialize, getInstance])
+  }, [isClient, initialize])
 
   return (
     <div
