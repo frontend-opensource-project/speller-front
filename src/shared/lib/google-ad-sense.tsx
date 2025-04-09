@@ -1,7 +1,8 @@
 'use client'
 
+import { useDeviceUtils } from '@/shared/lib/use-device-utils'
 import { cn } from '@/shared/lib/tailwind-merge'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 declare global {
   interface Window {
@@ -10,20 +11,32 @@ declare global {
 }
 
 interface GoogleAdSenseProps {
-  slot?: string
   className?: string
 }
-const GoogleAdSense = ({ slot, className }: GoogleAdSenseProps) => {
+const GoogleAdSense = ({ className, ...props }: GoogleAdSenseProps) => {
   const adRef = useRef<HTMLModElement>(null)
 
+  // 데스크탑: 수동 광고 사용
+  // 태블릿/모바일: 자동 광고 사용 (Google이 <ins> 태그 없이 광고 자동 삽입)
+  const { isDesktop } = useDeviceUtils()
+  const [isDesktopView, setIsDesktopView] = useState(false)
+
   useEffect(() => {
-    if (adRef.current) {
-      // 이미 초기화된 광고인지 확인
-      if (!adRef.current.getAttribute('data-adsbygoogle-status')) {
+    setIsDesktopView(isDesktop)
+  }, [isDesktop])
+
+  useEffect(() => {
+    // 광고 DOM이 렌더된 이후에만 push 실행
+    if (isDesktopView && adRef.current) {
+      try {
         ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+      } catch (e) {
+        console.error(e)
       }
     }
-  }, [])
+  }, [isDesktopView])
+
+  if (!isDesktopView) return null
 
   if (!process.env.NEXT_PUBLIC_AD_CLIENT) {
     console.error('AdSense client ID is missing.')
@@ -35,9 +48,7 @@ const GoogleAdSense = ({ slot, className }: GoogleAdSenseProps) => {
       ref={adRef}
       className={cn('adsbygoogle', 'block', className)}
       data-ad-client={process.env.NEXT_PUBLIC_AD_CLIENT}
-      data-ad-slot={slot}
-      data-ad-format='auto'
-      data-full-width-responsive='true'
+      {...props}
     />
   )
 }

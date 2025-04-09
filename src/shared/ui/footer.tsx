@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer className='bg-slate-200 pt-6 pc:py-[1.875rem]'>
       <div className='pc:container pc:mx-auto pc:px-[3.81rem]'>
-        <div className='flex flex-col items-center justify-center pc:flex-row pc:justify-between'>
+        <div className='flex flex-col items-center justify-center tab:min-h-[90px] pc:flex-row pc:justify-between'>
           <div className='flex flex-col items-center gap-1 pb-4 text-[0.625rem] tab:pb-[5.06rem] pc:items-start pc:pb-0'>
             {/* 고객센터 섹션 */}
             <div className='flex gap-2 text-slate-600'>
@@ -63,8 +63,14 @@ const Footer = () => {
               Copyrightⓒ2001 AI Lab & Narainfotech. All Rights Reserved
             </div>
           </div>
-          {/* 광고 영역 */}
-          <GoogleAdSense className='mb-1 w-80 rounded-sm bg-slate-300 p-4 text-center tab:mb-0 tab:w-full pc:w-1/2' />
+          <div className='hidden h-[90px] w-[728px] pc:block'>
+            {/* 광고 영역 */}
+            <GoogleAdSense
+              className='mb-1 hidden h-[50px] w-80 rounded-sm bg-slate-300 p-4 text-center tab:mb-0 tab:h-[90px] tab:w-[728px] pc:block'
+              data-ad-slot='4790060150'
+              data-full-width-responsive='true'
+            />
+          </div>
         </div>
       </div>
     </footer>
