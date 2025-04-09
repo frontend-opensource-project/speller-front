@@ -2,15 +2,36 @@ import React from 'react'
 import { InfoCard } from './info-card'
 import { SectionPanel } from './section-panel'
 import { Button } from '@/shared/ui/button'
+import { CONTACT_INFO } from '@/shared/model/contact-info'
+import Image from 'next/image'
 import Link from 'next/link'
 
 export const OrderPage = () => {
   return (
     <>
       <div className='flex w-full flex-col'>
-        <h1 className='my-3 text-3xl font-bold pc:mb-5 pc:mt-[3.6rem] pc:text-[3.125rem] pc:leading-[3.75rem]'>
-          바른 한글 검사기 구매 안내
-        </h1>
+        <div className='flex items-center justify-between'>
+          <h1 className='my-3 text-3xl font-bold pc:mb-5 pc:mt-[3.6rem] pc:text-[3.125rem] pc:leading-[3.75rem]'>
+            바른 한글 검사기 구매 안내
+          </h1>
+          <Button
+            variant='ghost'
+            size='icon'
+            aria-label='돌아가기'
+            className='relative size-4 self-start outline-none hover:bg-transparent focus-visible:ring-2 focus-visible:ring-slate-200 focus-visible:ring-offset-4 focus-visible:ring-offset-white tab:size-5 pc:size-6'
+            type='button'
+          >
+            <Link href='/'>
+              <Image
+                className='object-cover'
+                src='/close.svg'
+                fill
+                alt=''
+                aria-hidden='true'
+              />
+            </Link>
+          </Button>
+        </div>
         <div className='mb-2 flex flex-col justify-between gap-2 pc:mb-[2.5rem] pc:flex-row'>
           <p className='text-base text-slate-400 pc:text-[1.375rem]'>
             바른 한글 검사기는 온라인 API와 오프라인 API 2가지 형태로 서비스를
@@ -82,13 +103,15 @@ export const OrderPage = () => {
             />
           </SectionPanel>
         </div>
-        <div className='flex items-center justify-center py-5 pc:py-10'>
-          <Button
-            size='lg'
-            className='h-[3rem] text-xl pc:h-[4rem] pc:w-[9.5rem]'
-          >
-            <Link href='/'>돌아가기</Link>
-          </Button>
+        <div className='mb-[1.5rem] mt-[0.8rem] flex h-[6.75rem] flex-col items-center justify-center rounded-[0.625rem] bg-slate-600 text-center text-white'>
+          <h3 className='text-xl font-semibold leading-[2.4rem] pc:text-2xl'>
+            구매 문의
+          </h3>
+          <p className='text-sm text-slate-300'>
+            {CONTACT_INFO.email.label}({CONTACT_INFO.email.value})
+            <br />
+            {CONTACT_INFO.tel.label}({CONTACT_INFO.tel.value})
+          </p>
         </div>
       </div>
     </>
