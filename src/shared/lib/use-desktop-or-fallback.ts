@@ -10,7 +10,6 @@ import { useMemo } from 'react'
  */
 const useDesktopOrFallback = <T>(desktopValue: T, fallbackValue: T): T => {
   const isDesktop = useDesktop()
-
   const result = useMemo(() => {
     return isDesktop ? desktopValue : fallbackValue
   }, [isDesktop, desktopValue, fallbackValue])
