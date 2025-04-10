@@ -18,7 +18,7 @@ export const OrderPage = () => {
             variant='ghost'
             size='icon'
             aria-label='돌아가기'
-            className='relative size-4 self-start outline-none hover:bg-transparent focus-visible:ring-2 focus-visible:ring-slate-200 focus-visible:ring-offset-4 focus-visible:ring-offset-white tab:size-5 pc:size-6'
+            className='relative mr-1 size-4 self-start outline-none hover:bg-transparent focus-visible:ring-2 focus-visible:ring-slate-200 focus-visible:ring-offset-4 focus-visible:ring-offset-white tab:size-5 pc:size-6'
             type='button'
           >
             <Link href='/'>
