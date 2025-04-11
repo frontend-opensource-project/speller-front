@@ -37,11 +37,10 @@ const FeedbackForm = () => {
       <div className='mt-2 flex flex-col gap-3 pc:mt-[1.125rem] pc:grid pc:grid-cols-[9.25rem_1fr] pc:gap-0'>
         <FormLabel htmlFor='description' label='문의 내용' />
         <div
-          className='flex h-full max-h-[13.75rem] w-full flex-col rounded-lg bg-white px-5 py-4 pc:max-h-[21.25rem] pc:min-h-[21.25rem]'
+          className='flex h-full max-h-[13.75rem] min-h-56 w-full flex-col rounded-lg bg-white px-5 py-4 pc:max-h-[21.25rem] pc:min-h-[21.25rem]'
           id='description'
         >
           <Textarea
-            value={content}
             name='feedback-text'
             onChange={text => setContent(text)}
             placeholder='내용을 입력해 주세요.'
