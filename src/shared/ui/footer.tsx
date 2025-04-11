@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import GoogleAdSense from '../lib/google-ad-sense'
-
+import Link from 'next/link'
+import { CONTACT_INFO } from '../model/contact-info'
 const Footer = () => {
   return (
     <footer className='bg-slate-200 pt-6 pc:py-[1.875rem]'>
@@ -10,10 +11,15 @@ const Footer = () => {
             {/* 고객센터 섹션 */}
             <div className='flex gap-2 text-slate-600'>
               <span className='text-xs font-semibold leading-[1.0425rem] tracking-[-0.015rem] tab:leading-[1.05rem] pc:text-[0.75rem] pc:leading-[1.035rem] pc:tracking-[-0.015rem]'>
-                구매문의
+                <Link
+                  href='/order'
+                  className='hover:text-primary hover:underline'
+                >
+                  구매문의
+                </Link>
               </span>
               <a
-                href='tel:051-516-9268'
+                href={`tel:${CONTACT_INFO.tel.value}`}
                 className='flex items-center gap-1 text-[0.6875rem] leading-[0.95563rem] tracking-[-0.01375rem] tab:leading-[0.9625rem] pc:text-[0.75rem] pc:leading-[1.035rem] pc:tracking-[-0.015rem]'
               >
                 <div className='relative size-[0.83038rem]'>
@@ -24,10 +30,10 @@ const Footer = () => {
                     fill
                   />
                 </div>
-                <span>(주)나라인포테크</span>
+                <span>{CONTACT_INFO.tel.label}</span>
               </a>
               <a
-                href='mailto:urimal@pusan.ac.kr'
+                href={`mailto:${CONTACT_INFO.email.value}`}
                 className='flex items-center gap-1 text-[0.6875rem] leading-[0.95563rem] tracking-[-0.01375rem] tab:leading-[0.9625rem]'
               >
                 <div className='relative mb-[0.05rem] size-[0.83038rem]'>
@@ -38,7 +44,7 @@ const Footer = () => {
                     fill
                   />
                 </div>
-                <span>우리말배움터 관리자</span>
+                <span>{CONTACT_INFO.email.label}</span>
               </a>
             </div>
             {/* 저작권 정보 */}
