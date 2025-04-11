@@ -4,10 +4,14 @@ import React, { useCallback, useState } from 'react'
 import { SpellingCorrectionText } from './spelling-correction-text'
 import { ScrollGradientFade } from '@/shared/ui/scroll-gradient-fade'
 import { ScrollContainer } from '@/shared/ui/scroll-container'
+import { useSpellerRefs } from '@/entities/speller'
+import { useDesktopOrFallback } from '@/shared/lib/use-desktop-or-fallback'
 
 const CorrectionContent = () => {
-  const [isFocused, setIsFocused] = useState(false)
+  const { correctScrollContainerRef } = useSpellerRefs()
   const [showGradient, setShowGradient] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
+  const shouldShowFocusState = useDesktopOrFallback(true, isFocused)
 
   const handleScroll = useCallback((isScrolling: boolean) => {
     setShowGradient(isScrolling)
@@ -25,8 +29,9 @@ const CorrectionContent = () => {
       {/* 교정 텍스트 */}
       <div className='min-w-0 flex-1'>
         <ScrollContainer
+          isFocused={shouldShowFocusState}
+          ref={correctScrollContainerRef}
           onScrollStatusChange={handleScroll}
-          isFocused={isFocused}
           className='h-full min-h-40 flex-1'
         >
           <SpellingCorrectionText />

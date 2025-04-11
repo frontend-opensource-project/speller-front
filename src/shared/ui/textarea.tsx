@@ -6,6 +6,7 @@ import { initCaretPositionPolyfill } from '@/shared/lib/caret-position.polyfill'
 import { ScrollContainer } from './scroll-container'
 import { useClient } from '../lib/use-client'
 import { cn } from '../lib/tailwind-merge'
+import { useDesktopOrFallback } from '../lib/use-desktop-or-fallback'
 
 if (typeof window !== 'undefined') {
   initCaretPositionPolyfill()
@@ -30,6 +31,7 @@ const Textarea: FC<TextareaProps> = ({
 }) => {
   const isClient = useClient()
   const [isFocused, setIsFocused] = useState(false)
+  const shouldShowFocusState = useDesktopOrFallback(true, isFocused)
   // 실제 편집 가능한 텍스트 영역 요소 참조
   const contentEditableRef = useRef<HTMLDivElement>(null)
   // 마지막으로 업데이트된 값을 저장 (불필요한 리렌더링 방지)
@@ -129,7 +131,7 @@ const Textarea: FC<TextareaProps> = ({
     <ScrollContainer
       suppressHydrationWarning
       suppressContentEditableWarning
-      isFocused={isFocused}
+      isFocused={shouldShowFocusState}
       onScrollStatusChange={onScroll}
       className='h-full min-h-40 flex-1'
     >

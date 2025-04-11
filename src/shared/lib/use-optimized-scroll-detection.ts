@@ -1,6 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useRef } from 'react'
+import {
+  useDebounce,
+  useUnmountEffect,
+} from '@frontend-opensource/use-react-hooks'
+import { useCallback, useRef } from 'react'
 
 const useOptimizedScrollDetection = (
   callback: (isScrolling: boolean) => void,
@@ -8,7 +12,12 @@ const useOptimizedScrollDetection = (
 ) => {
   const scrollingRef = useRef(false)
   const rafRef = useRef<number>()
-  const timeoutRef = useRef<NodeJS.Timeout>()
+
+  // 스크롤 종료 감지를 위한 디바운스 함수
+  const debouncedEndScroll = useDebounce(() => {
+    scrollingRef.current = false
+    callback(false)
+  }, ms)
 
   const handleScroll = useCallback(() => {
     if (rafRef.current) {
@@ -21,22 +30,16 @@ const useOptimizedScrollDetection = (
         callback(true)
       }
 
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = setTimeout(() => {
-        scrollingRef.current = false
-        callback(false)
-      }, ms)
+      // 디바운스 함수 호출
+      debouncedEndScroll()
     })
-  }, [])
+  }, [callback, debouncedEndScroll])
 
-  useEffect(() => {
-    return () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current)
-      }
-      clearTimeout(timeoutRef.current)
+  useUnmountEffect(() => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
     }
-  }, [])
+  })
 
   return handleScroll
 }
