@@ -14,14 +14,14 @@ interface GoogleAdSenseProps {
   className?: string
 }
 
-const DELAY_MS = 0 // 화면 크기 전환 시 지연 없이 렌더링하여, 데스크탑 전환 시 발생할 수 있는 느린 레이아웃 쉬프트 방지
+const NO_DELAY = 0 // 화면 크기 전환 시 지연 없이 렌더링하여, 데스크탑 전환 시 발생할 수 있는 느린 레이아웃 쉬프트 방지
 
 const GoogleAdSense = ({ className, ...props }: GoogleAdSenseProps) => {
   const adRef = useRef<HTMLModElement>(null)
   const [isMounted, setIsMounted] = useState(false)
   // 데스크탑: 수동 광고 사용
   // 태블릿/모바일: 자동 광고 사용 (Google이 <ins> 태그 없이 광고 자동 삽입)
-  const isDesktop = useDesktop(DELAY_MS)
+  const isDesktop = useDesktop(NO_DELAY)
 
   useEffect(() => {
     setIsMounted(true)
