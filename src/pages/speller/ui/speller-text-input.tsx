@@ -1,26 +1,33 @@
 'use client'
 
-import React, { FC, useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-import { Textarea } from '@/shared/ui/textarea'
+import { Textarea, TextareaHandle } from '@/shared/ui/textarea'
 import { ClearTextButton } from './clear-text-button'
 import { ScrollGradientFade } from '@/shared/ui/scroll-gradient-fade'
+import { useSpeller } from '@/entities/speller'
 
-interface SpellerTextInputProps {
-  text: string
-  onTextChange: (value: string) => void
-}
-
-const SpellerTextInput: FC<SpellerTextInputProps> = ({
-  onTextChange,
-  text,
-}) => {
+const SpellerTextInput = () => {
+  const textareaRef = useRef<TextareaHandle>(null)
+  const { handleTextChange, text } = useSpeller()
   const [showGradient, setShowGradient] = useState(false)
-  const handleOnClear = useCallback(() => onTextChange(''), [])
+
+  const handleOnClear = useCallback(() => {
+    if (textareaRef.current) {
+      textareaRef.current.textClear()
+    }
+  }, [])
+
   const handleScroll = useCallback(
     (isScrolling: boolean) => setShowGradient(isScrolling),
     [],
   )
+
+  useEffect(() => {
+    if (!textareaRef.current) return
+
+    textareaRef.current.hydrateText(text)
+  }, [])
 
   return (
     <>
@@ -33,9 +40,9 @@ const SpellerTextInput: FC<SpellerTextInputProps> = ({
       {/* 텍스트 입력 */}
       <div className='min-w-0 flex-1'>
         <Textarea
-          value={text}
+          ref={textareaRef}
           name='speller-text'
-          onChange={onTextChange}
+          onChange={handleTextChange}
           onScroll={handleScroll}
           placeholder='내용을 입력해 주세요.'
         />
