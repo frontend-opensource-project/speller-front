@@ -13,8 +13,9 @@ const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
         {/* 광고 영역 */}
         <div className='my-24 hidden rounded-md bg-slate-300 pc:ml-5 pc:block'>
           <GoogleAdSense
-            slot='9725653724'
             className='h-[37.5rem] w-40 place-content-center'
+            data-ad-slot='9725653724'
+            data-full-width-responsive='true'
           />
         </div>
       </div>

@@ -1,15 +1,15 @@
 'use client'
 
 import { createContext, useContext, createRef, useRef } from 'react'
-import { useWindowSize } from '@frontend-opensource/use-react-hooks'
-import { OverlayScrollbarsComponentRef } from 'overlayscrollbars-react'
 import { useSpeller } from './use-speller'
+import { ScrollContainerHandle } from '@/shared/ui/scroll-container'
+import { useDesktop } from '@/shared/lib/use-desktop'
 
 interface SpellerRefsContextType {
   correctRefs: React.RefObject<HTMLDivElement>[] | null
   errorRefs: React.RefObject<HTMLDivElement>[] | null
-  correctScrollContainerRef: React.RefObject<OverlayScrollbarsComponentRef> | null
-  errorScrollContainerRef: React.RefObject<OverlayScrollbarsComponentRef> | null
+  correctScrollContainerRef: React.RefObject<ScrollContainerHandle> | null
+  errorScrollContainerRef: React.RefObject<ScrollContainerHandle> | null
   scrollSection: (target: 'correct' | 'error', index: number) => void
 }
 
@@ -20,11 +20,10 @@ export const SpellerRefsProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const correctScrollContainerRef = useRef<OverlayScrollbarsComponentRef>(null)
-  const errorScrollContainerRef = useRef<OverlayScrollbarsComponentRef>(null)
+  const correctScrollContainerRef = useRef<ScrollContainerHandle>(null)
+  const errorScrollContainerRef = useRef<ScrollContainerHandle>(null)
   const { response, correctInfo } = useSpeller()
-  const { width } = useWindowSize()
-  const isDesktop = width && width >= 1377
+  const isDesktop = useDesktop()
 
   const correctRefs = isDesktop
     ? Array.from({ length: Object.keys(correctInfo).length }, () =>
@@ -38,26 +37,6 @@ export const SpellerRefsProvider = ({
       )
     : null
 
-  const scrollToElement = (
-    scrollContainer: OverlayScrollbarsComponentRef,
-    targetElement: HTMLDivElement,
-  ) => {
-    const osInstance = scrollContainer?.osInstance()
-    if (!osInstance) return
-
-    const { scrollOffsetElement } = osInstance.elements()
-    const containerRect = scrollOffsetElement.getBoundingClientRect()
-    const targetRect = targetElement.getBoundingClientRect()
-
-    const offsetTop =
-      targetRect.top - containerRect.top + scrollOffsetElement.scrollTop
-
-    scrollOffsetElement.scrollTo({
-      top: offsetTop,
-      behavior: 'smooth',
-    })
-  }
-
   const scrollSection = (target: 'correct' | 'error', index: number) => {
     const refs = target === 'correct' ? correctRefs : errorRefs
     const scrollContainerRef =
@@ -66,10 +45,9 @@ export const SpellerRefsProvider = ({
     if (!refs || !scrollContainerRef.current) return
 
     const targetElement = refs[index]?.current
-    const container = scrollContainerRef.current
 
-    if (targetElement && container) {
-      scrollToElement(container, targetElement)
+    if (targetElement && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollToElement(targetElement)
     }
   }
 
