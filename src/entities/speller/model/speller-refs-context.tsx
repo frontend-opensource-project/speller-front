@@ -1,11 +1,14 @@
 'use client'
 
-import { createContext, useContext, useCallback, createRef } from 'react'
+import { createContext, useContext, createRef, useRef } from 'react'
 import { useSpeller } from './use-speller'
+import { ScrollContainerHandle } from '@/shared/ui/scroll-container'
 
 interface SpellerRefsContextType {
   correctRefs: React.RefObject<HTMLDivElement>[] | null
   errorRefs: React.RefObject<HTMLDivElement>[] | null
+  correctScrollContainerRef: React.RefObject<ScrollContainerHandle> | null
+  errorScrollContainerRef: React.RefObject<ScrollContainerHandle> | null
   scrollSection: (target: 'correct' | 'error', index: number) => void
 }
 
@@ -16,6 +19,8 @@ export const SpellerRefsProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const correctScrollContainerRef = useRef<ScrollContainerHandle>(null)
+  const errorScrollContainerRef = useRef<ScrollContainerHandle>(null)
   const { response, correctInfo } = useSpeller()
 
   const correctRefs = Array.from(
@@ -27,17 +32,29 @@ export const SpellerRefsProvider = ({
     createRef<HTMLDivElement>(),
   )
 
-  const scrollSection = useCallback(
-    (target: 'correct' | 'error', index: number) => {
-      const refs = target === 'correct' ? correctRefs : errorRefs
-      refs?.[index].current?.scrollIntoView({ behavior: 'smooth' })
-    },
-    [correctRefs, errorRefs],
-  )
+  const scrollSection = (target: 'correct' | 'error', index: number) => {
+    const refs = target === 'correct' ? correctRefs : errorRefs
+    const scrollContainerRef =
+      target === 'correct' ? correctScrollContainerRef : errorScrollContainerRef
+
+    if (!refs || !scrollContainerRef.current) return
+
+    const targetElement = refs[index]?.current
+
+    if (targetElement && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollToElement(targetElement)
+    }
+  }
 
   return (
     <SpellerRefsContext.Provider
-      value={{ correctRefs, errorRefs, scrollSection }}
+      value={{
+        correctRefs,
+        errorRefs,
+        correctScrollContainerRef,
+        errorScrollContainerRef,
+        scrollSection,
+      }}
     >
       {children}
     </SpellerRefsContext.Provider>
