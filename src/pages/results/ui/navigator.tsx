@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { CheckPayload, useSpeller } from '@/entities/speller'
+import { CheckPayload, useSpeller, useSpellerRefs } from '@/entities/speller'
 import { Spinner } from '@/shared/ui/spinner'
 import { toast } from '@/shared/lib/use-toast'
 import { spellCheckAction } from '../api/spell-check-action'
@@ -18,6 +18,8 @@ const Navigator = () => {
     handleReceiveResponse,
     updateResponseMap,
   } = useSpeller()
+  const { correctScrollContainerRef, errorScrollContainerRef } =
+    useSpellerRefs()
   const [isFetching, setIsFetching] = useState(false)
   const currentPage = Number(searchParams?.get('page')) || 1
   const currentPageRef = useRef<number | null>(null)
@@ -65,6 +67,14 @@ const Navigator = () => {
         errInfo: Object.values(correctInfo),
         pageIdx: currentPage,
       })
+
+      // 페이지 이동 시 섹션 스크롤 초기화
+      if (correctScrollContainerRef?.current) {
+        correctScrollContainerRef.current.scrollTo({ top: 0 })
+      }
+      if (errorScrollContainerRef?.current) {
+        errorScrollContainerRef.current.scrollTo({ top: 0 })
+      }
 
       handleReceiveResponse(data)
       router.push(createPageURL(page))
