@@ -1,6 +1,5 @@
 'use client'
 
-import { useWindowSize } from '@frontend-opensource/use-react-hooks'
 import { createContext, useContext, useCallback, createRef } from 'react'
 import { useSpeller } from './use-speller'
 
@@ -18,20 +17,15 @@ export const SpellerRefsProvider = ({
   children: React.ReactNode
 }) => {
   const { response, correctInfo } = useSpeller()
-  const { width } = useWindowSize()
-  const isDesktop = width && width >= 1377
 
-  const correctRefs = isDesktop
-    ? Array.from({ length: Object.keys(correctInfo).length }, () =>
-        createRef<HTMLDivElement>(),
-      )
-    : null
+  const correctRefs = Array.from(
+    { length: Object.keys(correctInfo).length },
+    () => createRef<HTMLDivElement>(),
+  )
 
-  const errorRefs = isDesktop
-    ? Array.from({ length: response?.errInfo.length }, () =>
-        createRef<HTMLDivElement>(),
-      )
-    : null
+  const errorRefs = Array.from({ length: response?.errInfo.length }, () =>
+    createRef<HTMLDivElement>(),
+  )
 
   const scrollSection = useCallback(
     (target: 'correct' | 'error', index: number) => {
