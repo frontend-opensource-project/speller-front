@@ -13,8 +13,7 @@ import { SpellerControl } from './speller-control'
 
 const SpellerPage = () => {
   const router = useRouter()
-  const { text, handleTextChange, handleReceiveResponse, initResponseMap } =
-    useSpeller()
+  const { handleReceiveResponse, initResponseMap } = useSpeller()
   const [state, formAction, isPending] = useActionState(spellCheckAction, {
     data: null,
     error: null,
@@ -67,9 +66,9 @@ const SpellerPage = () => {
           <SpellerSetting />
         </div>
         <div className='flex h-full w-full flex-col rounded-lg bg-white p-5 tab:rounded-[1rem] tab:p-10 pc:max-h-[40.25rem]'>
-          <SpellerTextInput text={text} onTextChange={handleTextChange} />
+          <SpellerTextInput />
           {/* 글자수 & 검사하기 버튼 */}
-          <SpellerControl count={text.length} />
+          <SpellerControl />
         </div>
       </ContentLayout>
     </form>

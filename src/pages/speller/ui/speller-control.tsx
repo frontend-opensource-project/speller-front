@@ -1,15 +1,15 @@
 'use client'
 
-import React, { FC } from 'react'
+import React from 'react'
 
 import { Button } from '@/shared/ui/button'
 import { TextCounter } from '@/shared/ui/text-counter'
+import { useSpeller } from '@/entities/speller'
 
-interface SpellerControlProps {
-  count: number
-}
+const SpellerControl = () => {
+  const { text } = useSpeller()
 
-const SpellerControl: FC<SpellerControlProps> = ({ count }) => {
+  const count = text.length
   const isButtonDisabled = count <= 0
 
   return (
