@@ -3,7 +3,6 @@
 import { createContext, useContext, createRef, useRef } from 'react'
 import { useSpeller } from './use-speller'
 import { ScrollContainerHandle } from '@/shared/ui/scroll-container'
-import { useDesktop } from '@/shared/lib/use-desktop'
 
 interface SpellerRefsContextType {
   correctRefs: React.RefObject<HTMLDivElement>[] | null
@@ -23,19 +22,15 @@ export const SpellerRefsProvider = ({
   const correctScrollContainerRef = useRef<ScrollContainerHandle>(null)
   const errorScrollContainerRef = useRef<ScrollContainerHandle>(null)
   const { response, correctInfo } = useSpeller()
-  const isDesktop = useDesktop()
 
-  const correctRefs = isDesktop
-    ? Array.from({ length: Object.keys(correctInfo).length }, () =>
-        createRef<HTMLDivElement>(),
-      )
-    : null
+  const correctRefs = Array.from(
+    { length: Object.keys(correctInfo).length },
+    () => createRef<HTMLDivElement>(),
+  )
 
-  const errorRefs = isDesktop
-    ? Array.from({ length: response?.errInfo.length }, () =>
-        createRef<HTMLDivElement>(),
-      )
-    : null
+  const errorRefs = Array.from({ length: response?.errInfo.length }, () =>
+    createRef<HTMLDivElement>(),
+  )
 
   const scrollSection = (target: 'correct' | 'error', index: number) => {
     const refs = target === 'correct' ? correctRefs : errorRefs
