@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useImperativeHandle, useRef } from 'react'
 
 import { ScrollContainer } from './scroll-container'
 import { cn } from '../lib/tailwind-merge'
@@ -20,13 +20,14 @@ interface TextareaProps {
 
 const Textarea = forwardRef<TextareaHandle, TextareaProps>(
   ({ className, onScroll, onChange, placeholder, name }, ref) => {
-    const [isFocused, setIsFocused] = useState(false)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
 
     const syncTextareaHeight = () => {
       const textarea = textareaRef.current
 
       if (!textarea) return
+
+      textarea.style.height = 'auto'
 
       if (textarea.value.length <= 0) {
         textarea.style.height = '100%'
@@ -62,21 +63,18 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(
     return (
       <div className='relative h-full'>
         <ScrollContainer
-          isFocused={isFocused}
+          isFocused
           onScrollStatusChange={onScroll}
           className='absolute inset-0 overflow-hidden'
         >
           <textarea
             ref={textareaRef}
             name={name}
-            style={{ height: '100%' }}
             placeholder={placeholder}
             className={cn(
               'flex h-full w-full resize-none overflow-hidden whitespace-pre-wrap break-all border-none border-input text-justify align-top text-[1.125rem] text-base font-normal leading-[1.8rem] tracking-[-0.0225rem] text-slate-600 ring-offset-background placeholder:text-muted-foreground placeholder:text-slate-300 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 tab:leading-[1.9125rem] pc:text-[1.25rem] pc:leading-[2.125rem] pc:tracking-[-0.025rem]',
               className,
             )}
-            onBlur={() => setIsFocused(false)}
-            onFocus={() => setIsFocused(true)}
             onInput={({ currentTarget: { value } }) => {
               onChange(value)
               syncTextareaHeight()

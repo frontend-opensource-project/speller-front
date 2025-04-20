@@ -11,19 +11,15 @@ import { ScrollContainer } from '@/shared/ui/scroll-container'
 import { ScrollGradientFade } from '@/shared/ui/scroll-gradient-fade'
 import { ErrorInfoSection } from './error-info-section'
 import { BulletBadge } from '../ui/bullet-badge'
-import { useDesktopOrFallback } from '@/shared/lib/use-desktop-or-fallback'
 
 const ErrorTrackingSection = () => {
   const { errorRefs, errorScrollContainerRef, scrollSection } = useSpellerRefs()
   const { response } = useSpeller()
   const { errInfo } = response ?? {}
   const [showGradient, setShowGradient] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
-  const shouldShowFocusState = useDesktopOrFallback(true, isFocused)
 
   const handleScroll = useCallback((isScrolling: boolean) => {
     setShowGradient(isScrolling)
-    setIsFocused(isScrolling)
   }, [])
 
   return (
@@ -35,7 +31,7 @@ const ErrorTrackingSection = () => {
         </h2>
       </div>
       <ScrollContainer
-        isFocused={shouldShowFocusState}
+        isFocused
         ref={errorScrollContainerRef}
         onScrollStatusChange={handleScroll}
         className='flex-1'
