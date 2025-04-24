@@ -1,9 +1,13 @@
+import { useRef } from 'react'
+import { UAParser } from 'ua-parser-js'
+
 import { CorrectMethodEnum } from '@/entities/speller'
 import { cn } from '@/shared/lib/tailwind-merge'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { useUserReplace } from '../model/use-user-replace'
 import { BulletBadge } from '../ui/bullet-badge'
+import { useIOSKeyboardPatch } from '@/shared/lib/use-keyboard-height'
 
 interface CustomTextEditorContent {
   handleClose: () => void
@@ -16,6 +20,11 @@ export const CustomTextEditorContent = ({
     useUserReplace({
       handleClose,
     })
+  const inputRef = useRef<HTMLInputElement>(null)
+  const { os } = UAParser(window.navigator.userAgent)
+  const isIOS = os.name === 'iOS'
+
+  useIOSKeyboardPatch(inputRef, isIOS)
 
   return (
     <>
@@ -38,8 +47,9 @@ export const CustomTextEditorContent = ({
         <div className='h-[1.125rem] w-[1.125rem] bg-chevron-down bg-contain bg-center bg-no-repeat focus-visible:ring-0 pc:h-[0.96rem] pc:w-[0.96rem]' />
       </div>
       <Input
+        ref={inputRef}
         placeholder='직접 수정해 보세요!'
-        className='h-[2.125rem] w-full text-[0.85rem] placeholder:text-slate-300 tab:text-base pc:h-[2.4rem] pc:rounded-[0.36rem] pc:px-[0.42rem] pc:py-[0.17rem] pc:text-base pc:leading-[170%]'
+        className='h-[2.125rem] w-full text-[1rem] placeholder:text-slate-300 tab:text-base pc:h-[2.4rem] pc:rounded-[0.36rem] pc:px-[0.42rem] pc:py-[0.17rem] pc:text-base pc:leading-[170%]'
         value={value}
         onChange={handleChange}
       />

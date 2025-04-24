@@ -1,18 +1,14 @@
 'use client'
 
+import React, { ReactNode, useState } from 'react'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+
 import { Button } from '@/shared/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/shared/ui/dialog'
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import React, { ReactNode, useState } from 'react'
+import { DialogHeader, DialogTitle } from '@/shared/ui/test-dialog'
 import { CustomTextEditorContent } from './custom-text-editor-content'
 import EditIcon from '@/shared/ui/icon/icon-pencil-black.svg'
+import { Dialog } from '@/shared/ui/test-dialog'
 
 interface CustomTextEditorProps {
   children: ReactNode
@@ -50,8 +46,9 @@ export const CustomTextEditor = ({ children }: CustomTextEditorProps) => {
           </div>
         </PopoverContent>
       </Popover>
+
       {/* mobile,tab */}
-      <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+      {/* <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild className='pc:hidden'>
           {children}
         </DialogTrigger>
@@ -64,6 +61,22 @@ export const CustomTextEditor = ({ children }: CustomTextEditorProps) => {
           </DialogHeader>
           <CustomTextEditorContent handleClose={handleDialogClose} />
         </DialogContent>
+      </Dialog> */}
+
+      {/* mobile,tab */}
+      <Dialog
+        onOpenChange={setDialogOpen}
+        open={isDialogOpen}
+        DialogTriggerItem={children}
+        className='max-w-[19.17rem] rounded-2xl bg-white p-[1.125rem] pt-[0.9375rem] scrollbar-none tab:max-w-[22.5625rem]'
+      >
+        <DialogHeader>
+          <DialogTitle>
+            <VisuallyHidden>대치어 직접 수정하기</VisuallyHidden>
+          </DialogTitle>
+          <CustomTextEditorTitle />
+        </DialogHeader>
+        <CustomTextEditorContent handleClose={handleDialogClose} />
       </Dialog>
     </>
   )

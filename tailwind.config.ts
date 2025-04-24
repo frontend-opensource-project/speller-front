@@ -109,6 +109,26 @@ export default {
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require('tailwindcss-animate')],
+
+  plugins: [
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('tailwindcss-animate'),
+    function ({
+      addUtilities,
+    }: {
+      addUtilities: (utilities: Record<string, unknown>) => void
+    }) {
+      addUtilities({
+        '.scrollbar-none': {
+          /* Chrome, Safari, Opera */
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+          /* Firefox */
+          '-ms-overflow-style': 'none', // IE 10+
+          'scrollbar-width': 'none', // Firefox
+        },
+      })
+    },
+  ],
 } satisfies Config
