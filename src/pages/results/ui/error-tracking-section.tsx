@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useCallback, useState } from 'react'
+import { Fragment } from 'react'
 import {
   useSpeller,
   CorrectMethodEnum,
@@ -11,20 +11,11 @@ import { ScrollContainer } from '@/shared/ui/scroll-container'
 import { ScrollGradientFade } from '@/shared/ui/scroll-gradient-fade'
 import { ErrorInfoSection } from './error-info-section'
 import { BulletBadge } from '../ui/bullet-badge'
-import { useDesktopOrFallback } from '@/shared/lib/use-desktop-or-fallback'
 
 const ErrorTrackingSection = () => {
   const { errorRefs, errorScrollContainerRef, scrollSection } = useSpellerRefs()
   const { response } = useSpeller()
   const { errInfo } = response ?? {}
-  const [showGradient, setShowGradient] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
-  const shouldShowFocusState = useDesktopOrFallback(true, isFocused)
-
-  const handleScroll = useCallback((isScrolling: boolean) => {
-    setShowGradient(isScrolling)
-    setIsFocused(isScrolling)
-  }, [])
 
   return (
     <>
@@ -35,10 +26,11 @@ const ErrorTrackingSection = () => {
         </h2>
       </div>
       <ScrollContainer
-        isFocused={shouldShowFocusState}
         ref={errorScrollContainerRef}
-        onScrollStatusChange={handleScroll}
         className='flex-1'
+        renderGradient={isScrolling => (
+          <ScrollGradientFade showGradient={isScrolling} />
+        )}
       >
         <div>
           {errInfo.map((info, idx) => (
@@ -54,7 +46,6 @@ const ErrorTrackingSection = () => {
         </div>
       </ScrollContainer>
       <div>
-        <ScrollGradientFade showGradient={showGradient} />
         <div className='flex items-center gap-4 text-sm font-medium'>
           <span className='flex items-center gap-2 tab:text-lg'>
             <BulletBadge
