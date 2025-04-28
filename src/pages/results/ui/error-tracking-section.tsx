@@ -29,7 +29,7 @@ const ErrorTrackingSection = () => {
   return (
     <>
       <div className='mb-[1rem] flex justify-between tab:mb-[1.25rem]'>
-        <h2 className='text-lg font-semibold leading-[1.9125rem] tracking-[-0.0225rem] tab:text-[1.375rem] tab:leading-[2.3375rem] tab:tracking-[-0.0275rem] pc:text-[1.5rem] pc:leading-[2.55rem] pc:tracking-[-0.03rem]'>
+        <h2 className='flex gap-2 text-lg font-semibold leading-[1.9125rem] tracking-[-0.0225rem] tab:text-[1.375rem] tab:leading-[2.3375rem] tab:tracking-[-0.0275rem] pc:text-[1.5rem] pc:leading-[2.55rem] pc:tracking-[-0.03rem]'>
           맞춤법/문법 오류
           <span className='text-red-100'>{errInfo.length}개</span>
         </h2>
