@@ -10,7 +10,6 @@ import React, {
   Fragment,
 } from 'react'
 import { useOverlayScrollbars } from 'overlayscrollbars-react'
-import { OverlayScrollbars } from 'overlayscrollbars'
 
 import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
@@ -25,7 +24,6 @@ export interface ScrollContainerHandle {
   scrollToElement: (targetElement: HTMLElement) => void
   scrollTo: (options: ScrollToOptions) => void
   getScrollPosition: () => { x: number; y: number }
-  getOsInstance: () => OverlayScrollbars | null
 }
 
 const SCROLL_VISIBILITY_DELAY = 500
@@ -118,7 +116,6 @@ const ScrollContainer = forwardRef<
 
           return { x: 0, y: 0 }
         },
-        getOsInstance: () => getInstance(),
       }),
       [getInstance],
     )
