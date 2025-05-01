@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useCallback, useState } from 'react'
+import { Fragment } from 'react'
 import {
   useSpeller,
   CorrectMethodEnum,
@@ -16,11 +16,6 @@ const ErrorTrackingSection = () => {
   const { errorRefs, errorScrollContainerRef, scrollSection } = useSpellerRefs()
   const { response } = useSpeller()
   const { errInfo } = response ?? {}
-  const [showGradient, setShowGradient] = useState(false)
-
-  const handleScroll = useCallback((isScrolling: boolean) => {
-    setShowGradient(isScrolling)
-  }, [])
 
   return (
     <>
@@ -31,10 +26,11 @@ const ErrorTrackingSection = () => {
         </h2>
       </div>
       <ScrollContainer
-        isFocused
         ref={errorScrollContainerRef}
-        onScrollStatusChange={handleScroll}
         className='flex-1'
+        renderGradient={isScrolling => (
+          <ScrollGradientFade showGradient={isScrolling} />
+        )}
       >
         <div>
           {errInfo.map((info, idx) => (
@@ -50,7 +46,6 @@ const ErrorTrackingSection = () => {
         </div>
       </ScrollContainer>
       <div>
-        <ScrollGradientFade showGradient={showGradient} />
         <div className='flex items-center gap-4 text-sm font-medium'>
           <span className='flex items-center gap-2 tab:text-lg'>
             <BulletBadge

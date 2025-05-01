@@ -13,9 +13,9 @@ const SpellerTextInput = () => {
   const [showGradient, setShowGradient] = useState(false)
 
   const handleOnClear = useCallback(() => {
-    if (textareaRef.current) {
-      textareaRef.current.textClear()
-    }
+    if (!textareaRef.current) return
+
+    textareaRef.current.textClear()
   }, [])
 
   const handleScroll = useCallback(
