@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-enum CorrectMethod {
+export enum CorrectMethod {
   띄어쓰기 = 1,
   오탈자 = 2,
   문맥 = 3,

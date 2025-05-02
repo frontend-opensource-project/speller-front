@@ -1,4 +1,4 @@
-import { CorrectMethodEnum } from '@/entities/speller'
+import { applyMethodColor } from '@/entities/speller'
 import { cn } from '@/shared/lib/tailwind-merge'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
@@ -23,10 +23,7 @@ export const CustomTextEditorContent = ({
         <p
           className={cn(
             'flex items-center justify-center text-[0.95rem] tab:text-lg pc:text-base pc:leading-normal',
-            correctMethod === CorrectMethodEnum.enum.띄어쓰기 &&
-              'text-purple-100',
-            correctMethod === CorrectMethodEnum.enum.오탈자 && 'text-red-100',
-            correctMethod === CorrectMethodEnum.enum.문맥 && 'text-green-100',
+            `text-${applyMethodColor(correctMethod)}`,
           )}
         >
           <BulletBadge

@@ -2,7 +2,7 @@ import { Fragment } from 'react'
 import {
   useSpeller,
   useSpellerRefs,
-  CorrectMethodEnum,
+  applyMethodColor,
 } from '@/entities/speller'
 import { cn } from '@/shared/lib/tailwind-merge'
 
@@ -68,13 +68,8 @@ const SpellingCorrectionText = () => {
         </button>
         <span
           className={cn(
-            'text-[1.125rem] font-bold leading-[160%] tracking-[-0.0225rem] text-purple-100 underline decoration-[2px] underline-offset-[25%] tab:leading-[170%] tab:tracking-[-0.03375rem] pc:text-[1.25rem] pc:tracking-[-0.025rem]',
-            pos.correctMethod === CorrectMethodEnum.enum.띄어쓰기 &&
-              'text-purple-100',
-            pos.correctMethod === CorrectMethodEnum.enum.오탈자 &&
-              'text-red-100',
-            pos.correctMethod === CorrectMethodEnum.enum.문맥 &&
-              'text-green-100',
+            'text-[1.125rem] font-bold leading-[160%] tracking-[-0.0225rem] underline decoration-[2px] underline-offset-[25%] tab:leading-[170%] tab:tracking-[-0.03375rem] pc:text-[1.25rem] pc:tracking-[-0.025rem]',
+            `text-${applyMethodColor(pos.correctMethod)}`,
             isResolved && 'text-slate-600',
           )}
         >
