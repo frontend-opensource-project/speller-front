@@ -1,15 +1,52 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogTitle,
+  DialogClose,
 } from '@/shared/ui/dialog'
 import { Checkbox } from '@/shared/ui/checkbox'
-import { DialogClose } from '@radix-ui/react-dialog'
+import { useLocalStorage } from '@frontend-opensource/use-react-hooks'
+
+const HIDE_DIALOG_KEY = 'speller-hide-dialog-until'
 
 export function ServiceUpdateInfoDialog() {
+  const [hideDialogUntil, setHideDialogUntil] = useLocalStorage(
+    HIDE_DIALOG_KEY,
+    '',
+  )
+
+  const [defaultHide, setDefaultHide] = useState(true)
+  const [isChecked, setIsChecked] = useState(false)
+
+  useEffect(() => {
+    if (!hideDialogUntil) {
+      setDefaultHide(false)
+      return
+    }
+
+    const expiryDate = parseInt(hideDialogUntil)
+    if (Date.now() < expiryDate) return
+    setHideDialogUntil('')
+  }, [])
+
+  const handleCheckboxChange = (checked: boolean) => {
+    if (checked) {
+      const oneWeekLater = Date.now() + 7 * 24 * 60 * 60 * 1000
+      setHideDialogUntil(oneWeekLater.toString())
+    } else {
+      setHideDialogUntil('')
+    }
+    setIsChecked(checked)
+  }
+
+  if (defaultHide) return null
+
   return (
     <Dialog defaultOpen>
       <DialogContent
@@ -59,13 +96,15 @@ export function ServiceUpdateInfoDialog() {
               <Checkbox
                 id='chk'
                 className='size-7 rounded-full border-slate-300 pc:size-9'
+                checked={isChecked}
+                onCheckedChange={handleCheckboxChange}
               />
               <label htmlFor='chk' className='text-slate-500 pc:text-xl'>
                 일주일간 보지 않기
               </label>
             </div>
             <DialogClose asChild>
-              <span className='pc:text-xl'>닫기</span>
+              <span className='cursor-pointer pc:text-xl'>닫기</span>
             </DialogClose>
           </div>
         </DialogFooter>
