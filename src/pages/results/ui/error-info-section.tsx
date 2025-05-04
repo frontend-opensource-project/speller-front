@@ -51,17 +51,19 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
     <div className={cn('my-[1.125rem]', errorIdx === 0 && 'mt-0')} {...props}>
       <dl className='grid grid-cols-[3.5rem_1fr] gap-3 tab:grid-cols-[4.75rem_1fr] pc:grid-cols-[4.5rem_1fr] pc:gap-1'>
         <dt className='py-0.5 text-sm font-semibold tab:text-lg'>입력 내용</dt>
-        <dd className='flex items-center justify-between'>
+        <dd className='flex items-start justify-between gap-2'>
           <Button
             variant='ghost'
-            className='flex h-auto items-center gap-2 p-0 text-base font-semibold hover:bg-transparent tab:gap-3.5 tab:text-xl'
+            className='flex h-auto items-start gap-2 p-0 text-base font-semibold hover:bg-transparent tab:gap-3.5 tab:text-xl'
             onClick={handleRevert}
           >
             <BulletBadge
               method={correctMethod}
-              className='mx-1.5 size-3 tab:mx-2.5'
+              className='mx-1.5 my-[0.3125rem] size-3 shrink-0 tab:mx-2.5 tab:my-2'
             />
-            {orgStr}
+            <span className='block whitespace-pre-line break-all text-left'>
+              {orgStr}
+            </span>
           </Button>
           <ReportForm>
             <Button
@@ -70,7 +72,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
               onClick={() => updateErrInfoIndex(errorIdx)}
             >
               <SendIcon className='!size-6 tab:!size-8' />
-              <span className='sr-only font-normal tab:not-sr-only tab:text-lg'>
+              <span className='sr-only font-normal tab:not-sr-only tab:whitespace-nowrap tab:text-lg'>
                 오류 제보
               </span>
             </Button>
