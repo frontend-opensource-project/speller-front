@@ -3,7 +3,7 @@ import { ClipboardEvent, Fragment, memo, ReactNode, useMemo } from 'react'
 import {
   useSpeller,
   useSpellerRefs,
-  applyTextMethodColor,
+  getTextMethodColor,
   CorrectInfo,
 } from '@/entities/speller'
 import { cn } from '@/shared/lib/tailwind-merge'
@@ -62,7 +62,7 @@ const SpellingCorrectionText = memo(() => {
               <span
                 className={cn(
                   'text-[1.125rem] font-bold leading-[160%] tracking-[-0.0225rem] underline decoration-[2px] underline-offset-[25%] tab:leading-[170%] tab:tracking-[-0.03375rem] pc:text-[1.25rem] pc:tracking-[-0.025rem]',
-                  `${applyTextMethodColor(position.correctMethod)}`,
+                  `${getTextMethodColor(position.correctMethod)}`,
                   isResolved && 'text-slate-600',
                 )}
               >

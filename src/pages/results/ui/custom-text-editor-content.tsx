@@ -1,4 +1,4 @@
-import { applyTextMethodColor } from '@/entities/speller'
+import { getTextMethodColor } from '@/entities/speller'
 import { cn } from '@/shared/lib/tailwind-merge'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
@@ -23,7 +23,7 @@ export const CustomTextEditorContent = ({
         <p
           className={cn(
             'flex items-center justify-center text-[0.95rem] tab:text-lg pc:text-base pc:leading-normal',
-            `${applyTextMethodColor(correctMethod)}`,
+            `${getTextMethodColor(correctMethod)}`,
           )}
         >
           <BulletBadge

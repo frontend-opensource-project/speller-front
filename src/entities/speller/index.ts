@@ -1,8 +1,5 @@
 export { SpellerApi } from './api/speller-service'
-export {
-  applyTextMethodColor,
-  applyBgMethodColor,
-} from './lib/apply-method-color'
+export { getTextMethodColor, getBgMethodColor } from './lib/get-method-color'
 export { parseCandidateWords } from './lib/parse-candidate-words'
 export type {
   UserReplacePayload,

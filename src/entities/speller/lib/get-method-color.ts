@@ -1,6 +1,6 @@
 import { type CorrectMethod, CorrectMethodEnum } from '../model/speller-schema'
 
-export const applyTextMethodColor = (method: CorrectMethod) => {
+export const getTextMethodColor = (method: CorrectMethod) => {
   switch (method) {
     case CorrectMethodEnum.enum.띄어쓰기:
       return 'text-purple-100'
@@ -13,7 +13,7 @@ export const applyTextMethodColor = (method: CorrectMethod) => {
   }
 }
 
-export const applyBgMethodColor = (method: CorrectMethod) => {
+export const getBgMethodColor = (method: CorrectMethod) => {
   switch (method) {
     case CorrectMethodEnum.enum.띄어쓰기:
       return 'bg-purple-100'
