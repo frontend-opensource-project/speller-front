@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { applyMethodColor, CorrectMethodEnum } from '@/entities/speller'
+import { applyBgMethodColor, CorrectMethodEnum } from '@/entities/speller'
 import { cn } from '@/shared/lib/tailwind-merge'
 
 interface BulletBadgeProps {
@@ -12,7 +12,7 @@ const BulletBadge = ({ className, method }: BulletBadgeProps) => {
     <i
       className={cn(
         'size-2 rounded-full',
-        `bg-${applyMethodColor(method)}`,
+        `${applyBgMethodColor(method)}`,
         className,
       )}
     />
