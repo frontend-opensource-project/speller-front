@@ -40,7 +40,7 @@ const SpellingCorrectionText = memo(() => {
                 isResolved && 'pt-0',
               )}
               ref={el => {
-                if (!correctRefs) return
+                if (!correctRefs || !el) return
                 correctRefs.current[currentIndex] = el
               }}
               onMouseOver={() => scrollSection('error', currentIndex)}

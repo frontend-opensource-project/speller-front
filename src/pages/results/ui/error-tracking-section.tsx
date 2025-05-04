@@ -39,7 +39,7 @@ const ErrorTrackingSection = () => {
               <ErrorInfoSection
                 errorInfo={info}
                 ref={el => {
-                  if (!errorRefs) return
+                  if (!errorRefs || !el) return
                   errorRefs.current[idx] = el
                 }}
                 onMouseOver={() => scrollSection('correct', idx)}
