@@ -38,7 +38,10 @@ const ErrorTrackingSection = () => {
               <hr className={cn('border-slate-200', idx === 0 && 'hidden')} />
               <ErrorInfoSection
                 errorInfo={info}
-                ref={errorRefs?.[idx]}
+                ref={el => {
+                  if (!errorRefs) return
+                  errorRefs.current[idx] = el
+                }}
                 onMouseOver={() => scrollSection('correct', idx)}
               />
             </Fragment>
