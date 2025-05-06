@@ -2,10 +2,8 @@
 
 import * as React from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { UAParser } from 'ua-parser-js'
-
 import { cn } from '@/shared/lib/tailwind-merge'
-import { useKeyboardHeight } from '../lib/use-keyboard-height'
+import { useDialogDeviceInfo } from '../lib/use-device-info'
 
 const DialogRoot = DialogPrimitive.Root
 
@@ -44,24 +42,16 @@ const Dialog = ({
   DialogTriggerItem: React.ReactNode
   className?: string
 }) => {
-  // 디바이스 정보 파싱
-  const { device, browser, os } = UAParser(window.navigator.userAgent)
-
   // Dialog 콘텐츠 참조
   const contentRef = React.useRef<HTMLDivElement | null>(null)
 
-  // 키보드 높이 관련 상태
-  const { keyboardHeight, screenHeight, forceUpdateScreenHeight } =
-    useKeyboardHeight()
-
-  // 콘텐츠 높이 계산
-  const contentHeight = contentRef.current?.offsetHeight ?? 0
-
-  // 삼성 브라우저일 경우 툴바 보정
-  const isSamsung = browser.name === 'Samsung Internet'
-  const toolbarBuffer = isSamsung ? 48 : 0
-  const adjustedKeyboardHeight = keyboardHeight + toolbarBuffer
-  const isKeyboardOpen = adjustedKeyboardHeight > 0
+  const {
+    device,
+    adjustedPadding,
+    screenHeight,
+    forceUpdateScreenHeight,
+    isKeyboardOpen,
+  } = useDialogDeviceInfo(contentRef)
 
   // 모바일 장치에서 화면 높이가 키보드에 맞춰 업데이트될 수 있도록 강제로 호출
   React.useEffect(() => {
@@ -69,38 +59,6 @@ const Dialog = ({
       forceUpdateScreenHeight()
     }
   }, [isKeyboardOpen, forceUpdateScreenHeight])
-
-  // 브라우저/OS 조건 체크
-  const isIOS = os.name === 'iOS'
-  const isMobileChrome = browser.is('Mobile Chrome')
-
-  // 모바일 Chrome에서는 화면보다 콘텐츠가 커야 키보드 패딩을 줄 필요가 있음
-  const shouldApplySimpleOffset = isMobileChrome
-    ? screenHeight >= contentHeight
-    : screenHeight > contentHeight
-
-  // 키보드가 열렸을 때 하단 여백 보정값 계산
-  const getAdjustedPadding = () => {
-    if (!isKeyboardOpen) return 0
-
-    const remainingSpace = screenHeight - contentHeight
-
-    if (isIOS) {
-      const overflow = screenHeight + contentHeight - screenHeight
-      const overflowCorrection = Math.max(0, overflow)
-      return adjustedKeyboardHeight - overflowCorrection - remainingSpace
-    }
-
-    if (shouldApplySimpleOffset) {
-      return adjustedKeyboardHeight
-    }
-
-    const overflow = screenHeight + contentHeight - window.innerHeight
-    const overflowCorrection = Math.max(0, overflow)
-    return adjustedKeyboardHeight - overflowCorrection - remainingSpace
-  }
-
-  const adjustedPadding = getAdjustedPadding()
 
   return (
     <DialogRoot open={open} onOpenChange={onOpenChange}>
