@@ -39,7 +39,10 @@ const SpellingCorrectionText = memo(() => {
                 'relative inline-block pt-6 transition-all duration-300',
                 isResolved && 'pt-0',
               )}
-              ref={correctRefs?.[currentIndex]}
+              ref={el => {
+                if (!correctRefs || !el) return
+                correctRefs.current[currentIndex] = el
+              }}
               onMouseOver={() => scrollSection('error', currentIndex)}
               aria-label={`추천 단어 - ${recommendedWord}`}
             >

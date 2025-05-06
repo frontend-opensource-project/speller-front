@@ -1,12 +1,11 @@
 'use client'
 
-import { createContext, useContext, createRef, useRef } from 'react'
-import { useSpeller } from './use-speller'
+import { createContext, useContext, useRef } from 'react'
 import { ScrollContainerHandle } from '@/shared/ui/scroll-container'
 
 interface SpellerRefsContextType {
-  correctRefs: React.RefObject<HTMLDivElement>[] | null
-  errorRefs: React.RefObject<HTMLDivElement>[] | null
+  correctRefs: React.MutableRefObject<(HTMLElement | null)[]> | null
+  errorRefs: React.MutableRefObject<(HTMLElement | null)[]> | null
   correctScrollContainerRef: React.RefObject<ScrollContainerHandle> | null
   errorScrollContainerRef: React.RefObject<ScrollContainerHandle> | null
   scrollSection: (target: 'correct' | 'error', index: number) => void
@@ -21,16 +20,9 @@ export const SpellerRefsProvider = ({
 }) => {
   const correctScrollContainerRef = useRef<ScrollContainerHandle>(null)
   const errorScrollContainerRef = useRef<ScrollContainerHandle>(null)
-  const { response, correctInfo } = useSpeller()
 
-  const correctRefs = Array.from(
-    { length: Object.keys(correctInfo).length },
-    () => createRef<HTMLDivElement>(),
-  )
-
-  const errorRefs = Array.from({ length: response?.errInfo.length }, () =>
-    createRef<HTMLDivElement>(),
-  )
+  const correctRefs = useRef<(HTMLElement | null)[]>([])
+  const errorRefs = useRef<(HTMLElement | null)[]>([])
 
   const scrollSection = (target: 'correct' | 'error', index: number) => {
     const refs = target === 'correct' ? correctRefs : errorRefs
@@ -39,7 +31,7 @@ export const SpellerRefsProvider = ({
 
     if (!refs || !scrollContainerRef.current) return
 
-    const targetElement = refs[index]?.current
+    const targetElement = refs.current[index]
 
     if (targetElement && scrollContainerRef.current) {
       scrollContainerRef.current.scrollToElement(targetElement)
