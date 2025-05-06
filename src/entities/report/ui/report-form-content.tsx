@@ -1,11 +1,8 @@
-import { useRef } from 'react'
-import { UAParser } from 'ua-parser-js'
-
 import { useSendReport } from '@/entities/report/model/use-send-report'
 import { BasicTextarea } from '@/shared/ui/basic-textarea'
 import { Button } from '@/shared/ui/button'
 import { toast } from '@/shared/lib/use-toast'
-import { useIOSKeyboardPatch } from '@/shared/lib/use-ios-keyboard-patch'
+import { useInputWithIOSPatch } from '@/shared/lib/use-input-with-ios-patch'
 
 interface ReportFormContentProps {
   handleClose: () => void
@@ -20,11 +17,7 @@ export const ReportFormContent = ({ handleClose }: ReportFormContentProps) => {
       handleClose()
     },
   })
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const { os } = UAParser(window.navigator.userAgent)
-  const isIOS = os.name === 'iOS'
-
-  useIOSKeyboardPatch(textareaRef, isIOS)
+  const textareaRef = useInputWithIOSPatch<HTMLTextAreaElement>()
 
   return (
     <>

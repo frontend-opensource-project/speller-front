@@ -1,13 +1,10 @@
-import { useRef } from 'react'
-import { UAParser } from 'ua-parser-js'
-
 import { CorrectMethodEnum } from '@/entities/speller'
 import { cn } from '@/shared/lib/tailwind-merge'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { useUserReplace } from '../model/use-user-replace'
 import { BulletBadge } from '../ui/bullet-badge'
-import { useIOSKeyboardPatch } from '@/shared/lib/use-ios-keyboard-patch'
+import { useInputWithIOSPatch } from '@/shared/lib/use-input-with-ios-patch'
 
 interface CustomTextEditorContent {
   handleClose: () => void
@@ -20,11 +17,7 @@ export const CustomTextEditorContent = ({
     useUserReplace({
       handleClose,
     })
-  const inputRef = useRef<HTMLInputElement>(null)
-  const { os } = UAParser(window.navigator.userAgent)
-  const isIOS = os.name === 'iOS'
-
-  useIOSKeyboardPatch(inputRef, isIOS)
+  const inputRef = useInputWithIOSPatch<HTMLInputElement>()
 
   return (
     <>
