@@ -5,7 +5,7 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 
 import { Button } from '@/shared/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover'
-import { Dialog, DialogHeader, DialogTitle } from '@/shared/ui/test-dialog'
+import { Dialog, DialogHeader, DialogTitle } from '@/shared/ui/dialog'
 import { ReportFormContent } from './report-form-content'
 import SendIcon from '@/shared/ui/icon/icon-send-black.svg'
 
@@ -45,22 +45,6 @@ export const ReportForm = ({ children }: ReportFormProps) => {
           </div>
         </PopoverContent>
       </Popover>
-
-      {/* mobile,tab */}
-      {/* <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-        <DialogTrigger asChild className='pc:hidden'>
-          {children}
-        </DialogTrigger>
-        <DialogContent className='max-w-[19.1781rem] rounded-2xl bg-white p-[0.95rem] tab:max-w-[22.5625rem] tab:px-4'>
-          <DialogHeader>
-            <DialogTitle>
-              <VisuallyHidden>제보 작성하기</VisuallyHidden>
-            </DialogTitle>
-            <ReportFormTitle />
-          </DialogHeader>
-          <ReportFormContent handleClose={handleDialogClose} />
-        </DialogContent>
-      </Dialog> */}
 
       {/* mobile,tab */}
       <Dialog

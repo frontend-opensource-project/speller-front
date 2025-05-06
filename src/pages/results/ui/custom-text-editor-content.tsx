@@ -7,7 +7,7 @@ import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { useUserReplace } from '../model/use-user-replace'
 import { BulletBadge } from '../ui/bullet-badge'
-import { useIOSKeyboardPatch } from '@/shared/lib/use-keyboard-height'
+import { useIOSKeyboardPatch } from '@/shared/lib/use-ios-keyboard-patch'
 
 interface CustomTextEditorContent {
   handleClose: () => void
