@@ -1,13 +1,15 @@
 import Image from 'next/image'
-import GoogleAdSense from '../lib/google-ad-sense'
 import Link from 'next/link'
+
 import { CONTACT_INFO } from '../model/contact-info'
+import { FooterAdSense } from './footer-ad-sense'
+
 const Footer = () => {
   return (
     <footer className='bg-slate-200 pt-6 pc:py-[1.875rem]'>
       <div className='pc:container pc:mx-auto pc:px-[3.81rem]'>
         <div className='flex flex-col items-center justify-center tab:min-h-[90px] pc:flex-row pc:justify-between'>
-          <div className='flex flex-col items-center gap-1 pb-4 text-[0.625rem] tab:pb-[5.06rem] pc:items-start pc:pb-0'>
+          <div className='flex flex-col items-center gap-1 pb-4 text-[0.625rem] tab:pb-[4.8262rem] pc:items-start pc:pb-0'>
             {/* 고객센터 섹션 */}
             <div className='flex gap-2 text-slate-600'>
               <span className='text-xs font-semibold leading-[1.0425rem] tracking-[-0.015rem] tab:leading-[1.05rem] pc:text-[0.75rem] pc:leading-[1.035rem] pc:tracking-[-0.015rem]'>
@@ -69,14 +71,8 @@ const Footer = () => {
               Copyrightⓒ2001 AI Lab & Narainfotech. All Rights Reserved
             </div>
           </div>
-          <div className='hidden h-[90px] w-[728px] pc:block'>
-            {/* 광고 영역 */}
-            <GoogleAdSense
-              className='mb-1 hidden h-[50px] w-80 rounded-sm p-4 text-center tab:mb-0 tab:h-[90px] tab:w-[728px] pc:block'
-              data-ad-slot='4790060150'
-              data-full-width-responsive='true'
-            />
-          </div>
+          {/* 광고 영역 */}
+          <FooterAdSense />
         </div>
       </div>
     </footer>
