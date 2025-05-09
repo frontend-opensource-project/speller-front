@@ -2,10 +2,15 @@
 
 import GoogleAdSense from '../lib/google-ad-sense'
 import { cn } from '../lib/tailwind-merge'
+import { useClient } from '../lib/use-client'
 
 const isDev = process.env.NODE_ENV === 'development'
 
 const FooterAdSense = () => {
+  const isClient = useClient()
+
+  if (!isClient) return null
+
   if (isDev) {
     return <div className={cn(AdSenseStyle, 'bg-slate-300')} />
   }
