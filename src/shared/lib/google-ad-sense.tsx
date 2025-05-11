@@ -1,9 +1,8 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import { cn } from '@/shared/lib/tailwind-merge'
-import { useClient } from './use-client'
 
 declare global {
   interface Window {
@@ -15,86 +14,40 @@ interface GoogleAdSenseProps {
   className?: string
 }
 
-const AD_LOAD_TIMEOUT_MS = 5000
 const AD_STATUS_ATTR = 'data-adsbygoogle-status'
+const AD_LOAD_INTERVAL = 100 // 100ms 간격
+const MAX_ATTEMPTS = 50 // 5초간 최대 시도
 
 const GoogleAdSense = ({ className, ...props }: GoogleAdSenseProps) => {
-  const isClient = useClient()
   const adRef = useRef<HTMLModElement>(null)
-  const [isAdLoaded, setIsAdLoaded] = useState(false)
 
   useEffect(() => {
     if (!adRef.current) return
 
-    let didSetLoaded = false
-    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    // 광고 스크립트가 로드될 때까지 polling → 준비되면 광고 push
+    const timerId = tryLoadAdGoogle({
+      onAdReady: () => {
+        try {
+          const alreadyLoaded =
+            adRef.current?.getAttribute(AD_STATUS_ATTR) === 'done'
 
-    // 이미 광고가 로드된 상태인지 확인합니다.
-    const alreadyLoaded = adRef.current.getAttribute(AD_STATUS_ATTR) === 'done'
-
-    // 광고가 한 번만 로드 완료 상태로 바뀌도록 보장하는 함수.
-    const setLoadedOnce = () => {
-      if (!didSetLoaded) {
-        setIsAdLoaded(true)
-        didSetLoaded = true
-      }
-    }
-
-    if (!alreadyLoaded) {
-      try {
-        // 광고 스크립트를 실행시켜 광고 요청.
-        ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-
-        // MutationObserver를 사용하여 광고 DOM의 속성 변화를 감시합니다.
-        // 광고가 성공적으로 로드되면 data-adsbygoogle-status="done" 속성이 추가됩니다.
-        const observer = new MutationObserver(() => {
-          const status = adRef.current?.getAttribute(AD_STATUS_ATTR)
-
-          if (status === 'done') {
-            setLoadedOnce() // 광고 로드 완료 시 상태 변경
-            observer.disconnect()
-
-            if (timeoutId) {
-              clearTimeout(timeoutId)
-            }
+          if (!alreadyLoaded && window.adsbygoogle) {
+            window.adsbygoogle.push({})
           }
-        })
-
-        observer.observe(adRef.current, { attributes: true })
-
-        // 일정 시간 내에 광고가 로드되지 않으면 실패로 처리합니다.
-        timeoutId = setTimeout(() => {
-          const status = adRef.current?.getAttribute(AD_STATUS_ATTR)
-
-          if (status === 'done') {
-            setLoadedOnce()
-          } else {
-            console.warn('AdSense failed to load within timeout.')
-          }
-
-          observer.disconnect()
-        }, AD_LOAD_TIMEOUT_MS)
-
-        return () => {
-          observer.disconnect()
-
-          if (timeoutId) {
-            clearTimeout(timeoutId)
-          }
+        } catch (e) {
+          console.error('Error pushing ad to AdSense:', e)
         }
-      } catch (e) {
-        console.error(e)
-      }
-    } else {
-      // 이미 광고가 로드된 경우 즉시 상태를 변경합니다.
-      setLoadedOnce()
-    }
+      },
+      onAdFail: () => {
+        console.warn('AdSense loading failed, fallback will be rendered.')
+      },
+      maxAttempts: MAX_ATTEMPTS,
+      retry: AD_LOAD_INTERVAL,
+    })
+
+    return () => clearInterval(timerId)
   }, [])
 
-  // 클라이언트가 아니거나 광고가 아직 로드되지 않은 경우 렌더링하지 않습니다.
-  if (!isClient || !isAdLoaded) return null
-
-  // 광고 클라이언트 ID가 없을 경우 경고를 남기고 렌더링하지 않습니다.
   if (!process.env.NEXT_PUBLIC_AD_CLIENT) {
     console.error('AdSense client ID is missing.')
     return null
@@ -108,6 +61,41 @@ const GoogleAdSense = ({ className, ...props }: GoogleAdSenseProps) => {
       {...props}
     />
   )
+}
+
+interface TryLoadAdGoogle {
+  onAdReady: () => void
+  onAdFail: () => void
+  retry: number
+  maxAttempts: number
+}
+
+// AdSense 스크립트가 준비될 때까지 polling을 수행한 뒤, push 수행
+const tryLoadAdGoogle = ({
+  onAdReady,
+  onAdFail,
+  retry,
+  maxAttempts,
+}: TryLoadAdGoogle): NodeJS.Timeout => {
+  let attempts = 0
+  // 매번 실행 시점 기준으로 광고 스크립트 준비 여부 평가
+  const isAdSenseReady = () =>
+    typeof window !== 'undefined' && !!window.adsbygoogle
+
+  // 준비되지 않았을 경우 일정 간격으로 재시도
+  const timerId = setInterval(() => {
+    if (isAdSenseReady()) {
+      onAdReady()
+      clearInterval(timerId)
+    }
+
+    if (++attempts >= maxAttempts) {
+      onAdFail()
+      clearInterval(timerId)
+    }
+  }, retry)
+
+  return timerId
 }
 
 export default GoogleAdSense
