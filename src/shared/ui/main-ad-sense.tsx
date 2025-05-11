@@ -4,6 +4,9 @@ import { useEffect, useState, useRef } from 'react'
 import GoogleAdSense from '../lib/google-ad-sense'
 import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
+import { getBreakpoint } from '../lib/get-break-point'
+
+type Breakpoint = ReturnType<typeof getBreakpoint>
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -43,16 +46,5 @@ const MainAdSense = () => {
 
 const AdStyle =
   'my-24 h-[37.5rem] w-40 place-content-center overflow-hidden rounded-sm pc:ml-5 pc:block'
-
-type Breakpoint = 'ssr' | 'mobile' | 'tablet' | 'desktop'
-
-const getBreakpoint = (): Breakpoint => {
-  if (typeof window === 'undefined') return 'ssr'
-  const width = window.innerWidth
-
-  if (width < 726) return 'mobile'
-  if (width < 1377) return 'tablet'
-  return 'desktop'
-}
 
 export { MainAdSense }
