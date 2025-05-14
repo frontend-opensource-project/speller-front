@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 
 import GoogleAdSense from '../lib/google-ad-sense'
 import { cn } from '../lib/tailwind-merge'
@@ -12,16 +13,17 @@ const MAX_RETRIES = 3
 const isDev = process.env.NODE_ENV === 'development'
 
 const MainAdSense = () => {
+  const pathname = usePathname()
   const isClient = useClient()
   const breakpoint = useBreakpoint()
   const [adKey, retryCount, retry, reset] = useAdRetryKey(
-    `main-ad-${breakpoint}`,
+    `main-ad-${pathname}-${breakpoint}`,
     MAX_RETRIES,
   )
 
   useEffect(() => {
-    reset() // breakpoint가 변경될 때 광고 키 리셋
-  }, [breakpoint])
+    reset()
+  }, [pathname, breakpoint])
 
   const handleUnFilled = () => {
     if (retryCount < MAX_RETRIES) {
