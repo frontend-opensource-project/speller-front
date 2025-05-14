@@ -47,8 +47,8 @@ const FooterAdSense = () => {
       className={AdStyle}
       data-ad-slot='4790060150'
       data-full-width-responsive='true'
-      onFilled={handleFilled}
-      onUnFilled={handleUnFilled}
+      onAdFilled={handleFilled}
+      onAdUnfilled={handleUnFilled}
     />
   )
 }

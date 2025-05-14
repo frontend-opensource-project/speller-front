@@ -12,26 +12,28 @@ declare global {
 
 interface GoogleAdSenseProps {
   className?: string
-  onFilled?: () => void
-  onUnFilled?: () => void
+  onAdFilled?: () => void
+  onAdUnfilled?: () => void
 }
 
+// 광고 로딩 및 상태 감지 관련 상수 설정
 const AD_CONFIG = {
   loadInterval: 100, // adsbygoogle 스크립트 polling 간격 (ms)
-  maxAttempts: 50, // polling 최대 시도 횟수 (약 5초 동안)
-  viewTrigger: 0.1, // 광고 요소가 뷰포트에 10% 이상 노출됐을 때만 로딩
+  maxAttempts: 50, // adsbygoogle 스크립트 polling 최대 시도 횟수 (100ms * 50 = 최대 5초까지 기다림)
+  viewTrigger: 0.1, // 광고 요소가 뷰포트에 10% 이상 노출되어야 로딩 시작
   status: {
-    key: 'data-ad-status',
-    filled: 'filled', // 광고가 성공적으로 채워진 경우
-    unFilled: 'unfilled', // 광고가 로드되지 않은 경우
-    detectTime: 1500, // push 이후 광고 로드 상태 감지까지 대기 시간 (ms)
+    key: 'data-ad-status', // 광고 로딩 결과가 표시되는 DOM 속성
+    filled: 'filled', // 광고가 정상적으로 채워진 경우의 값
+    unFilled: 'unfilled', // 광고가 채워지지 못한 경우의 값
+    checkIntervalMs: 200, // 광고가 삽입된 이후, 상태를 200ms 간격으로 확인
+    maxCheckAttempts: 10, // 200ms * 10 = 최대 2초 동안 광고 상태 polling
   },
 }
 
 const GoogleAdSense = ({
   className,
-  onFilled,
-  onUnFilled,
+  onAdFilled,
+  onAdUnfilled,
   ...restProps
 }: GoogleAdSenseProps) => {
   const initializedRef = useRef(false) // 광고가 이미 push 되었는지 추적
@@ -55,14 +57,17 @@ const GoogleAdSense = ({
               ;(window.adsbygoogle = window.adsbygoogle || []).push({})
               initializedRef.current = true
 
-              // 일정 시간 뒤 광고 로드 여부를 체크하여 콜백 호출
-              checkAdStatusTimerRef.current = setTimeout(() => {
-                const status = adRef.current?.getAttribute(AD_CONFIG.status.key)
-                checkAdStatus(status, { onUnFilled, onFilled })
-              }, AD_CONFIG.status.detectTime)
+              // 광고 상태를 polling하여 filled/unfilled 여부 판단
+              checkAdStatusTimerRef.current = checkAdStatusPolling({
+                targetElement: adRef.current,
+                onAdFilled,
+                onAdUnfilled,
+                checkIntervalMs: AD_CONFIG.status.checkIntervalMs,
+                maxCheckAttempts: AD_CONFIG.status.maxCheckAttempts,
+              })
             } catch (e) {
               console.error('Error pushing ad to AdSense:', e)
-              onUnFilled?.()
+              onAdUnfilled?.()
             }
           },
           onAdFail: () => {
@@ -82,7 +87,7 @@ const GoogleAdSense = ({
 
     return () => {
       observer.disconnect()
-      clearTimeout(checkAdStatusTimerRef.current)
+      clearInterval(checkAdStatusTimerRef.current)
       clearInterval(tryLoadAdGoogleTimerRef.current)
     }
   }, [])
@@ -102,20 +107,55 @@ const GoogleAdSense = ({
   )
 }
 
-// 광고 로딩 결과 상태 체크 함수
-const checkAdStatus = (
-  status: string | null | undefined,
-  options: {
-    onFilled?: () => void
-    onUnFilled?: () => void
-  },
-) => {
-  if (status === AD_CONFIG.status.filled) {
-    return options.onFilled?.()
-  }
+interface CheckAdStatusPolling {
+  targetElement: HTMLElement | null
+  onAdFilled?: () => void
+  onAdUnfilled?: () => void
+  checkIntervalMs: number
+  maxCheckAttempts: number
+}
 
-  // filled가 아니거나 unknown일 경우에는 unfilled로 처리
-  return options.onUnFilled?.()
+// 광고 상태(filled/unfilled)를 polling 방식으로 확인
+const checkAdStatusPolling = ({
+  targetElement,
+  onAdFilled,
+  onAdUnfilled,
+  checkIntervalMs,
+  maxCheckAttempts,
+}: CheckAdStatusPolling): NodeJS.Timeout => {
+  let checks = 0
+  let resolved = false // 중복 호출 방지를 위한 플래그
+
+  const timer = setInterval(() => {
+    if (resolved) {
+      clearInterval(timer)
+      return
+    }
+
+    const status = targetElement?.getAttribute(AD_CONFIG.status.key)
+
+    if (status === AD_CONFIG.status.filled) {
+      resolved = true
+      clearInterval(timer)
+      onAdFilled?.()
+      return
+    }
+
+    if (status === AD_CONFIG.status.unFilled) {
+      resolved = true
+      clearInterval(timer)
+      onAdUnfilled?.()
+      return
+    }
+
+    if (++checks >= maxCheckAttempts) {
+      resolved = true
+      clearInterval(timer)
+      onAdUnfilled?.()
+    }
+  }, checkIntervalMs)
+
+  return timer
 }
 
 interface TryLoadAdGoogle {

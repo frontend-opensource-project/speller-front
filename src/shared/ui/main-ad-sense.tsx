@@ -48,8 +48,8 @@ const MainAdSense = () => {
       className={AdStyle}
       data-ad-slot='9725653724'
       data-full-width-responsive='true'
-      onFilled={handleFilled}
-      onUnFilled={handleUnFilled}
+      onAdFilled={handleFilled}
+      onAdUnfilled={handleUnFilled}
     />
   )
 }
