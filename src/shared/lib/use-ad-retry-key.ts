@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 
 export const useAdRetryKey = (
   prefix: string,
-  maxRetries: number = 3,
+  maxRetries: number,
 ): [string, number, () => void, () => void] => {
   const [retryCount, setRetryCount] = useState(0)
   const [key, setKey] = useState(() => `${prefix}-${Date.now()}`)
