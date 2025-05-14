@@ -1,51 +1,59 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect } from 'react'
 
 import GoogleAdSense from '../lib/google-ad-sense'
 import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
-import { getBreakpoint } from '../lib/get-break-point'
+import { useBreakpoint } from '../lib/use-break-point'
+import { useAdRetryKey } from '../lib/use-ad-retry-key'
 
-type Breakpoint = ReturnType<typeof getBreakpoint>
-
+const MAX_RETRIES = 3
 const isDev = process.env.NODE_ENV === 'development'
 
 const FooterAdSense = () => {
   const isClient = useClient()
-  const [breakpoint, setBreakpoint] = useState<Breakpoint>(getBreakpoint())
-  const prevBreakpointRef = useRef<Breakpoint>(breakpoint)
+  const breakpoint = useBreakpoint()
+  const [adKey, retryCount, retry, reset] = useAdRetryKey(
+    `footer-ad-${breakpoint}`,
+    MAX_RETRIES,
+  )
 
   useEffect(() => {
-    const update = () => {
-      const current = getBreakpoint()
-      if (prevBreakpointRef.current !== current) {
-        prevBreakpointRef.current = current
-        setBreakpoint(current)
-      }
-    }
+    reset() // breakpoint가 변경될 때 광고 키 리셋
+  }, [breakpoint])
 
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
-  }, [])
+  const handleUnFilled = () => {
+    if (retryCount < MAX_RETRIES) {
+      retry()
+      console.warn(`🔁 광고 재시도: ${retryCount + 1}/${MAX_RETRIES}`)
+    } else {
+      console.warn('🛑 광고 재시도 최대치 도달 — fallback 고려')
+    }
+  }
+
+  const handleFilled = () => {
+    console.log('✅ 광고 성공적으로 로드됨')
+  }
 
   if (!isClient) return null
 
   if (isDev) {
     return <div className={cn(AdStyle, 'bg-slate-300')} />
   }
-
   return (
     <GoogleAdSense
-      key={`footer-ad-${breakpoint}`} // key를 사용하여 광고를 강제로 다시 로드
+      key={adKey}
       className={AdStyle}
       data-ad-slot='4790060150'
       data-full-width-responsive='true'
+      onFilled={handleFilled}
+      onUnFilled={handleUnFilled}
     />
   )
 }
 
 const AdStyle =
-  'mb-1 h-[90px] w-full max-w-[100vw] overflow-hidden rounded-sm tab:max-w-[728px]'
+  'mb-1 h-[6.25rem] w-full max-w-[31.25rem] overflow-hidden rounded-sm tab:max-w-[728px]'
 
 export { FooterAdSense }
