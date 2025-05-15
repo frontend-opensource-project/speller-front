@@ -70,6 +70,12 @@ const Footer = () => {
             <div className='text-center text-[0.625rem] font-normal leading-[1.0625rem] tracking-[-0.0125rem] text-slate-500 tab:leading-[1.0625rem] pc:text-[0.75rem] pc:leading-[1.035rem] pc:tracking-[-0.015rem]'>
               Copyrightⓒ2001 AI Lab & Narainfotech. All Rights Reserved
             </div>
+            <a
+              href='#'
+              className='text-xs text-slate-600 hover:text-primary hover:underline'
+            >
+              바른 한글 리뉴얼에 기여하신 분들
+            </a>
           </div>
           {/* 광고 영역 */}
           <FooterAdSense />
