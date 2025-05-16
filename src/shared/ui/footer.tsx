@@ -71,8 +71,9 @@ const Footer = () => {
               Copyrightⓒ2001 AI Lab & Narainfotech. All Rights Reserved
             </div>
             <a
-              href='#'
-              className='text-xs text-slate-600 hover:text-primary hover:underline'
+              href='https://rogue-toothpaste-2b9.notion.site/1ee8bd6bfd808016995ff0b71b2cb358'
+              target='_blank'
+              className='pt-1 text-xs text-primary hover:text-primary hover:underline pc:pt-2'
             >
               바른 한글 리뉴얼에 기여하신 분들
             </a>
