@@ -70,6 +70,13 @@ const Footer = () => {
             <div className='text-center text-[0.625rem] font-normal leading-[1.0625rem] tracking-[-0.0125rem] text-slate-500 tab:leading-[1.0625rem] pc:text-[0.75rem] pc:leading-[1.035rem] pc:tracking-[-0.015rem]'>
               Copyrightⓒ2001 AI Lab & Narainfotech. All Rights Reserved
             </div>
+            <a
+              href='https://rogue-toothpaste-2b9.notion.site/1ee8bd6bfd808016995ff0b71b2cb358'
+              target='_blank'
+              className='pt-1 text-xs text-primary hover:text-primary hover:underline pc:pt-2'
+            >
+              바른 한글 리뉴얼에 기여하신 분들
+            </a>
           </div>
           {/* 광고 영역 */}
           <FooterAdSense />
