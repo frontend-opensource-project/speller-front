@@ -2,7 +2,9 @@ import 'overlayscrollbars/overlayscrollbars.css'
 import './styles/globals.css'
 
 import localFont from 'next/font/local'
+
 import { Toaster } from '@/shared/ui/toaster'
+import { GoogleAdsenseScript } from '@/shared/lib/google-ad-sense-script'
 
 const pretendard = localFont({
   src: './font/pretendard-variable.woff2',
@@ -19,12 +21,7 @@ const App = ({
   return (
     <html lang='ko' className={`${pretendard.variable}`}>
       <head>
-        {/* Google AdSense */}
-        <script
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_AD_CLIENT}`}
-          crossOrigin='anonymous'
-        />
+        <GoogleAdsenseScript />
       </head>
       <body className={`${pretendard.className} antialiased`}>
         {children}
