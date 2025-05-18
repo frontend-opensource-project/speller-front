@@ -36,11 +36,6 @@ const MainAdSlot = () => {
   useEffect(() => {
     reset()
     resetAdState()
-
-    return () => {
-      reset()
-      resetAdState()
-    }
   }, [pathname, breakpoint])
 
   const handleUnFilled = () => {

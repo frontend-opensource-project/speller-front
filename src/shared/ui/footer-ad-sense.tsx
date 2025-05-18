@@ -38,11 +38,6 @@ const FooterAdSense = () => {
   useEffect(() => {
     reset()
     resetAdState()
-
-    return () => {
-      reset()
-      resetAdState()
-    }
   }, [pathname, breakpoint])
 
   const handleUnFilled = () => {
