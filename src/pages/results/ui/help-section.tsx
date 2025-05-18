@@ -3,9 +3,11 @@ import {
   useDebounce,
   useWindowSize,
 } from '@frontend-opensource/use-react-hooks'
+
 import { Button } from '@/shared/ui/button'
 import { cn } from '@/shared/lib/tailwind-merge'
 import ArrowBottomIcon from '@/shared/ui/icon/icon-arrow-bottom.svg'
+import { DESKTOP, TABLET } from '../../../../tailwind.config'
 
 interface HelpSectionProps {
   help: string
@@ -23,8 +25,8 @@ const HelpSection = ({ help }: HelpSectionProps) => {
     const rem = 16
     // threshold: 각 디바이스 화면에서 도움말이 2줄까지 보이는 높이
     let threshold = 4.5 * rem // mobile
-    if (width! >= 726) threshold = 3.5 * rem // tab
-    if (width! >= 1377) threshold = 3 * rem // pc
+    if (width! >= TABLET) threshold = 3.5 * rem // tab
+    if (width! >= DESKTOP) threshold = 3 * rem // pc
 
     setShowButton(contentRef.current.scrollHeight > threshold)
   }, 300)

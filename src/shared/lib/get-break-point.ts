@@ -1,11 +1,14 @@
-type Breakpoint = 'ssr' | 'mobile' | 'tablet' | 'desktop'
+import { DESKTOP, LARGE_DESKTOP, TABLET } from '../../../tailwind.config'
+
+type Breakpoint = 'ssr' | 'mobile' | 'tablet' | 'desktop' | 'desktop-small'
 
 const getBreakpoint = (): Breakpoint => {
   if (typeof window === 'undefined') return 'ssr'
   const width = window.innerWidth
 
-  if (width < 726) return 'mobile'
-  if (width < 1377) return 'tablet'
+  if (width < TABLET) return 'mobile'
+  if (width < DESKTOP) return 'tablet'
+  if (width < LARGE_DESKTOP) return 'desktop-small'
 
   return 'desktop'
 }

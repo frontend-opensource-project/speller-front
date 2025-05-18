@@ -48,30 +48,28 @@ const ErrorTrackingSection = () => {
           ))}
         </div>
       </ScrollContainer>
-      <div>
-        <div className='flex items-center gap-4 text-sm font-medium'>
-          <span className='flex items-center gap-2 tab:text-lg'>
-            <BulletBadge
-              method={CorrectMethodEnum.enum.띄어쓰기}
-              className='tab:size-3'
-            />
-            띄어쓰기 오류
-          </span>
-          <span className='flex items-center gap-2 tab:text-lg'>
-            <BulletBadge
-              method={CorrectMethodEnum.enum.오탈자}
-              className='tab:size-3'
-            />
-            오탈자 오류
-          </span>
-          <span className='flex items-center gap-2 tab:text-lg'>
-            <BulletBadge
-              method={CorrectMethodEnum.enum.문맥}
-              className='tab:size-3'
-            />
-            문맥상 오류
-          </span>
-        </div>
+      <div className='flex items-center gap-4 pt-5 text-sm font-medium pc:-translate-y-5 pc:justify-between pc:gap-0 pc:@[400px]:justify-normal pc:@[400px]:gap-4'>
+        <span className='flex items-center gap-2 tab:text-lg pc:gap-1 pc:@[400px]:gap-2'>
+          <BulletBadge
+            method={CorrectMethodEnum.enum.띄어쓰기}
+            className='tab:size-3'
+          />
+          띄어쓰기 오류
+        </span>
+        <span className='flex items-center gap-2 tab:text-lg pc:gap-1 pc:@[400px]:gap-2'>
+          <BulletBadge
+            method={CorrectMethodEnum.enum.오탈자}
+            className='tab:size-3'
+          />
+          오탈자 오류
+        </span>
+        <span className='flex items-center gap-2 tab:text-lg pc:gap-1 pc:@[400px]:gap-2'>
+          <BulletBadge
+            method={CorrectMethodEnum.enum.문맥}
+            className='tab:size-3'
+          />
+          문맥상 오류
+        </span>
       </div>
     </>
   )

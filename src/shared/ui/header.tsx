@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './popover'
 const Header = () => {
   return (
     <div className='flex items-center justify-center bg-white'>
-      <header className='flex flex-1 items-center justify-between px-6 py-4 pc:container tab:px-[3.75rem] tab:py-5 pc:p-[2rem_3.75rem]'>
+      <header className='flex flex-1 items-center justify-between px-6 py-4 pc:container pc-lg:container tab:px-[3.75rem] tab:py-5 pc:p-[1rem_1.875rem] pc-lg:p-[2rem_3.75rem]'>
         <div className='flex items-center gap-5'>
           <Link href='/'>
             <h1 className='text-xl font-bold tab:text-2xl'>
@@ -29,7 +29,7 @@ const Header = () => {
             문의하기
           </Link>
           <Link
-            href='https://nara-speller.co.kr/speller/'
+            href='./old_speller/'
             className='hidden rounded-lg border border-[#B8B8BE] p-3 font-semibold !leading-none text-slate-500 hover:bg-accent tab:inline-flex tab:text-xl pc:text-base'
           >
             이전 버전 사용하기
@@ -67,7 +67,7 @@ const Header = () => {
               </li>
               <li className='group'>
                 <Link
-                  href='https://nara-speller.co.kr/speller/'
+                  href='./old_speller/'
                   className={`${classes.popoverButton} border-none`}
                 >
                   <i

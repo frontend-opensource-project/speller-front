@@ -1,12 +1,14 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useWindowSize } from '@frontend-opensource/use-react-hooks'
 
-const DELAY_MS = 1000 // 1초
-const DESKTOP_SIZE = 1377 // 데스크탑 너비
+import { DESKTOP } from '../../../tailwind.config'
+import { UAParser } from 'ua-parser-js'
 
-const isDesktopWidth = (width: number) => width >= DESKTOP_SIZE
+const DELAY_MS = 1000 // 1초
+
+const isDesktopWidth = (width: number) => width >= DESKTOP
 
 const useDesktop = (delayTime?: number) => {
   const { width } = useWindowSize(delayTime ?? DELAY_MS)
@@ -16,4 +18,16 @@ const useDesktop = (delayTime?: number) => {
   return isDesktop
 }
 
-export { useDesktop }
+const useDesktopDevice = () => {
+  const [isDesktop, setIsDesktop] = useState(true)
+
+  useEffect(() => {
+    const parser = new UAParser()
+    const result = parser.getResult()
+    setIsDesktop(!result.device.type)
+  }, [])
+
+  return isDesktop
+}
+
+export { useDesktop, useDesktopDevice }
