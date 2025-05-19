@@ -1,13 +1,28 @@
 'use server'
 
+import { z } from 'zod'
+
 import { ENDPOINT } from '../config'
 
-type ResponseData = { denied?: 'true' | 'false' }
-
-const errorMsg = '[Error] IP 필터링 서비스를 사용할 수 없습니다.'
 const REVALIDATE_SEC = 300 // 5분(300초)
+const errorMsg = {
+  unknown: '[Error] Unable to use the IP filtering service.',
+  invalid: '[Error] Invalid IP address.',
+  parse: '[Error] Failed to receive a valid IP response from the server.',
+}
 
-const checkIpAccess = async (clientIp: string) => {
+const IpSchema = z.string().ip({ version: 'v4' })
+const IpAccessSchema = z.object({
+  allowed: z.boolean(),
+})
+
+const checkIpAccess = async (clientIp: string): Promise<boolean> => {
+  const parsed = IpSchema.safeParse(clientIp)
+
+  if (!parsed.success) {
+    throw new Error(errorMsg.invalid)
+  }
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}${ENDPOINT.FILTER_IP}`,
     {
@@ -15,32 +30,22 @@ const checkIpAccess = async (clientIp: string) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ clientIp }),
       cache: 'force-cache',
-      next: {
-        revalidate: REVALIDATE_SEC,
-      },
+      next: { revalidate: REVALIDATE_SEC },
     },
   )
 
   if (!response.ok) {
-    throw new Error(errorMsg)
+    throw new Error(errorMsg.unknown)
   }
 
-  const data: ResponseData = await response.json()
+  const json = await response.json()
+  const parsedResponse = IpAccessSchema.safeParse(json)
 
-  return isIpAccessDenied(data)
-}
-
-const isIpAccessDenied = (payload: ResponseData) => {
-  const isDeniedFieldMissing = payload.denied === undefined
-
-  if (isDeniedFieldMissing) {
-    throw new Error(errorMsg)
+  if (!parsedResponse.success) {
+    throw new Error(errorMsg.parse)
   }
 
-  // 응답값이 false인 경우 차단되어야 함
-  const isAccessDenied = payload.denied === 'false'
-
-  return isAccessDenied
+  return parsedResponse.data.allowed
 }
 
 export { checkIpAccess }
