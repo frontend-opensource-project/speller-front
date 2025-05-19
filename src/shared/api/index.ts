@@ -1,1 +1,8 @@
 export { Client } from './client'
+export { checkIpAllowed } from './check-ip/check-ip-access'
+export {
+  type CheckIpRequest,
+  type CheckIpResponse,
+  CheckIpResponseSchema,
+  IpSchema,
+} from './check-ip/schema'

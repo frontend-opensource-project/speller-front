@@ -1,8 +1,9 @@
 import 'server-only'
 
-import { checkIpAccess } from '../api/check-ip-access'
-import { AccessDeniedMessage } from '../ui/access-denied-message'
-import { getClientIp } from './get-client-ip'
+import { getClientIpByHeader } from './get-client-ip'
+import { ClientIpGuard } from '../model/client-ip-guard'
+import { AccessDeniedMessage } from '../ui/ip-access-feedback'
+import { checkIpAllowed } from '../api'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -14,19 +15,25 @@ const withIpRestriction = <P extends object>(
       return <WrappedComponent {...props} />
     }
 
-    const clientIP = await getClientIp()
+    const clientIp = await getClientIpByHeader()
+    const isClientIpUnknown = !clientIp.isSuccess && clientIp.ip === 'unknown'
+
+    // 서버 헤더에서 클라이언트 IP를 확인할 수 없는 경우, 클라이언트 측에서 재조회합니다.
+    if (isClientIpUnknown) {
+      return (
+        <ClientIpGuard>
+          <WrappedComponent {...props} />
+        </ClientIpGuard>
+      )
+    }
 
     try {
-      if (!clientIP.isSuccess) {
-        throw new Error(clientIP.reason)
-      }
+      const isIpAllowed = await checkIpAllowed(clientIp.ip)
 
-      const isAccessDenied = await checkIpAccess(clientIP.ip)
-
-      return isAccessDenied ? (
-        <AccessDeniedMessage />
-      ) : (
+      return isIpAllowed ? (
         <WrappedComponent {...props} />
+      ) : (
+        <AccessDeniedMessage />
       )
     } catch (error) {
       console.warn(error)

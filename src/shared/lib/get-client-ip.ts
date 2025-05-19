@@ -1,18 +1,18 @@
 'use server'
 
 import { headers } from 'next/headers'
-import { z } from 'zod'
 
-const IpSchema = z.string().ip({ version: 'v4' })
+import { IpSchema } from '../api'
+
 const IPIFY_API = {
   url: 'https://api.ipify.org?format=json',
 }
 
-type ClientIpResult =
+export type ClientIpResult =
   | { isSuccess: true; ip: string; reason: null }
   | { isSuccess: false; ip: 'unknown'; reason: string }
 
-const getClientIp = async (): Promise<ClientIpResult> => {
+const getClientIpByHeader = async (): Promise<ClientIpResult> => {
   const requestHeaders = await headers()
   // 현재 프로덕션 환경을 기준으로 Cloudflare 우선
   const headerKeys = ['cf-connecting-ip']
@@ -43,7 +43,14 @@ const getClientIp = async (): Promise<ClientIpResult> => {
     }
   }
 
-  // 헤더에서 IP를 찾지 못한 경우 외부 API를 통해 조회
+  return {
+    isSuccess: false,
+    ip: 'unknown',
+    reason: `Failed to get IP from header information.`,
+  }
+}
+
+const getClientIpByApi = async (): Promise<ClientIpResult> => {
   try {
     const response = await fetch(IPIFY_API.url)
 
@@ -70,4 +77,4 @@ const getClientIp = async (): Promise<ClientIpResult> => {
   }
 }
 
-export { getClientIp }
+export { getClientIpByHeader, getClientIpByApi }

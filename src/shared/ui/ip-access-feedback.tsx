@@ -35,4 +35,18 @@ const AccessDeniedMessage = () => (
   </div>
 )
 
-export { AccessDeniedMessage }
+const IpCheckingFallback = () => {
+  return (
+    <div className='flex h-screen items-center justify-center'>
+      <div className='animate-pulse text-center text-lg tab:text-xl pc:text-2xl'>
+        <div className='mb-2 font-bold'>
+          <h1>접속 상태 확인 중...</h1>
+        </div>
+        <p className='text-slate-500'>사용자 IP 확인 중입니다.</p>
+        <p className='mt-2 text-sm text-slate-400'>잠시만 기다려주세요.</p>
+      </div>
+    </div>
+  )
+}
+
+export { AccessDeniedMessage, IpCheckingFallback }

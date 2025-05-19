@@ -1,8 +1,7 @@
 'use server'
 
-import { z } from 'zod'
-
-import { ENDPOINT } from '../config'
+import { ENDPOINT } from '../../config'
+import { CheckIpRequest, CheckIpResponseSchema, IpSchema } from './schema'
 
 const REVALIDATE_SEC = 300 // 5분(300초)
 const errorMsg = {
@@ -11,24 +10,20 @@ const errorMsg = {
   parse: '[Error] Failed to receive a valid IP response from the server.',
 }
 
-const IpSchema = z.string().ip({ version: 'v4' })
-const IpAccessSchema = z.object({
-  allowed: z.boolean(),
-})
-
-const checkIpAccess = async (clientIp: string): Promise<boolean> => {
+const checkIpAllowed = async (clientIp: string): Promise<boolean> => {
   const parsed = IpSchema.safeParse(clientIp)
 
   if (!parsed.success) {
     throw new Error(errorMsg.invalid)
   }
 
+  const payload: CheckIpRequest = { clientIP: clientIp }
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}${ENDPOINT.FILTER_IP}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clientIp }),
+      body: JSON.stringify(payload),
       cache: 'force-cache',
       next: { revalidate: REVALIDATE_SEC },
     },
@@ -39,7 +34,7 @@ const checkIpAccess = async (clientIp: string): Promise<boolean> => {
   }
 
   const json = await response.json()
-  const parsedResponse = IpAccessSchema.safeParse(json)
+  const parsedResponse = CheckIpResponseSchema.safeParse(json)
 
   if (!parsedResponse.success) {
     throw new Error(errorMsg.parse)
@@ -48,4 +43,4 @@ const checkIpAccess = async (clientIp: string): Promise<boolean> => {
   return parsedResponse.data.allowed
 }
 
-export { checkIpAccess }
+export { checkIpAllowed }
