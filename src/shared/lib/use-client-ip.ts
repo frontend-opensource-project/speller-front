@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
-import { ClientIpResult, getClientIpByApi } from './get-client-ip'
+import { ClientIpResult } from '../api'
+import { getClientIpByApi } from './get-client-ip-by-api'
 
 export const useClientIp = () => {
   const [ipState, setIpState] = useState<ClientIpResult>()

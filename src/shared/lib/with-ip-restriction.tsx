@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { getClientIpByHeader } from './get-client-ip'
+import { getClientIpByHeader } from './get-client-ip-by-header'
 import { ClientIpGuard } from '../model/client-ip-guard'
 import { AccessDeniedMessage } from '../ui/ip-access-feedback'
 import { checkIpAllowed } from '../api'

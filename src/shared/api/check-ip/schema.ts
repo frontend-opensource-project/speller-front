@@ -11,3 +11,7 @@ export const CheckIpResponseSchema = z.object({
 })
 
 export type CheckIpResponse = z.infer<typeof CheckIpResponseSchema>
+
+export type ClientIpResult =
+  | { isSuccess: true; ip: string; reason: null }
+  | { isSuccess: false; ip: 'unknown'; reason: string }
