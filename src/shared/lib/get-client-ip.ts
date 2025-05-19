@@ -1,7 +1,9 @@
 'use server'
 
 import { headers } from 'next/headers'
+import { z } from 'zod'
 
+const IpSchema = z.string().ip({ version: 'v4' })
 const IPIFY_API = {
   url: 'https://api.ipify.org?format=json',
 }
@@ -12,15 +14,8 @@ type ClientIpResult =
 
 const getClientIp = async (): Promise<ClientIpResult> => {
   const requestHeaders = await headers()
-  // 우선순위에 따라 헤더에서 IP 추출
-  const headerKeys = [
-    'x-forwarded-for',
-    'x-real-ip',
-    'cf-connecting-ip',
-    'true-client-ip',
-    'fastly-client-ip',
-    'x-cluster-client-ip',
-  ]
+  // 현재 프로덕션 환경을 기준으로 Cloudflare 우선
+  const headerKeys = ['cf-connecting-ip']
   let clientIP: string | null = null
 
   for (const key of headerKeys) {
@@ -41,7 +36,11 @@ const getClientIp = async (): Promise<ClientIpResult> => {
       clientIP = match[1]
     }
 
-    return { isSuccess: true, ip: clientIP, reason: null }
+    const parsed = IpSchema.safeParse(clientIP)
+
+    if (parsed.success) {
+      return { isSuccess: true, ip: parsed.data, reason: null }
+    }
   }
 
   // 헤더에서 IP를 찾지 못한 경우 외부 API를 통해 조회
@@ -53,9 +52,10 @@ const getClientIp = async (): Promise<ClientIpResult> => {
     }
 
     const data: { ip?: string } = await response.json()
+    const parsed = IpSchema.safeParse(data.ip)
 
-    if (typeof data.ip === 'string' && data.ip.trim() !== '') {
-      return { isSuccess: true, ip: data.ip, reason: null }
+    if (parsed.success) {
+      return { isSuccess: true, ip: parsed.data, reason: null }
     }
 
     throw new Error('IP address not found in response')
