@@ -2,8 +2,7 @@ import 'server-only'
 
 import { getClientIpByHeader } from './get-client-ip-by-header'
 import { ClientIpGuard } from '../model/client-ip-guard'
-import { AccessDeniedMessage } from '../ui/ip-access-feedback'
-import { checkIpAllowed } from '../api'
+import { ServerIpGuard } from '../model/server-ip-guard'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -27,19 +26,11 @@ const withIpRestriction = <P extends object>(
       )
     }
 
-    try {
-      const isIpAllowed = await checkIpAllowed(clientIp.ip)
-
-      return isIpAllowed ? (
+    return (
+      <ServerIpGuard clientIp={clientIp}>
         <WrappedComponent {...props} />
-      ) : (
-        <AccessDeniedMessage />
-      )
-    } catch (error) {
-      console.warn(error)
-
-      return <WrappedComponent {...props} />
-    }
+      </ServerIpGuard>
+    )
   }
 }
 

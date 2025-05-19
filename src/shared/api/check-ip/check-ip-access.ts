@@ -5,9 +5,9 @@ import { CheckIpRequest, CheckIpResponseSchema, IpSchema } from './schema'
 
 const REVALIDATE_SEC = 300 // 5분(300초)
 const errorMsg = {
-  unknown: '[Error] Unable to use the IP filtering service.',
-  invalid: '[Error] Invalid IP address.',
-  parse: '[Error] Failed to receive a valid IP response from the server.',
+  unknown: 'Unable to use the IP filtering service.',
+  invalid: 'Invalid IP address.',
+  parse: 'Failed to receive a valid IP response from the server.',
 }
 
 const checkIpAllowed = async (clientIp: string): Promise<boolean> => {
