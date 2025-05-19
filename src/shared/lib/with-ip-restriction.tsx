@@ -1,8 +1,8 @@
 import 'server-only'
 
 import { getClientIpByHeader } from './get-client-ip-by-header'
-import { ClientIpGuard } from '../model/client-ip-guard'
-import { ServerIpGuard } from '../model/server-ip-guard'
+import { ClientIpGuard } from '../ui/client-ip-guard'
+import { ServerIpGuard } from '../ui/server-ip-guard'
 
 const isDev = process.env.NODE_ENV === 'development'
 

@@ -3,10 +3,7 @@
 import { FC, PropsWithChildren, useEffect, useState } from 'react'
 
 import { useClientIp } from '../lib/use-client-ip'
-import {
-  AccessDeniedMessage,
-  IpCheckingFallback,
-} from '../ui/ip-access-feedback'
+import { AccessDeniedMessage, IpCheckingFallback } from './ip-access-feedback'
 import { ENDPOINT } from '../config'
 import { CheckIpRequest, CheckIpResponseSchema } from '../api'
 
