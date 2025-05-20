@@ -12,6 +12,8 @@ import {
   CheckResultResponseErrorParams,
   ERROR_STAGE,
   CheckResultResponseUnknownParams,
+  ErrorDetailOpenedParams,
+  CorrectedErrorType,
 } from './analytics-event-types'
 
 type Event = (typeof GA_EVENT_TYPE)[keyof typeof GA_EVENT_TYPE]
@@ -47,6 +49,14 @@ const GAEvents: GAEventTrackerMap = {
   checkResultResponseUnknown: createTracker<CheckResultResponseUnknownParams>(
     GA_EVENT_TYPE.EVENT,
     GA_ACTIONS.CHECK_RESULT_RESPONSE_UNKNOWN,
+  ),
+  errorDetailOpened: createTracker<ErrorDetailOpenedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.ERROR_DETAIL_OPENED,
+  ),
+  errorDetailClosed: createTracker<ErrorDetailOpenedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.ERROR_DETAIL_CLOSED,
   ),
 }
 
@@ -198,5 +208,45 @@ export const sendCheckResultResponseUnknownEvent = ({
     error_message: errorMessage,
     elapsed_time_ms: elapsedTimeMs,
     section: 'original_text',
+  })
+}
+
+/**
+ * 사용자가 교정 오류 상세 정보를 열었을 때 GA 이벤트를 전송합니다.
+ *
+ * - 예: 사용자가 특정 맞춤법/문법 오류 항목을 클릭하여 상세 설명을 확인한 경우
+ * - 이벤트는 'button' 방식으로, 'error_insight' 섹션에서 발생한 것으로 기록됩니다.
+ *
+ * @param correctedErrorType 열람한 오류 유형 (띄어쓰기, 오탈자, 문맥)
+ */
+export const sendErrorDetailOpenedEvent = ({
+  correctedErrorType,
+}: {
+  correctedErrorType: CorrectedErrorType
+}) => {
+  GAEvents.errorDetailOpened({
+    method: 'button',
+    section: 'error_insight',
+    corrected_error_type: correctedErrorType,
+  })
+}
+
+/**
+ * 사용자가 교정 오류 상세 정보를 닫았을 때 GA 이벤트를 전송합니다.
+ *
+ * - 예: 사용자가 열린 오류 상세 설명 패널을 닫은 경우
+ * - 이벤트는 'button' 방식으로, 'error_insight' 섹션에서 발생한 것으로 기록됩니다.
+ *
+ * @param correctedErrorType 닫은 오류 유형 (띄어쓰기, 오탈자, 문맥)
+ */
+export const sendErrorDetailClosedEvent = ({
+  correctedErrorType,
+}: {
+  correctedErrorType: CorrectedErrorType
+}) => {
+  GAEvents.errorDetailClosed({
+    method: 'button',
+    section: 'error_insight',
+    corrected_error_type: correctedErrorType,
   })
 }

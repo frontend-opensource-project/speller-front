@@ -127,7 +127,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
           도움말
         </dt>
         <dd>
-          <HelpSection help={help} />
+          <HelpSection help={help} correctMethod={correctMethod} />
         </dd>
       </dl>
     </div>
