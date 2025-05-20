@@ -5,6 +5,7 @@ import localFont from 'next/font/local'
 
 import { Toaster } from '@/shared/ui/toaster'
 import { GoogleAdsenseScript } from '@/shared/lib/google-ad-sense-script'
+import { GoogleAnalyticsScript } from '@/shared/lib/google-analytics-script'
 
 const pretendard = localFont({
   src: './font/pretendard-variable.woff2',
@@ -27,6 +28,7 @@ const App = ({
         {children}
         <Toaster />
       </body>
+      <GoogleAnalyticsScript />
     </html>
   )
 }
