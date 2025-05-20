@@ -11,6 +11,12 @@ import { SpellerTextInput } from './speller-text-input'
 import { ResultsSkeleton } from './results-skeleton'
 import { SpellerControl } from './speller-control'
 import { ServiceUpdateInfoDialog } from './service-update-info-dialog'
+import {
+  sendCheckCompletedEvent,
+  sendCheckResultNoErrorEvent,
+  sendCheckResultResponseErrorEvent,
+  sendCheckResultResponseUnknownEvent,
+} from '@/shared/lib/send-ga-event'
 
 const SpellerPage = () => {
   const router = useRouter()
@@ -18,36 +24,68 @@ const SpellerPage = () => {
   const [state, formAction, isPending] = useActionState(spellCheckAction, {
     data: null,
     error: null,
+    elapsedTimeMs: 0,
   })
   const [isRedirectingToResult, setIsRedirectingToResult] = useState(false)
 
   useEffect(() => {
     if (state.data) {
-      setIsRedirectingToResult(true)
-      handleReceiveResponse(state.data)
-      initResponseMap()
-
-      if (state.data.errInfo.length === 0) {
-        router.push(
-          `/no-errors?isStrictCheck=${state.data.requestedWithStrictMode}`,
-        )
-        return
+      const { data, elapsedTimeMs } = state
+      const payload = {
+        textLength: data.str.length,
+        isStrict: data.requestedWithStrictMode,
+        elapsedTimeMs: elapsedTimeMs,
       }
-      router.push('/results')
+
+      setIsRedirectingToResult(true)
+      handleReceiveResponse(data)
+      initResponseMap()
+      sendCheckCompletedEvent(payload)
+
+      if (data.errInfo.length === 0) {
+        sendCheckResultNoErrorEvent(payload)
+
+        return router.push(
+          `/no-errors?isStrictCheck=${data.requestedWithStrictMode}`,
+        )
+      }
+
+      return router.push('/results')
     }
 
-    // TODO: Error Boundary 적용
     if (state.error) {
-      console.error(state.error)
       setIsRedirectingToResult(false)
-      if (
-        (state.error as { errorCode?: number })?.errorCode ===
-        TIMEOUT_ERROR_CODE
-      ) {
-        router.push(
-          `/timeout?isStrictCheck=${state?.data?.requestedWithStrictMode}`,
-        )
+
+      if (state.error.type === 'server') {
+        const {
+          error: {
+            errorCode,
+            errorMessage,
+            requestPayload: { isStrict, textLength },
+          },
+          elapsedTimeMs,
+        } = state
+        const errorStage =
+          errorCode === TIMEOUT_ERROR_CODE ? 'timeout' : 'request'
+
+        sendCheckResultResponseErrorEvent({
+          errorStage,
+          errorCode,
+          errorMessage,
+          isStrict,
+          textLength,
+          elapsedTimeMs,
+        })
+      } else {
+        sendCheckResultResponseUnknownEvent({
+          errorStage: 'unknown',
+          errorCode: 9999,
+          errorMessage: state.error.errorMessage,
+          elapsedTimeMs: state.elapsedTimeMs,
+        })
       }
+
+      return router.push(`/timeout`)
     }
   }, [state, router, handleReceiveResponse])
 
