@@ -3,7 +3,7 @@
 import { ReactElement } from 'react'
 
 import { checkIpAllowed } from '../api'
-import { AccessDeniedMessage } from '../ui/ip-access-feedback'
+import { AccessDeniedMessage } from './ip-access-feedback'
 import { getClientIpByHeader } from '../lib/get-client-ip-by-header'
 import { ClientIpGuard } from './client-ip-guard'
 
@@ -11,7 +11,13 @@ interface ServerIpGuardProps {
   children: ReactElement
 }
 
-const ServerIpGuard = async ({ children }: ServerIpGuardProps) => {
+const isDev = process.env.NODE_ENV === 'development'
+
+const IpGuard = async ({ children }: ServerIpGuardProps) => {
+  if (isDev) {
+    return children
+  }
+
   const clientIp = await getClientIpByHeader()
   const isClientIpUnknown = !clientIp.isSuccess && clientIp.ip === 'unknown'
 
@@ -35,4 +41,4 @@ const ServerIpGuard = async ({ children }: ServerIpGuardProps) => {
   return children
 }
 
-export { ServerIpGuard }
+export { IpGuard }
