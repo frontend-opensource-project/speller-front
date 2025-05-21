@@ -2,15 +2,24 @@
 
 import { ReactElement } from 'react'
 
-import { checkIpAllowed, ClientIpResult } from '../api'
+import { checkIpAllowed } from '../api'
 import { AccessDeniedMessage } from '../ui/ip-access-feedback'
+import { getClientIpByHeader } from '../lib/get-client-ip-by-header'
+import { ClientIpGuard } from './client-ip-guard'
 
 interface ServerIpGuardProps {
-  clientIp: ClientIpResult
   children: ReactElement
 }
 
-const ServerIpGuard = async ({ clientIp, children }: ServerIpGuardProps) => {
+const ServerIpGuard = async ({ children }: ServerIpGuardProps) => {
+  const clientIp = await getClientIpByHeader()
+  const isClientIpUnknown = !clientIp.isSuccess && clientIp.ip === 'unknown'
+
+  // 서버 헤더에서 클라이언트 IP를 확인할 수 없는 경우, 클라이언트 측에서 재조회합니다.
+  if (isClientIpUnknown) {
+    return <ClientIpGuard>{children}</ClientIpGuard>
+  }
+
   try {
     const isIpAllowed = await checkIpAllowed(clientIp.ip)
 
