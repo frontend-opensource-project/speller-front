@@ -29,7 +29,7 @@ const Header = () => {
             문의하기
           </Link>
           <Link
-            href='./old_speller/'
+            href='https://nara-speller.co.kr/old_speller/'
             className='hidden rounded-lg border border-[#B8B8BE] p-3 font-semibold !leading-none text-slate-500 hover:bg-accent tab:inline-flex tab:text-xl pc:text-base'
           >
             이전 버전 사용하기
@@ -67,7 +67,7 @@ const Header = () => {
               </li>
               <li className='group'>
                 <Link
-                  href='./old_speller/'
+                  href='https://nara-speller.co.kr/old_speller/'
                   className={`${classes.popoverButton} border-none`}
                 >
                   <i
