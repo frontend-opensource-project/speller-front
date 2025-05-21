@@ -17,7 +17,10 @@ import { CustomTextEditor } from './custom-text-editor'
 import { logClickReplaceAction } from '../api/log-click-replace-action'
 import { extractContext } from '../lib/extractContext'
 import { BulletBadge } from '../ui/bullet-badge'
-import { sendCorrectionWordClickedEvent } from '@/shared/lib/send-ga-event'
+import {
+  sendCorrectionFeedbackOpenedEvent,
+  sendCorrectionWordClickedEvent,
+} from '@/shared/lib/send-ga-event'
 import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-error-type'
 
 interface ErrorInfoSectionProps<T>
@@ -34,6 +37,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
     useSpeller()
   const { errorIdx, correctMethod, orgStr, candWord, help } = errorInfo ?? {}
   const candidateWords = parseCandidateWords(candWord)
+  const correctedErrorType = getCorrectedErrorType(correctMethod)
 
   const handleClickReplace = (replaceWord: string) => {
     const sentence = extractContext(response.str, errorInfo, replaceWord)
@@ -50,7 +54,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
     sendCorrectionWordClickedEvent({
       sectionType: 'correction_item',
       wordTextType: 'suggested',
-      correctedErrorType: getCorrectedErrorType(correctMethod),
+      correctedErrorType,
     })
   }
 
@@ -72,11 +76,17 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
               {orgStr}
             </span>
           </Button>
-          <ReportForm>
+          <ReportForm errorType={correctedErrorType}>
             <Button
               variant='ghost'
               className='h-auto p-0 text-slate-500 hover:bg-transparent pc:gap-2'
-              onClick={() => updateErrInfoIndex(errorIdx)}
+              onClick={() => {
+                updateErrInfoIndex(errorIdx)
+                sendCorrectionFeedbackOpenedEvent({
+                  sectionType: 'correction_item',
+                  correctedErrorType,
+                })
+              }}
             >
               <SendIcon className='!size-6 tab:!size-8' />
               <span className='sr-only font-normal tab:not-sr-only tab:whitespace-nowrap tab:text-lg'>

@@ -17,6 +17,9 @@ import {
   CorrectionWordClickedParams,
   WordTextType,
   SectionType,
+  ManualCorrectionSubmittedParams,
+  CorrectionFeedbackOpenedParams,
+  CorrectionFeedbackSubmittedParams,
 } from './analytics-event-types'
 
 type Event = (typeof GA_EVENT_TYPE)[keyof typeof GA_EVENT_TYPE]
@@ -64,6 +67,18 @@ const GAEvents: GAEventTrackerMap = {
   correctionWordClicked: createTracker<CorrectionWordClickedParams>(
     GA_EVENT_TYPE.EVENT,
     GA_ACTIONS.CORRECTION_WORD_CLICKED,
+  ),
+  manualCorrectionSubmitted: createTracker<ManualCorrectionSubmittedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.MANUAL_CORRECTION_SUBMITTED,
+  ),
+  correctionFeedbackOpened: createTracker<CorrectionFeedbackOpenedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.CORRECTION_FEEDBACK_OPENED,
+  ),
+  correctionFeedbackSubmitted: createTracker<CorrectionFeedbackSubmittedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.CORRECTION_FEEDBACK_SUBMITTED,
   ),
 }
 
@@ -222,7 +237,7 @@ export const sendCheckResultResponseUnknownEvent = ({
  * 사용자가 교정 오류 상세 정보를 열었을 때 GA 이벤트를 전송합니다.
  *
  * - 예: 사용자가 특정 맞춤법/문법 오류 항목을 클릭하여 상세 설명을 확인한 경우
- * - 이벤트는 'button' 방식으로, 'error_insight' 섹션에서 발생한 것으로 기록됩니다.
+ * - 이벤트는 'button' 방식으로, 'correction_item' 섹션에서 발생한 것으로 기록됩니다.
  *
  * @param correctedErrorType 열람한 오류 유형 (띄어쓰기, 오탈자, 문맥)
  */
@@ -233,7 +248,7 @@ export const sendErrorDetailOpenedEvent = ({
 }) => {
   GAEvents.errorDetailOpened({
     method: 'button',
-    section: 'error_insight',
+    section: 'correction_item',
     corrected_error_type: correctedErrorType,
   })
 }
@@ -242,7 +257,7 @@ export const sendErrorDetailOpenedEvent = ({
  * 사용자가 교정 오류 상세 정보를 닫았을 때 GA 이벤트를 전송합니다.
  *
  * - 예: 사용자가 열린 오류 상세 설명 패널을 닫은 경우
- * - 이벤트는 'button' 방식으로, 'error_insight' 섹션에서 발생한 것으로 기록됩니다.
+ * - 이벤트는 'button' 방식으로, 'correction_item' 섹션에서 발생한 것으로 기록됩니다.
  *
  * @param correctedErrorType 닫은 오류 유형 (띄어쓰기, 오탈자, 문맥)
  */
@@ -253,7 +268,7 @@ export const sendErrorDetailClosedEvent = ({
 }) => {
   GAEvents.errorDetailClosed({
     method: 'button',
-    section: 'error_insight',
+    section: 'correction_item',
     corrected_error_type: correctedErrorType,
   })
 }
@@ -276,6 +291,81 @@ export const sendCorrectionWordClickedEvent = ({
 }) => {
   GAEvents.correctionWordClicked({
     word_text_type: wordTextType,
+    corrected_error_type: correctedErrorType,
+    section: sectionType,
+    method: 'button',
+  })
+}
+
+/**
+ * 사용자가 자동 추천된 대치어가 아닌, 직접 수정한 텍스트를 제출했을 때 GA 이벤트를 전송합니다.
+ *
+ * - 예: 사용자가 추천된 단어 목록 대신, 오류 항목에 대해 수동으로 입력하고 확정 버튼을 누른 경우
+ * - 이벤트는 'manual_correction_text_length', 'corrected_error_type', 'section' 정보를 포함하며,
+ *   수동 수정이 어느 오류 항목에서, 어떤 방식으로 이루어졌는지를 분석하는 데 활용됩니다.
+ *
+ * @param correctedErrorType 사용자가 수동으로 수정한 오류 유형 (예: 띄어쓰기, 오탈자 등)
+ * @param textLength 수동으로 입력한 텍스트의 길이
+ * @param sectionType 수동 수정이 발생한 UI 영역 구분
+ */
+export const sendManualCorrectionSubmittedEvent = ({
+  correctedErrorType,
+  textLength,
+  sectionType,
+}: {
+  correctedErrorType: CorrectedErrorType
+  textLength: number
+  sectionType: SectionType
+}) => {
+  GAEvents.manualCorrectionSubmitted({
+    manual_correction_text_length: textLength,
+    corrected_error_type: correctedErrorType,
+    section: sectionType,
+    method: 'button',
+  })
+}
+
+/**
+ * 사용자가 교정 결과에 대해 오류 제보(피드백)를 남기기 위해
+ * '오류 제보' 버튼을 클릭하여 모달을 연 시점에 GA 이벤트를 전송합니다.
+ *
+ * @param correctedErrorType 사용자가 피드백을 남기려는 오류 유형 (예: 문맥 오류, 띄어쓰기 오류 등)
+ * @param sectionType 해당 제보가 발생한 UI 영역 구분
+ */
+export const sendCorrectionFeedbackOpenedEvent = ({
+  correctedErrorType,
+  sectionType,
+}: {
+  correctedErrorType: CorrectedErrorType
+  sectionType: SectionType
+}) => {
+  GAEvents.correctionFeedbackOpened({
+    corrected_error_type: correctedErrorType,
+    section: sectionType,
+    method: 'button',
+  })
+}
+
+/**
+ * 사용자가 교정 결과에 대해 오류 제보(피드백)를 실제로 작성하여 전송했을 때 GA 이벤트를 전송합니다.
+ *
+ * - 예: 오류 항목 우측의 '제보하기' 버튼 클릭 → 모달 내 피드백 입력 후 제출
+ *
+ * @param correctedErrorType 사용자가 제보한 대상 오류 유형
+ * @param textLength 사용자가 작성한 피드백 텍스트 길이
+ * @param sectionType 피드백이 발생한 UI 영역 구분
+ */
+export const sendCorrectionFeedbackSubmittedEvent = ({
+  correctedErrorType,
+  textLength,
+  sectionType,
+}: {
+  correctedErrorType: CorrectedErrorType
+  textLength: number
+  sectionType: SectionType
+}) => {
+  GAEvents.correctionFeedbackSubmitted({
+    feedback_text_length: textLength,
     corrected_error_type: correctedErrorType,
     section: sectionType,
     method: 'button',

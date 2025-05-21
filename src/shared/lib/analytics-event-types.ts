@@ -9,6 +9,9 @@ export const GA_ACTIONS = {
   ERROR_DETAIL_OPENED: 'error_detail_opened',
   ERROR_DETAIL_CLOSED: 'error_detail_closed',
   CORRECTION_WORD_CLICKED: 'correction_word_clicked',
+  MANUAL_CORRECTION_SUBMITTED: 'manual_correction_submitted',
+  CORRECTION_FEEDBACK_OPENED: 'correction_feedback_opened',
+  CORRECTION_FEEDBACK_SUBMITTED: 'correction_feedback_submitted',
 } as const
 
 export const GA_EVENT_TYPE = {
@@ -34,11 +37,7 @@ export const SECTION = [
   'contact_form',
   'original_text',
   'correction_item',
-  'error_report',
-  'manual_edit',
   'corrected_text',
-  'error_insight',
-  'error_anchor',
 ] as const
 export type SectionType = (typeof SECTION)[number]
 
@@ -102,6 +101,26 @@ export const CorrectionWordClickedSchema = z.object({
   corrected_error_type: z.enum(CORRECTED_ERROR_TYPE),
 })
 
+export const ManualCorrectionSubmittedSchema = z.object({
+  manual_correction_text_length: z.number(),
+  method: z.enum(METHOD),
+  section: z.enum(SECTION),
+  corrected_error_type: z.enum(CORRECTED_ERROR_TYPE),
+})
+
+export const CorrectionFeedbackOpenedSchema = z.object({
+  method: z.enum(METHOD),
+  section: z.enum(SECTION),
+  corrected_error_type: z.enum(CORRECTED_ERROR_TYPE),
+})
+
+export const CorrectionFeedbackSubmittedSchema = z.object({
+  feedback_text_length: z.number(),
+  method: z.enum(METHOD),
+  section: z.enum(SECTION),
+  corrected_error_type: z.enum(CORRECTED_ERROR_TYPE),
+})
+
 export type CheckTriggeredParams = z.infer<typeof CheckTriggeredSchema>
 export type CheckCompletedParams = z.infer<typeof CheckCompletedSchema>
 export type CheckResultNoErrorParams = z.infer<typeof CheckResultNoErrorSchema>
@@ -116,6 +135,15 @@ export type ErrorDetailClosedParams = z.infer<typeof ErrorDetailClosedSchema>
 export type CorrectionWordClickedParams = z.infer<
   typeof CorrectionWordClickedSchema
 >
+export type ManualCorrectionSubmittedParams = z.infer<
+  typeof ManualCorrectionSubmittedSchema
+>
+export type CorrectionFeedbackOpenedParams = z.infer<
+  typeof CorrectionFeedbackOpenedSchema
+>
+export type CorrectionFeedbackSubmittedParams = z.infer<
+  typeof CorrectionFeedbackSubmittedSchema
+>
 
 type GAEventMap = {
   checkTriggered: z.infer<typeof CheckTriggeredSchema>
@@ -126,6 +154,9 @@ type GAEventMap = {
   errorDetailOpened: z.infer<typeof ErrorDetailOpenedSchema>
   errorDetailClosed: z.infer<typeof ErrorDetailClosedSchema>
   correctionWordClicked: z.infer<typeof CorrectionWordClickedSchema>
+  manualCorrectionSubmitted: z.infer<typeof ManualCorrectionSubmittedSchema>
+  correctionFeedbackOpened: z.infer<typeof CorrectionFeedbackOpenedSchema>
+  correctionFeedbackSubmitted: z.infer<typeof CorrectionFeedbackSubmittedSchema>
 }
 
 export type GAEventTrackerMap = {

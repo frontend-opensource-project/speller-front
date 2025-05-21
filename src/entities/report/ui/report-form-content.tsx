@@ -2,12 +2,18 @@ import { useSendReport } from '@/entities/report/model/use-send-report'
 import { BasicTextarea } from '@/shared/ui/basic-textarea'
 import { Button } from '@/shared/ui/button'
 import { toast } from '@/shared/lib/use-toast'
+import { sendCorrectionFeedbackSubmittedEvent } from '@/shared/lib/send-ga-event'
+import { CorrectedErrorType } from '@/shared/lib/analytics-event-types'
 
 interface ReportFormContentProps {
   handleClose: () => void
+  errorType: CorrectedErrorType
 }
 
-export const ReportFormContent = ({ handleClose }: ReportFormContentProps) => {
+export const ReportFormContent = ({
+  handleClose,
+  errorType,
+}: ReportFormContentProps) => {
   const { comment, handleChange, handleSubmit } = useSendReport({
     handleClose: () => {
       toast({
@@ -31,7 +37,14 @@ export const ReportFormContent = ({ handleClose }: ReportFormContentProps) => {
       <Button
         disabled={!comment}
         className='h-[2.65rem] py-[0.88rem] text-[0.95rem] tab:h-[3.125rem] tab:text-lg pc:mt-[0.75rem] pc:h-[2.5rem] pc:rounded-[0.42rem] pc:py-[0.7rem] pc:text-base'
-        onClick={handleSubmit}
+        onClick={() => {
+          handleSubmit()
+          sendCorrectionFeedbackSubmittedEvent({
+            sectionType: 'correction_item',
+            textLength: comment.length,
+            correctedErrorType: errorType,
+          })
+        }}
       >
         제출하기
       </Button>
