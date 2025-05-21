@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useWindowSize } from '@frontend-opensource/use-react-hooks'
+import { UAParser } from 'ua-parser-js'
 
 import { DESKTOP } from '../../../tailwind.config'
-import { UAParser } from 'ua-parser-js'
 
 const DELAY_MS = 1000 // 1초
 

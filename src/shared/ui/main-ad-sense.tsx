@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import GoogleAdSense from '../lib/google-ad-sense'
 import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
-import { useBreakpoint } from '../lib/use-break-point'
+import { Breakpoint, useBreakpoint } from '../lib/use-break-point'
 import { useAdRetryKey } from '../lib/use-ad-retry-key'
 import { AdProvider, useAdContext } from '../model/ad-context'
 import { Skeleton } from './skeleton'
@@ -28,10 +28,10 @@ const MainAdSlot = () => {
     `main-ad-${pathname}-${breakpoint}`,
     MAX_RETRIES,
   )
+  const allowedBreakpoints: Breakpoint[] = ['desktop', 'desktop-large']
   // 광고 로딩은 완료되었으나, 표시할 광고가 없는 상태
   const isAdUnFilledStatus = !isAdFilled && isDoneAd
-  const shouldRender =
-    isClient && ['desktop', 'desktop-small'].includes(breakpoint)
+  const shouldRender = isClient && allowedBreakpoints.includes(breakpoint)
 
   useEffect(() => {
     reset()
