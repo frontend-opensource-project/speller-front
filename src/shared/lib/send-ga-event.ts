@@ -14,6 +14,9 @@ import {
   CheckResultResponseUnknownParams,
   ErrorDetailOpenedParams,
   CorrectedErrorType,
+  CorrectionWordClickedParams,
+  WordTextType,
+  SectionType,
 } from './analytics-event-types'
 
 type Event = (typeof GA_EVENT_TYPE)[keyof typeof GA_EVENT_TYPE]
@@ -57,6 +60,10 @@ const GAEvents: GAEventTrackerMap = {
   errorDetailClosed: createTracker<ErrorDetailOpenedParams>(
     GA_EVENT_TYPE.EVENT,
     GA_ACTIONS.ERROR_DETAIL_CLOSED,
+  ),
+  correctionWordClicked: createTracker<CorrectionWordClickedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.CORRECTION_WORD_CLICKED,
   ),
 }
 
@@ -248,5 +255,29 @@ export const sendErrorDetailClosedEvent = ({
     method: 'button',
     section: 'error_insight',
     corrected_error_type: correctedErrorType,
+  })
+}
+
+/**
+ * 사용자가 대치어(수정된 단어)를 클릭했을 때 GA 이벤트를 전송합니다.
+ *
+ * @param correctedErrorType 해당 단어에 적용된 교정 오류 유형
+ * @param wordTextType 클릭된 단어의 위치 구분
+ * @param sectionType 클릭된 단어의 섹션 구분 (교정 문서, 맞춤법/문법 오류)
+ */
+export const sendCorrectionWordClickedEvent = ({
+  correctedErrorType,
+  wordTextType,
+  sectionType,
+}: {
+  correctedErrorType: CorrectedErrorType
+  wordTextType: WordTextType
+  sectionType: SectionType
+}) => {
+  GAEvents.correctionWordClicked({
+    word_text_type: wordTextType,
+    corrected_error_type: correctedErrorType,
+    section: sectionType,
+    method: 'button',
   })
 }
