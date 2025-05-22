@@ -6,6 +6,13 @@ import { CONTACT_INFO } from '../model/contact-info'
 const FooterInfoSection = () => {
   return (
     <div className='flex flex-col items-center gap-1 py-6 text-[0.625rem] pc:min-w-[24.0625rem] pc:items-start pc:py-0'>
+      <a
+        href='https://rogue-toothpaste-2b9.notion.site/1ee8bd6bfd808016995ff0b71b2cb358'
+        target='_blank'
+        className='pb-1 text-xs text-primary hover:text-primary hover:underline pc:pb-2'
+      >
+        바른 한글 재단장에 기여하신 분들
+      </a>
       {/* 고객센터 섹션 */}
       <div className='flex gap-2 text-slate-600'>
         <span className='text-xs font-semibold leading-[1.0425rem] tracking-[-0.015rem] tab:leading-[1.05rem] pc:text-[0.75rem] pc:leading-[1.035rem] pc:tracking-[-0.015rem]'>
@@ -59,13 +66,6 @@ const FooterInfoSection = () => {
       <div className='text-center text-[0.625rem] font-normal leading-[1.0625rem] tracking-[-0.0125rem] text-slate-500 tab:leading-[1.0625rem] pc:text-[0.75rem] pc:leading-[1.035rem] pc:tracking-[-0.015rem]'>
         Copyrightⓒ2001 AI Lab & Narainfotech. All Rights Reserved
       </div>
-      <a
-        href='https://rogue-toothpaste-2b9.notion.site/1ee8bd6bfd808016995ff0b71b2cb358'
-        target='_blank'
-        className='pt-1 text-xs text-primary hover:text-primary hover:underline pc:pt-2'
-      >
-        바른 한글 리뉴얼에 기여하신 분들
-      </a>
     </div>
   )
 }
