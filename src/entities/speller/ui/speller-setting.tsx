@@ -4,18 +4,12 @@ import React, { memo } from 'react'
 
 import { Label } from '@/shared/ui/label'
 import { Switch } from '@/shared/ui/switch'
-import {
-  useSetStrictCheckQuery,
-  useStrictCheckQuery,
-} from '../lib/use-strict-check-query'
+import { useSpellerActions } from '../model/use-speller'
+import { useAppSelector } from '@/shared/lib/use-redux'
 
 const SpellerSetting = memo(() => {
-  const isStrict = useStrictCheckQuery()
-  const setStrict = useSetStrictCheckQuery()
-
-  const handleCheckedChange = (checked: boolean) => {
-    setStrict(checked)
-  }
+  const { updateStrictCheckMode } = useSpellerActions()
+  const isStrictCheck = useAppSelector(state => state.speller.isStrictCheck)
 
   return (
     <div className='flex items-center justify-end gap-2 pc:gap-4'>
@@ -30,8 +24,8 @@ const SpellerSetting = memo(() => {
         aria-label='강한 검사 모드 켜기/끄기'
         id='airplane-mode'
         name='isStrictCheck'
-        onCheckedChange={handleCheckedChange}
-        checked={isStrict}
+        onCheckedChange={updateStrictCheckMode}
+        checked={isStrictCheck}
       />
     </div>
   )

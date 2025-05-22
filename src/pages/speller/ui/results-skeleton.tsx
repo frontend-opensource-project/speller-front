@@ -16,8 +16,8 @@ const ResultsSkeleton = () => {
           <div className='min-w-0 flex-1'>
             <Skeleton className='h-full flex-1 rounded-sm' />
           </div>
-          <div className='mt-2 flex flex-shrink-0 justify-between'>
-            <Skeleton className='h-5 w-8 self-end rounded-sm tab:h-6 tab:w-9' />
+          <div className='flex flex-shrink-0 justify-between pt-5'>
+            <Skeleton className='h-5 w-8 self-end rounded-sm tab:h-6 tab:w-9 pc:-translate-y-3' />
             <div className='flex gap-3'>
               <Skeleton className='tab:h-13 tab:w-15 h-12 w-14 rounded-sm' />
               <Skeleton className='tab:h-13 tab:w-15 h-12 w-14 rounded-sm' />
@@ -40,7 +40,7 @@ const ResultsSkeleton = () => {
             </div>
           </ScrollContainer>
           <div className='mt-5 gap-4'>
-            <Skeleton className='h-6 w-72 rounded-sm tab:h-7 tab:w-80' />
+            <Skeleton className='h-6 w-72 rounded-sm tab:h-7 tab:w-80 pc:w-64 pc-lg:w-96' />
           </div>
         </div>
       </div>

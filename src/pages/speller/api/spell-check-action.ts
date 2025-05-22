@@ -28,7 +28,7 @@ type ActionState = {
         type: 'server'
         errorCode: number
         requestPayload: {
-          isStrict: boolean
+          isStrictCheck: boolean
           textLength: number
         }
       }
@@ -80,7 +80,7 @@ const spellCheckAction = async (
             errorMessage,
             type: 'server',
             requestPayload: {
-              isStrict: isStrictCheck,
+              isStrictCheck,
               textLength: text.length,
             },
           },

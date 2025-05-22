@@ -47,20 +47,20 @@ export const CheckTriggeredSchema = z.object({
   original_text_length: z.number(),
   method: z.enum(METHOD),
   section: z.enum(SECTION),
-  is_strict: z.boolean(),
+  is_strict_check: z.boolean(),
 })
 
 export const CheckCompletedSchema = z.object({
   original_text_length: z.number(),
   section: z.enum(SECTION),
-  is_strict: z.boolean(),
+  is_strict_check: z.boolean(),
   elapsed_time_ms: z.number(),
 })
 
 export const CheckResultNoErrorSchema = z.object({
   original_text_length: z.number(),
   section: z.enum(SECTION),
-  is_strict: z.boolean(),
+  is_strict_check: z.boolean(),
   elapsed_time_ms: z.number(),
 })
 
@@ -70,7 +70,7 @@ export const CheckResultResponseErrorSchema = z.object({
   error_message: z.string(),
   original_text_length: z.number(),
   section: z.enum(SECTION),
-  is_strict: z.boolean(),
+  is_strict_check: z.boolean(),
   elapsed_time_ms: z.number(),
 })
 
