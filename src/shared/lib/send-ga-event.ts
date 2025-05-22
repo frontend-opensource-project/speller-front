@@ -89,20 +89,20 @@ const GAEvents: GAEventTrackerMap = {
  * 'checkTriggered' 이벤트를 Google Analytics에 전송합니다.
  *
  * @param textLength 사용자가 입력한 원문 텍스트 길이
- * @param isStrict 강한 검사 모드 여부 (true: 강한 검사, false: 일반 검사)
+ * @param isStrictCheck 강한 검사 모드 여부 (true: 강한 검사, false: 일반 검사)
  */
 export const sendCheckTriggeredEvent = ({
   textLength,
-  isStrict,
+  isStrictCheck,
 }: {
   textLength: number
-  isStrict: boolean
+  isStrictCheck: boolean
 }) => {
   GAEvents.checkTriggered({
     original_text_length: textLength,
     method: 'button',
     section: 'original_text',
-    is_strict: isStrict,
+    is_strict_check: isStrictCheck,
   })
 }
 
@@ -114,22 +114,22 @@ export const sendCheckTriggeredEvent = ({
  *
  * @param textLength 사용자가 입력한 원문의 글자 수
  * @param elapsedTimeMs 검사 요청부터 응답까지 소요된 시간 (밀리초 단위)
- * @param isStrict 강한 검사 모드 여부 (true: 강한 검사, false: 일반 검사)
+ * @param isStrictCheck 강한 검사 모드 여부 (true: 강한 검사, false: 일반 검사)
  */
 export const sendCheckCompletedEvent = ({
   textLength,
   elapsedTimeMs,
-  isStrict,
+  isStrictCheck,
 }: {
   textLength: number
   elapsedTimeMs: number
-  isStrict: boolean
+  isStrictCheck: boolean
 }) => {
   GAEvents.checkCompleted({
     original_text_length: textLength,
     elapsed_time_ms: elapsedTimeMs,
     section: 'original_text',
-    is_strict: isStrict,
+    is_strict_check: isStrictCheck,
   })
 }
 
@@ -141,22 +141,22 @@ export const sendCheckCompletedEvent = ({
  *
  * @param textLength 검사한 원문의 글자 수
  * @param elapsedTimeMs 검사 요청부터 응답까지 소요된 시간 (밀리초 단위)
- * @param isStrict 강한 검사 모드 여부 (true: 강한 검사, false: 일반 검사)
+ * @param isStrictCheck 강한 검사 모드 여부 (true: 강한 검사, false: 일반 검사)
  */
 export const sendCheckResultNoErrorEvent = ({
   textLength,
   elapsedTimeMs,
-  isStrict,
+  isStrictCheck,
 }: {
   textLength: number
   elapsedTimeMs: number
-  isStrict: boolean
+  isStrictCheck: boolean
 }) => {
   GAEvents.checkResultNoError({
     original_text_length: textLength,
     elapsed_time_ms: elapsedTimeMs,
     section: 'original_text',
-    is_strict: isStrict,
+    is_strict_check: isStrictCheck,
   })
 }
 
@@ -170,7 +170,7 @@ export const sendCheckResultNoErrorEvent = ({
  *
  * @param textLength 검사 대상 원문의 글자 수
  * @param elapsedTimeMs 요청 시작부터 오류 발생까지의 소요 시간 (밀리초 단위)
- * @param isStrict 강한 검사 모드 여부 (true: 강한 검사, false: 일반 검사)
+ * @param isStrictCheck 강한 검사 모드 여부 (true: 강한 검사, false: 일반 검사)
  * @param errorStage 오류 발생 단계 (예: 'request', 'timeout' 등)
  * @param errorCode 서버 또는 내부 시스템이 부여한 오류 코드
  * @param errorMessage 에러 메시지 또는 상세 설명
@@ -178,14 +178,14 @@ export const sendCheckResultNoErrorEvent = ({
 export const sendCheckResultResponseErrorEvent = ({
   textLength,
   elapsedTimeMs,
-  isStrict,
+  isStrictCheck,
   errorStage,
   errorCode,
   errorMessage,
 }: {
   textLength: number
   elapsedTimeMs: number
-  isStrict: boolean
+  isStrictCheck: boolean
   errorCode: number
   errorStage: (typeof ERROR_STAGE)[number]
   errorMessage: string
@@ -197,7 +197,7 @@ export const sendCheckResultResponseErrorEvent = ({
     error_message: errorMessage,
     elapsed_time_ms: elapsedTimeMs,
     section: 'original_text',
-    is_strict: isStrict,
+    is_strict_check: isStrictCheck,
   })
 }
 
