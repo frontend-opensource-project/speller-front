@@ -1,4 +1,4 @@
-export { Client } from './client'
+export { Client, baseURL } from './client'
 export { checkIpAllowed } from './check-ip/check-ip-access'
 export {
   type CheckIpRequest,

@@ -6,5 +6,5 @@ export const ENDPOINT = {
   NOT_CHANGE: '/notChange',
   SEND_REPORT_MAIL: '/sendReportMail',
   FILTER_IP: '/filterIP',
-  CHECK_IP: '/api/check-ip', // API Route
+  CHECK_IP: '/client-api/check-ip', // API Route
 }

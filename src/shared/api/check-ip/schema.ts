@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export interface CheckIpRequest {
-  clientIP: string
+  clientIp: string
 }
 
 export const IpSchema = z.string().ip({ version: 'v4' })

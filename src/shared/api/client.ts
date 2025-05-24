@@ -1,9 +1,19 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
-const defaultConfig: AxiosRequestConfig = {
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-}
+export const baseURL = (() => {
+  const url =
+    typeof window === 'undefined'
+      ? process.env.SERVER_API_URL
+      : process.env.NEXT_PUBLIC_BASE_URL
 
+  if (!url) {
+    throw new Error('The baseURL API environment variable is not set.')
+  }
+
+  return url
+})()
+
+const defaultConfig: AxiosRequestConfig = { baseURL }
 const defaultAxiosInstance = axios.create(defaultConfig)
 
 export class Client {
