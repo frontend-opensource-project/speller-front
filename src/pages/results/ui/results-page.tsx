@@ -38,5 +38,4 @@ const ResultsPage = () => {
   )
 }
 
-// 0.625rem
 export { ResultsPage }
