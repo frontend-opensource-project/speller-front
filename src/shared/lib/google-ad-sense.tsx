@@ -100,7 +100,7 @@ const GoogleAdSense = ({
   return (
     <ins
       ref={adRef}
-      className={cn('adsbygoogle block min-h-[6.25rem]', className)}
+      className={cn('adsbygoogle block', className)}
       data-ad-client={process.env.NEXT_PUBLIC_AD_CLIENT}
       {...restProps}
     />

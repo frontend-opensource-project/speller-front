@@ -6,16 +6,15 @@ import { usePathname } from 'next/navigation'
 import GoogleAdSense from '../lib/google-ad-sense'
 import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
-import { useBreakpoint } from '../lib/use-break-point'
+import { Breakpoint, useBreakpoint } from '../lib/use-break-point'
 import { useAdRetryKey } from '../lib/use-ad-retry-key'
-import { useAdContext } from '../model/ad-context'
+import { AdProvider, useAdContext } from '../model/ad-context'
 import { Skeleton } from './skeleton'
-import { useDesktopDevice } from '../lib/use-desktop'
 
 const MAX_RETRIES = 3
 const isDev = process.env.NODE_ENV === 'development'
 
-const FooterAdSense = () => {
+const FooterAdSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
   const {
     adState: { isAdFilled, isDoneAd, isLoading },
     resetAdState,
@@ -25,15 +24,13 @@ const FooterAdSense = () => {
   const pathname = usePathname()
   const isClient = useClient()
   const breakpoint = useBreakpoint()
-  const isDesktop = useDesktopDevice()
   const [adKey, retryCount, retry, reset] = useAdRetryKey(
     `footer-ad-${pathname}-${breakpoint}`,
     MAX_RETRIES,
   )
   // 광고 로딩은 완료되었으나, 표시할 광고가 없는 상태
   const isAdUnFilledStatus = !isAdFilled && isDoneAd
-  // 모바일에서는 반복적인 깜빡임 이슈로 스켈레톤 비활성화 → 데스크톱에서만 표시
-  const showSkeletonOnDesktopOnly = isLoading && isDesktop
+  const shouldRender = isClient && includeDevice.includes(breakpoint)
 
   useEffect(() => {
     reset()
@@ -55,49 +52,63 @@ const FooterAdSense = () => {
     readyAdState()
   }
 
-  if (!isClient) return null
+  if (!shouldRender) return null
 
   if (isDev) {
     return (
-      <div className={AdContainerStyle}>
-        <div className={cn(AdStyle, 'min-h-[6.25rem] bg-slate-300')}></div>
+      <div
+        className={cn(
+          'flex h-full min-h-[6.25rem] w-full items-center justify-center overflow-hidden rounded-sm bg-slate-100 px-4 pb-9 tab:px-[3.75rem] pc:justify-end pc:bg-slate-200 pc:px-0 pc:pb-0',
+          pathname === '/guide' && 'bg-white',
+        )}
+      >
+        <div
+          className={cn(
+            'flex min-h-[6.25rem] w-full max-w-[31.25rem] items-center justify-center self-center overflow-hidden rounded-sm bg-slate-300 tab:max-w-[45.5rem]',
+          )}
+        />
       </div>
     )
   }
 
   return (
-    <div className={cn(AdContainerStyle, isAdUnFilledStatus && 'hidden')}>
+    <div
+      className={cn(
+        'relative max-h-[8.5rem] min-h-[8.5rem] overflow-hidden rounded-sm bg-slate-100 pc:min-h-[6.25rem] pc:w-full pc:min-w-[31.25rem] pc-lg:max-w-[45.5rem]',
+        isAdUnFilledStatus && 'hidden',
+        pathname === '/guide' && 'bg-white',
+      )}
+    >
       {/* 광고 로딩 UI */}
-      {showSkeletonOnDesktopOnly ? (
-        <Skeleton
-          className={cn(
-            AdStyle,
-            'min-h-[6.25rem] rounded-none bg-slate-300 pc-lg:min-w-[45.5rem]',
-          )}
-        />
+      {isLoading ? (
+        <Skeleton className='absolute left-1/2 min-h-[6.25rem] w-full max-w-[29rem] -translate-x-1/2 overflow-hidden rounded-sm bg-slate-300 tab:max-w-[38rem] pc:w-full pc:min-w-[31.25rem] pc-lg:max-w-[45.5rem]' />
       ) : null}
       <div
         className={cn(
-          'transition-opacity',
+          'relative transition-opacity',
           isLoading ? 'pointer-events-none opacity-0' : 'opacity-100',
         )}
       >
         <GoogleAdSense
           key={`${adKey}-${retryCount}`}
-          className={AdStyle}
+          className={cn(
+            'h-full min-h-[6.25rem] w-full max-w-[29rem] place-self-center overflow-hidden rounded-sm tab:max-w-[38rem]',
+          )}
           data-ad-slot='4790060150'
-          data-full-width-responsive='true'
           onAdFilled={handleFilled}
           onAdUnfilled={handleUnFilled}
+          data-full-width-responsive='true'
         />
       </div>
     </div>
   )
 }
 
-const AdContainerStyle =
-  'fixed bottom-0 flex h-full max-h-[6.25rem] min-h-[6.25rem] w-full items-center justify-center overflow-hidden bg-transparent pc:static pc:justify-end pc:rounded-sm'
-const AdStyle =
-  'h-auto w-full max-w-[31.25rem] self-center overflow-hidden tab:max-w-[45.5rem] tab:rounded-sm'
-
+const FooterAdSense = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
+  return (
+    <AdProvider>
+      <FooterAdSlot includeDevice={includeDevice} />
+    </AdProvider>
+  )
+}
 export { FooterAdSense }
