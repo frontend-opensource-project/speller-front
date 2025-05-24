@@ -11,7 +11,9 @@ export const POST = async (req: Request) => {
     return NextResponse.json(response)
   } catch (error) {
     console.warn(
-      error instanceof Error ? error.message : 'Unknown request error',
+      error instanceof Error
+        ? error.message
+        : 'An unknown error occurred while looking up the IP.',
     )
     const errorResponse: CheckIpResponse = { allowed: true }
 
