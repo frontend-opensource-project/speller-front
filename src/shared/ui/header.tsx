@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './popover'
 const Header = () => {
   return (
     <div className='flex items-center justify-center bg-white'>
-      <header className='flex flex-1 items-center justify-between px-6 py-4 pc:container pc-lg:container tab:px-[3.75rem] tab:py-5 pc:p-[1rem_1.875rem] pc-lg:p-[2rem_3.75rem]'>
+      <header className='flex flex-1 items-center justify-between px-6 py-4 pc-lg:container tab:px-[3.75rem] tab:py-5 pc:w-full pc:p-[1rem_1.875rem] pc-lg:p-[2rem_3.75rem]'>
         <div className='flex items-center gap-5'>
           <Link href='/'>
             <h1 className='text-xl font-bold tab:text-2xl'>
