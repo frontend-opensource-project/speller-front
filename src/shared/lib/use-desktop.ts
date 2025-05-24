@@ -7,10 +7,9 @@ import { UAParser } from 'ua-parser-js'
 import { DESKTOP } from '../../../tailwind.config'
 
 const DELAY_MS = 1000 // 1초
-
 const isDesktopWidth = (width: number) => width >= DESKTOP
 
-const useDesktop = (delayTime?: number) => {
+const useDesktopByWindowSize = (delayTime?: number) => {
   const { width } = useWindowSize(delayTime ?? DELAY_MS)
   const targetWidth = width ?? 0
   const isDesktop = useMemo(() => isDesktopWidth(targetWidth), [targetWidth])
@@ -18,7 +17,7 @@ const useDesktop = (delayTime?: number) => {
   return isDesktop
 }
 
-const useDesktopDevice = () => {
+const useDesktopByUserAgent = () => {
   const [isDesktop, setIsDesktop] = useState(true)
 
   useEffect(() => {
@@ -30,4 +29,4 @@ const useDesktopDevice = () => {
   return isDesktop
 }
 
-export { useDesktop, useDesktopDevice }
+export { useDesktopByWindowSize, useDesktopByUserAgent }
