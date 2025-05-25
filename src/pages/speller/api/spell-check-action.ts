@@ -1,7 +1,7 @@
 'use server'
 
 import axios from 'axios'
-import { ZodError } from 'zod'
+import { z, ZodError } from 'zod'
 
 import {
   SpellerApi,
@@ -9,17 +9,38 @@ import {
   checkPayloadSchema,
   checkResponseSchema,
 } from '@/entities/speller'
-import { TIMEOUT_ERROR_CODE } from '../model/error-code'
+
+const errorResponseSchema = z.object({
+  errorMessage: z.string(),
+  errorCode: z.number(),
+})
 
 type ActionState = {
   data: SpellerState['response'] | null
-  error: unknown | { errorMessage: string; errorCode: number }
+  error:
+    | null
+    | {
+        errorMessage: string
+        type: 'zodError' | 'unknown'
+      }
+    | {
+        errorMessage: string
+        type: 'server'
+        errorCode: number
+        requestPayload: {
+          isStrict: boolean
+          textLength: number
+        }
+      }
+  elapsedTimeMs: number
 }
 
 const spellCheckAction = async (
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> => {
+  const start = Date.now()
+
   try {
     const text = formData.get('speller-text') as string
     const isStrictCheck = formData.get('isStrictCheck') === 'on'
@@ -29,6 +50,7 @@ const spellCheckAction = async (
     })
     const { data } = await SpellerApi.check(validateCheckPayload)
     const validateCheckResponse = checkResponseSchema.parse(data)
+    const elapsedTimeMs = Date.now() - start
 
     return {
       data: {
@@ -36,31 +58,67 @@ const spellCheckAction = async (
         requestedWithStrictMode: isStrictCheck,
       },
       error: null,
+      elapsedTimeMs,
     }
   } catch (error) {
-    let errorMessage: string =
-      '[Error] spellCheckAction: 함수를 실행하는 동안 에러가 발생했습니다.'
+    const elapsedTimeMs = Date.now() - start
 
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        const { errorMessage, errorCode } = error.response.data
+    if (axios.isAxiosError(error) && error.response?.data) {
+      try {
+        const { errorCode, errorMessage } = errorResponseSchema.parse(
+          error.response.data,
+        )
+        const requestDataRaw = error.config?.data // 직렬화된 요청 데이터
+        const requestDataParsed = JSON.parse(requestDataRaw)
+        const { text, isStrictCheck = false } =
+          checkPayloadSchema.parse(requestDataParsed)
 
-        if (errorCode === TIMEOUT_ERROR_CODE) {
-          return {
-            data: null,
-            error: { errorMessage, errorCode },
-          }
+        return {
+          data: null,
+          error: {
+            errorCode,
+            errorMessage,
+            type: 'server',
+            requestPayload: {
+              isStrict: isStrictCheck,
+              textLength: text.length,
+            },
+          },
+          elapsedTimeMs,
+        }
+      } catch {
+        return {
+          data: null,
+          error: {
+            errorMessage:
+              "spellCheckAction: Response field value attribute and type don't match.",
+            type: 'zodError',
+          },
+          elapsedTimeMs,
         }
       }
     }
 
     if (error instanceof ZodError) {
-      errorMessage = error.message
+      return {
+        data: null,
+        error: {
+          errorMessage:
+            'spellCheckAction: Received invalid form field value — type or format mismatch.',
+          type: 'zodError',
+        },
+        elapsedTimeMs,
+      }
     }
 
     return {
       data: null,
-      error: errorMessage,
+      error: {
+        errorMessage:
+          'spellCheckAction: An unknown error occurred while executing a function.',
+        type: 'unknown',
+      },
+      elapsedTimeMs,
     }
   }
 }

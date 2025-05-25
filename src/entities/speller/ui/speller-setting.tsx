@@ -1,44 +1,20 @@
 'use client'
 
 import React, { memo } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import { Label } from '@/shared/ui/label'
 import { Switch } from '@/shared/ui/switch'
-
-const QUERY = 'isStrictCheck'
+import {
+  useSetStrictCheckQuery,
+  useStrictCheckQuery,
+} from '../lib/use-strict-check-query'
 
 const SpellerSetting = memo(() => {
-  const searchParams = useSearchParams()
-  const pathname = usePathname()
-  const { replace } = useRouter()
-
-  const updateStrictCheckQueryParams = (checked: boolean) => {
-    if (!searchParams) return
-
-    const params = new URLSearchParams(searchParams.toString())
-
-    if (checked) {
-      params.set(QUERY, 'true')
-    } else {
-      params.delete(QUERY)
-    }
-
-    return params.toString()
-  }
+  const isStrict = useStrictCheckQuery()
+  const setStrict = useSetStrictCheckQuery()
 
   const handleCheckedChange = (checked: boolean) => {
-    const newParams = updateStrictCheckQueryParams(checked)
-
-    if (newParams !== undefined) {
-      replace(`${pathname}?${newParams}`, { scroll: false })
-    }
-  }
-
-  const isStrictCheckEnabled = () => {
-    if (!searchParams) return false
-
-    return searchParams.get(QUERY) === 'true'
+    setStrict(checked)
   }
 
   return (
@@ -55,7 +31,7 @@ const SpellerSetting = memo(() => {
         id='airplane-mode'
         name='isStrictCheck'
         onCheckedChange={handleCheckedChange}
-        checked={isStrictCheckEnabled()}
+        checked={isStrict}
       />
     </div>
   )

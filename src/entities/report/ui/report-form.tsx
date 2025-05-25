@@ -1,5 +1,8 @@
 'use client'
 
+import React, { ReactNode, useState } from 'react'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+
 import { Button } from '@/shared/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover'
 import {
@@ -9,16 +12,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/shared/ui/dialog'
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import React, { ReactNode, useState } from 'react'
 import { ReportFormContent } from './report-form-content'
 import SendIcon from '@/shared/ui/icon/icon-send-black.svg'
+import { CorrectedErrorType } from '@/shared/lib/analytics-event-types'
 
 interface ReportFormProps {
   children: ReactNode
+  errorType: CorrectedErrorType
 }
 
-export const ReportForm = ({ children }: ReportFormProps) => {
+export const ReportForm = ({ children, errorType }: ReportFormProps) => {
   const [isPopoverOpen, setPopoverOpen] = useState(false)
   const [isDialogOpen, setDialogOpen] = useState(false)
 
@@ -46,7 +49,10 @@ export const ReportForm = ({ children }: ReportFormProps) => {
                 onClick={handlePopoverClose}
               ></Button>
             </div>
-            <ReportFormContent handleClose={handlePopoverClose} />
+            <ReportFormContent
+              handleClose={handlePopoverClose}
+              errorType={errorType}
+            />
           </div>
         </PopoverContent>
       </Popover>
@@ -62,7 +68,10 @@ export const ReportForm = ({ children }: ReportFormProps) => {
             </DialogTitle>
             <ReportFormTitle />
           </DialogHeader>
-          <ReportFormContent handleClose={handleDialogClose} />
+          <ReportFormContent
+            handleClose={handleDialogClose}
+            errorType={errorType}
+          />
         </DialogContent>
       </Dialog>
     </>

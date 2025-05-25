@@ -1,6 +1,10 @@
 export { SpellerApi } from './api/speller-service'
 export { getTextMethodColor, getBgMethodColor } from './lib/get-method-color'
 export { parseCandidateWords } from './lib/parse-candidate-words'
+export {
+  useSetStrictCheckQuery,
+  useStrictCheckQuery,
+} from './lib/use-strict-check-query'
 export type {
   UserReplacePayload,
   NotChangePayload,
