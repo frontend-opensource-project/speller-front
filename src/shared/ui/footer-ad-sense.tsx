@@ -90,14 +90,14 @@ const FooterAdSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
       ) : null}
       <div
         className={cn(
-          'relative transition-opacity',
+          'relative grid min-h-[6.25rem] items-center justify-items-center transition-opacity pc:justify-items-end',
           isLoading ? 'pointer-events-none opacity-0' : 'opacity-100',
         )}
       >
         <GoogleAdSense
           key={`${adKey}-${retryCount}`}
           className={cn(
-            'h-full min-h-[6.25rem] w-full max-w-[29rem] place-self-center overflow-hidden rounded-sm tab:max-w-[38rem] pc:place-self-end pc-lg:max-w-[45.5rem]',
+            'h-full max-h-[6.25rem] w-full max-w-[29rem] overflow-hidden rounded-sm tab:max-w-[38rem] pc-lg:max-w-[45.5rem]',
           )}
           data-ad-slot='4790060150'
           onAdFilled={handleFilled}
