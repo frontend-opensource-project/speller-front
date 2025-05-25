@@ -64,7 +64,7 @@ const FooterAdSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
       >
         <div
           className={cn(
-            'flex min-h-[6.25rem] w-full max-w-[31.25rem] items-center justify-center self-center overflow-hidden rounded-sm bg-slate-300 tab:max-w-[45.5rem]',
+            'flex min-h-[6.25rem] w-full max-w-[29rem] items-center justify-center self-center overflow-hidden rounded-sm bg-slate-300 tab:max-w-[38rem] pc-lg:max-w-[45.5rem]',
           )}
         />
       </div>
@@ -74,14 +74,19 @@ const FooterAdSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
   return (
     <div
       className={cn(
-        'relative max-h-[8.5rem] min-h-[8.5rem] overflow-hidden rounded-sm bg-slate-100 pc:min-h-[6.25rem] pc:w-full pc:min-w-[31.25rem] pc-lg:max-w-[45.5rem]',
+        'relative max-h-[8.5rem] min-h-[8.5rem] overflow-hidden rounded-sm bg-slate-100 pc:min-h-[6.25rem] pc:w-full pc:min-w-[31.25rem] pc:bg-slate-200 pc-lg:max-w-[45.5rem]',
         isAdUnFilledStatus && 'hidden',
         pathname === '/guide' && 'bg-white',
       )}
     >
       {/* 광고 로딩 UI */}
       {isLoading ? (
-        <Skeleton className='absolute left-1/2 min-h-[6.25rem] w-full max-w-[29rem] -translate-x-1/2 overflow-hidden rounded-sm bg-slate-300 tab:max-w-[38rem] pc:w-full pc:min-w-[31.25rem] pc-lg:max-w-[45.5rem]' />
+        <Skeleton
+          className={cn(
+            'absolute left-1/2 min-h-[6.25rem] w-full max-w-[29rem] -translate-x-1/2 overflow-hidden rounded-sm bg-slate-300 tab:max-w-[38rem] pc:w-full pc:min-w-[31.25rem] pc-lg:max-w-[45.5rem]',
+            'pc:left-auto pc:right-0 pc:translate-x-0',
+          )}
+        />
       ) : null}
       <div
         className={cn(
@@ -92,7 +97,7 @@ const FooterAdSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
         <GoogleAdSense
           key={`${adKey}-${retryCount}`}
           className={cn(
-            'h-full min-h-[6.25rem] w-full max-w-[29rem] place-self-center overflow-hidden rounded-sm tab:max-w-[38rem]',
+            'h-full min-h-[6.25rem] w-full max-w-[29rem] place-self-center overflow-hidden rounded-sm tab:max-w-[38rem] pc:place-self-end pc-lg:max-w-[45.5rem]',
           )}
           data-ad-slot='4790060150'
           onAdFilled={handleFilled}
