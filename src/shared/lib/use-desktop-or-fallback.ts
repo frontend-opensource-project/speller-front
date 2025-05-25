@@ -1,6 +1,6 @@
 'use client'
 
-import { useDesktop } from '@/shared/lib/use-desktop'
+import { useDesktopByWindowSize } from '@/shared/lib/use-desktop'
 import { useMemo } from 'react'
 
 /**
@@ -9,7 +9,7 @@ import { useMemo } from 'react'
  * @param fallbackValue 아닐 경우 반환할 값
  */
 const useDesktopOrFallback = <T>(desktopValue: T, fallbackValue: T): T => {
-  const isDesktop = useDesktop()
+  const isDesktop = useDesktopByWindowSize()
   const result = useMemo(() => {
     return isDesktop ? desktopValue : fallbackValue
   }, [isDesktop, desktopValue, fallbackValue])

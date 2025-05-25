@@ -50,7 +50,7 @@ const FeedbackForm = () => {
         </div>
       </div>
       {/* 폼 전송 버튼 */}
-      <div className='mt-3 pb-28 text-end tab:mt-4 tab:pb-[20.875rem] pc:pb-[4.375rem]'>
+      <div className='mt-3 pb-[5.4375rem] text-end tab:mt-4'>
         <Button
           className='h-[3.375rem] w-full text-lg tab:w-32 pc:h-16 pc:w-[9.625rem] pc:text-[1.375rem]'
           type='submit'

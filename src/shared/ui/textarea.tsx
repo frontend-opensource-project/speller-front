@@ -27,9 +27,9 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(
 
       if (!textarea) return
 
-      if (textarea.value.length <= 0) {
-        textarea.style.height = '100%'
-      } else {
+      textarea.style.height = '100%'
+
+      if (textarea.value.length > 0) {
         textarea.style.height = `${textarea.scrollHeight}px`
       }
     }

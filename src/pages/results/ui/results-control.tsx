@@ -38,8 +38,8 @@ const ResultsControl = () => {
   }
 
   return (
-    <div className='mt-2 flex flex-shrink-0 justify-between'>
-      <TextCounter count={str.length} />
+    <div className='flex flex-shrink-0 justify-between pt-5'>
+      <TextCounter count={str.length} className='pc:-translate-y-3' />
       <div className='flex gap-3'>
         <ActionButton
           icon='/arrow-return-left.svg'

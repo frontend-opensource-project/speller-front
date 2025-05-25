@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+
 import { getBreakpoint } from '../lib/get-break-point'
 
-type Breakpoint = ReturnType<typeof getBreakpoint>
+export type Breakpoint = ReturnType<typeof getBreakpoint>
 
 export const useBreakpoint = (): Breakpoint => {
   const [breakpoint, setBreakpoint] = useState<Breakpoint>(getBreakpoint())

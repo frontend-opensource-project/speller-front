@@ -8,8 +8,8 @@ const ResultsSkeleton = () => {
       <div className='mb-2 mt-[0.94rem] flex min-h-[1.625rem] items-center justify-end tab:mt-[1.75rem] pc:mb-[0.78rem] pc:mt-[1.97rem] pc:min-h-8'>
         <Skeleton className='h-6 w-56 rounded-sm pc:h-[1.875rem] pc:w-64' />
       </div>
-      <div className='flex flex-col gap-2 overflow-auto pc:flex-row pc:gap-0'>
-        <div className='flex max-h-[30.5rem] min-h-[30.5rem] w-full flex-1 flex-col rounded-lg bg-white p-5 tab:rounded-[1rem] tab:p-10 pc:max-h-[40.25rem] pc:rounded-br-none pc:rounded-tr-none'>
+      <div className='flex h-full flex-col gap-2 overflow-hidden pc:flex-row pc:gap-0'>
+        <div className='content-visibility-auto flex min-h-[30.5rem] flex-col rounded-lg bg-white p-5 contain-strict tab:rounded-[1rem] tab:p-10 pc:w-1/2 pc:rounded-br-none pc:rounded-tr-none'>
           <div className='mb-[1rem] flex justify-between tab:mb-[1.25rem]'>
             <Skeleton className='h-7 w-16 rounded-sm tab:h-8 tab:w-20' />
           </div>
@@ -24,7 +24,7 @@ const ResultsSkeleton = () => {
             </div>
           </div>
         </div>
-        <div className='flex max-h-[30.5rem] min-h-[30.5rem] w-full flex-1 flex-col rounded-lg border border-blue-500 bg-white px-5 pb-3.5 pt-[1.125rem] tab:rounded-[1rem] tab:p-10 tab:pb-7 pc:max-h-[40.25rem] pc:rounded-bl-none pc:rounded-tl-none pc:border-none pc:pb-10'>
+        <div className='content-visibility-auto flex min-h-[30.5rem] flex-col rounded-lg border border-blue-500 bg-white px-5 pb-3.5 pt-[1.125rem] contain-strict tab:rounded-[1rem] tab:p-10 tab:pb-7 pc:w-1/2 pc:rounded-bl-none pc:rounded-tl-none pc:border-none pc:pb-10'>
           <div className='pb-[1.125rem]'>
             <Skeleton className='h-7 w-44 rounded-sm tab:h-8 tab:w-48' />
           </div>

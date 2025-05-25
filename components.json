@@ -11,8 +11,8 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@/shared/components",
-    "utils": "@/shared/lib/utils",
+    "components": "@/shared/ui",
+    "utils": "@/shared/lib/tailwind-merge.ts",
     "ui": "@/shared/ui",
     "lib": "@/shared/lib",
     "hooks": "@/shared/lib"
