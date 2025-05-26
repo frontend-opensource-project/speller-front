@@ -8,16 +8,23 @@ import { Button } from '@/shared/ui/button'
 import { cn } from '@/shared/lib/tailwind-merge'
 import ArrowBottomIcon from '@/shared/ui/icon/icon-arrow-bottom.svg'
 import { DESKTOP, TABLET } from '../../../../tailwind.config'
+import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-error-type'
+import {
+  sendErrorDetailClosedEvent,
+  sendErrorDetailOpenedEvent,
+} from '@/shared/lib/send-ga-event'
 
 interface HelpSectionProps {
   help: string
+  correctMethod: number
 }
 
-const HelpSection = ({ help }: HelpSectionProps) => {
+const HelpSection = ({ help, correctMethod }: HelpSectionProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const [showButton, setShowButton] = useState<boolean>(false)
   const contentRef = useRef<HTMLParagraphElement>(null)
   const { width } = useWindowSize()
+  const correctedErrorType = getCorrectedErrorType(correctMethod)
 
   const checkContentHeight = useDebounce(() => {
     if (!contentRef.current) return
@@ -58,7 +65,17 @@ const HelpSection = ({ help }: HelpSectionProps) => {
           isExpanded && 'text-slate-400',
           showButton && 'visible',
         )}
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => {
+          const next = !isExpanded
+
+          if (next) {
+            sendErrorDetailOpenedEvent({ correctedErrorType })
+          } else {
+            sendErrorDetailClosedEvent({ correctedErrorType })
+          }
+
+          setIsExpanded(next)
+        }}
       >
         {isExpanded ? '접기' : '자세히 보기'}
         <ArrowBottomIcon
