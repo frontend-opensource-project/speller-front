@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-
 import { cn } from '@/shared/lib/tailwind-merge'
+import { useDialogDeviceInfo } from '../lib/use-device-info'
 
-const Dialog = DialogPrimitive.Root
+const DialogRoot = DialogPrimitive.Root
 
 const DialogTrigger = DialogPrimitive.Trigger
 
@@ -26,31 +26,81 @@ const DialogOverlay = React.forwardRef<
     {...props}
   />
 ))
+
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
-const DialogContent = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        'sm:rounded-lg fixed left-[50%] top-[50%] z-50 grid w-[calc(100%-32px)] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-[1.2rem] pt-[0.94rem] shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
-        className,
-      )}
-      {...props}
-    >
-      {children}
-      <DialogPrimitive.Close className='absolute right-[1.15rem] top-[1.38rem] rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground tab:right-[1.125rem] tab:top-[1.6356rem]'>
-        <span className='inline-block h-3.5 w-3.5 bg-close bg-contain bg-no-repeat p-[0.2281rem] tab:h-4 tab:w-4' />
-        <span className='sr-only'>Close</span>
-      </DialogPrimitive.Close>
-    </DialogPrimitive.Content>
-  </DialogPortal>
-))
-DialogContent.displayName = DialogPrimitive.Content.displayName
+const Dialog = ({
+  open,
+  onOpenChange,
+  children,
+  DialogTriggerItem,
+  className,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  children: React.ReactNode
+  DialogTriggerItem: React.ReactNode
+  className?: string
+}) => {
+  // Dialog 콘텐츠 참조
+  const contentRef = React.useRef<HTMLDivElement | null>(null)
+
+  const {
+    device,
+    adjustedPadding,
+    screenHeight,
+    forceUpdateScreenHeight,
+    isKeyboardOpen,
+  } = useDialogDeviceInfo(contentRef)
+
+  // 모바일 장치에서 화면 높이가 키보드에 맞춰 업데이트될 수 있도록 강제로 호출
+  React.useEffect(() => {
+    if (isKeyboardOpen) {
+      forceUpdateScreenHeight()
+    }
+  }, [isKeyboardOpen, forceUpdateScreenHeight])
+
+  return (
+    <DialogRoot open={open} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild className='pc:hidden'>
+        {DialogTriggerItem}
+      </DialogTrigger>
+      <DialogPortal>
+        <DialogOverlay />
+        <div
+          className='fixed inset-0 z-50 flex w-full items-center justify-center'
+          style={{
+            paddingBottom:
+              device.type === 'mobile' ? adjustedPadding : undefined,
+            transition: 'padding-bottom 0.3s ease',
+          }}
+        >
+          <DialogPrimitive.Content
+            ref={contentRef}
+            style={{ maxHeight: screenHeight }}
+            className={cn(
+              device.type === 'mobile' ? dialogStyle.mobile : dialogStyle.web,
+              className,
+            )}
+            onOpenAutoFocus={event => event.preventDefault()}
+          >
+            {children}
+            <DialogClose className='absolute right-[1.15rem] top-[1.38rem] rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground tab:right-[1.125rem] tab:top-[1.6356rem]'>
+              <span className='inline-block h-3.5 w-3.5 bg-close bg-contain bg-no-repeat p-[0.2281rem] tab:h-4 tab:w-4' />
+              <span className='sr-only'>Close</span>
+            </DialogClose>
+          </DialogPrimitive.Content>
+        </div>
+      </DialogPortal>
+    </DialogRoot>
+  )
+}
+
+const dialogStyle = {
+  web: 'sm:rounded-lg fixed left-[50%] top-[50%] z-50 grid w-[calc(100%-32px)] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-[1.2rem] pt-[0.94rem] shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
+  mobile:
+    'sm:rounded-lg relative z-50 grid max-h-[calc(100dvh-80px)] w-[calc(100%-32px)] max-w-lg gap-4 overflow-y-auto rounded-lg border bg-white p-[1.2rem] pt-[0.94rem] shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
+}
 
 const DialogHeader = ({
   className,
@@ -61,6 +111,7 @@ const DialogHeader = ({
     {...props}
   />
 )
+
 DialogHeader.displayName = 'DialogHeader'
 
 const DialogFooter = ({
@@ -75,6 +126,7 @@ const DialogFooter = ({
     {...props}
   />
 )
+
 DialogFooter.displayName = 'DialogFooter'
 
 const DialogTitle = React.forwardRef<
@@ -90,6 +142,7 @@ const DialogTitle = React.forwardRef<
     {...props}
   />
 ))
+
 DialogTitle.displayName = DialogPrimitive.Title.displayName
 
 const DialogDescription = React.forwardRef<
@@ -102,6 +155,7 @@ const DialogDescription = React.forwardRef<
     {...props}
   />
 ))
+
 DialogDescription.displayName = DialogPrimitive.Description.displayName
 
 export {
@@ -110,7 +164,6 @@ export {
   DialogOverlay,
   DialogClose,
   DialogTrigger,
-  DialogContent,
   DialogHeader,
   DialogFooter,
   DialogTitle,
