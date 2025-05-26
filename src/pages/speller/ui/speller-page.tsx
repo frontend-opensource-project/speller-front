@@ -31,9 +31,9 @@ const SpellerPage = () => {
   useEffect(() => {
     if (state.data) {
       const { data, elapsedTimeMs } = state
-      const payload = {
+      const payload: Parameters<typeof sendCheckCompletedEvent>[0] = {
         textLength: data.str.length,
-        isStrict: data.requestedWithStrictMode,
+        isStrictCheck: data.requestedWithStrictMode,
         elapsedTimeMs: elapsedTimeMs,
       }
 
@@ -45,9 +45,7 @@ const SpellerPage = () => {
       if (data.errInfo.length === 0) {
         sendCheckResultNoErrorEvent(payload)
 
-        return router.push(
-          `/no-errors?isStrictCheck=${data.requestedWithStrictMode}`,
-        )
+        return router.push(`/no-errors`)
       }
 
       return router.push('/results')
@@ -61,7 +59,7 @@ const SpellerPage = () => {
           error: {
             errorCode,
             errorMessage,
-            requestPayload: { isStrict, textLength },
+            requestPayload: { isStrictCheck, textLength },
           },
           elapsedTimeMs,
         } = state
@@ -72,7 +70,7 @@ const SpellerPage = () => {
           errorStage,
           errorCode,
           errorMessage,
-          isStrict,
+          isStrictCheck,
           textLength,
           elapsedTimeMs,
         })

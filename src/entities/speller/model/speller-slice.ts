@@ -10,6 +10,7 @@ type Response = CheckResponse & { requestedWithStrictMode: boolean }
 interface SpellerState {
   text: string // 입력된 텍스트 원본
   displayText: string // 교정문서에 표시되는 텍스트
+  isStrictCheck: boolean // 강한 검사
   response: Response
   responseMap: Record<number, Response>
   correctInfo: Record<number, CorrectInfo>
@@ -19,6 +20,7 @@ interface SpellerState {
 const initialState: SpellerState = {
   text: '',
   displayText: '',
+  isStrictCheck: false,
   response: {
     str: '',
     errInfo: [],
@@ -37,6 +39,10 @@ const spellerSlice = createSlice({
   reducers: {
     setText: (state, action: PayloadAction<string>) => {
       state.text = action.payload
+    },
+
+    setStrictMode: (state, action: PayloadAction<boolean>) => {
+      state.isStrictCheck = action.payload
     },
 
     updateResponse: (state, action: PayloadAction<Response>) => {
@@ -77,6 +83,7 @@ const spellerSlice = createSlice({
 
 const {
   setText,
+  setStrictMode,
   updateResponse,
   updateCorrectInfo,
   setSelectedErrIdx,
@@ -87,6 +94,7 @@ const spellerReducer = spellerSlice.reducer
 
 export {
   setText,
+  setStrictMode,
   updateResponse,
   updateCorrectInfo,
   setSelectedErrIdx,
