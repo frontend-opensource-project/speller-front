@@ -1,15 +1,11 @@
 'use client'
 
-import React, { memo } from 'react'
-
 import { Label } from '@/shared/ui/label'
 import { Switch } from '@/shared/ui/switch'
-import { useSpellerActions } from '../model/use-speller'
-import { useAppSelector } from '@/shared/lib/use-redux'
+import { useSpeller } from '../model/use-speller'
 
-const SpellerSetting = memo(() => {
-  const { updateStrictCheckMode } = useSpellerActions()
-  const isStrictCheck = useAppSelector(state => state.speller.isStrictCheck)
+const SpellerSetting = () => {
+  const { updateStrictCheckMode, isStrictCheck } = useSpeller()
 
   return (
     <div className='flex items-center justify-end gap-2 pc:gap-4'>
@@ -29,8 +25,6 @@ const SpellerSetting = memo(() => {
       />
     </div>
   )
-})
-
-SpellerSetting.displayName = 'SpellerSetting'
+}
 
 export { SpellerSetting }

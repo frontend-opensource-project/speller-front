@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { shallowEqual } from 'react-redux'
 
 import { useAppDispatch, useAppSelector } from '@/shared/lib/use-redux'
@@ -76,39 +76,6 @@ const useSpeller = () => {
     updateResponseMap,
     initResponseMap,
   }
-}
-
-export const useSpellerActions = () => {
-  const dispatch = useAppDispatch()
-
-  return useMemo(
-    () => ({
-      handleTextChange: (value: string) => {
-        dispatch(setText(value))
-      },
-      updateStrictCheckMode: (value: boolean) => {
-        dispatch(setStrictMode(value))
-      },
-      handleReceiveResponse: (payload: SpellerState['response']) => {
-        dispatch(updateResponse(payload))
-      },
-      handleUpdateCorrectInfo: (payload: CorrectInfo) => {
-        dispatch(updateCorrectInfo(payload))
-      },
-      updateErrInfoIndex: (index: number) => {
-        dispatch(setSelectedErrIdx(index))
-      },
-      updateResponseMap: (
-        payload: SpellerState['response'] & { pageIdx: number },
-      ) => {
-        dispatch(setResponseMap(payload))
-      },
-      initResponseMap: () => {
-        dispatch(resetResponseMap())
-      },
-    }),
-    [dispatch],
-  )
 }
 
 export { useSpeller }
