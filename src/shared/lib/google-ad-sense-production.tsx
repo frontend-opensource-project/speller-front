@@ -5,7 +5,7 @@
 
 import { cn } from '@/shared/lib/tailwind-merge'
 import React, { useEffect, useRef, useState } from 'react'
-import { useDesktop } from './use-desktop'
+import { useDesktopByWindowSize } from './use-desktop'
 
 declare global {
   interface Window {
@@ -24,7 +24,7 @@ const GoogleAdSense = ({ className, ...props }: GoogleAdSenseProps) => {
   const [isMounted, setIsMounted] = useState(false)
   // 데스크탑: 수동 광고 사용
   // 태블릿/모바일: 자동 광고 사용 (Google이 <ins> 태그 없이 광고 자동 삽입)
-  const isDesktop = useDesktop(NO_DELAY)
+  const isDesktop = useDesktopByWindowSize(NO_DELAY)
 
   useEffect(() => {
     setIsMounted(true)

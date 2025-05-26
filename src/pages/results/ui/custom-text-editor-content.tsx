@@ -4,6 +4,8 @@ import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { useUserReplace } from '../model/use-user-replace'
 import { BulletBadge } from '../ui/bullet-badge'
+import { sendManualCorrectionSubmittedEvent } from '@/shared/lib/send-ga-event'
+import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-error-type'
 
 interface CustomTextEditorContent {
   handleClose: () => void
@@ -43,7 +45,14 @@ export const CustomTextEditorContent = ({
       <Button
         disabled={!value}
         className='h-[2.65rem] py-[0.88rem] text-[0.95rem] tab:h-[3.125rem] tab:text-[1.125rem] pc:h-[2.5rem] pc:rounded-[0.31rem] pc:py-[0.84rem] pc:text-base'
-        onClick={handleEdit}
+        onClick={() => {
+          handleEdit()
+          sendManualCorrectionSubmittedEvent({
+            sectionType: 'correction_item',
+            correctedErrorType: getCorrectedErrorType(correctMethod),
+            textLength: value.length,
+          })
+        }}
       >
         수정하기
       </Button>

@@ -1,5 +1,7 @@
 'use client'
 
+import { XIcon } from 'lucide-react'
+
 import {
   useSpeller,
   type ErrorInfo,
@@ -10,13 +12,16 @@ import { Button } from '@/shared/ui/button'
 import { cn } from '@/shared/lib/tailwind-merge'
 import EditIcon from '@/shared/ui/icon/icon-edit.svg'
 import SendIcon from '@/shared/ui/icon/icon-send-gray.svg'
-
 import { HelpSection } from './help-section'
 import { CustomTextEditor } from './custom-text-editor'
 import { logClickReplaceAction } from '../api/log-click-replace-action'
 import { extractContext } from '../lib/extractContext'
 import { BulletBadge } from '../ui/bullet-badge'
-import { XIcon } from 'lucide-react'
+import {
+  sendCorrectionFeedbackOpenedEvent,
+  sendCorrectionWordClickedEvent,
+} from '@/shared/lib/send-ga-event'
+import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-error-type'
 
 interface ErrorInfoSectionProps<T>
   extends React.RefAttributes<T>,
@@ -32,6 +37,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
     useSpeller()
   const { errorIdx, correctMethod, orgStr, candWord, help } = errorInfo ?? {}
   const candidateWords = parseCandidateWords(candWord)
+  const correctedErrorType = getCorrectedErrorType(correctMethod)
 
   const handleClickReplace = (replaceWord: string) => {
     const sentence = extractContext(response.str, errorInfo, replaceWord)
@@ -45,6 +51,11 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
 
   const handleRevert = () => {
     handleUpdateCorrectInfo({ ...errorInfo, crtStr: orgStr })
+    sendCorrectionWordClickedEvent({
+      sectionType: 'correction_item',
+      wordTextType: 'suggested',
+      correctedErrorType,
+    })
   }
 
   return (
@@ -65,11 +76,17 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
               {orgStr}
             </span>
           </Button>
-          <ReportForm>
+          <ReportForm errorType={correctedErrorType}>
             <Button
               variant='ghost'
               className='h-auto p-0 text-slate-500 hover:bg-transparent pc:gap-2'
-              onClick={() => updateErrInfoIndex(errorIdx)}
+              onClick={() => {
+                updateErrInfoIndex(errorIdx)
+                sendCorrectionFeedbackOpenedEvent({
+                  sectionType: 'correction_item',
+                  correctedErrorType,
+                })
+              }}
             >
               <SendIcon className='!size-6 tab:!size-8' />
               <span className='sr-only font-normal tab:not-sr-only tab:whitespace-nowrap tab:text-lg'>
@@ -127,7 +144,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
           도움말
         </dt>
         <dd>
-          <HelpSection help={help} />
+          <HelpSection help={help} correctMethod={correctMethod} />
         </dd>
       </dl>
     </div>

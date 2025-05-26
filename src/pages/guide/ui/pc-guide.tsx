@@ -11,7 +11,7 @@ export const PcGuide = () => {
         height={1200}
         alt='누구나 제한 없이 전문적인 맞춤법을 사용해요.'
       />
-      <div className='px-4 pc:container pc:mx-auto pc:px-[4.5rem]'>
+      <div className='px-4 pc:container pc-lg:container pc:mx-auto pc:px-[4.5rem]'>
         <h2 className='pb-[1.875rem] pt-[4.375rem] text-center text-3xl font-bold text-slate-400'>
           바른 한글 사용법
         </h2>

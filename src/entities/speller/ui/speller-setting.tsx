@@ -1,45 +1,11 @@
 'use client'
 
-import React, { memo } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-
 import { Label } from '@/shared/ui/label'
 import { Switch } from '@/shared/ui/switch'
+import { useSpeller } from '../model/use-speller'
 
-const QUERY = 'isStrictCheck'
-
-const SpellerSetting = memo(() => {
-  const searchParams = useSearchParams()
-  const pathname = usePathname()
-  const { replace } = useRouter()
-
-  const updateStrictCheckQueryParams = (checked: boolean) => {
-    if (!searchParams) return
-
-    const params = new URLSearchParams(searchParams.toString())
-
-    if (checked) {
-      params.set(QUERY, 'true')
-    } else {
-      params.delete(QUERY)
-    }
-
-    return params.toString()
-  }
-
-  const handleCheckedChange = (checked: boolean) => {
-    const newParams = updateStrictCheckQueryParams(checked)
-
-    if (newParams !== undefined) {
-      replace(`${pathname}?${newParams}`, { scroll: false })
-    }
-  }
-
-  const isStrictCheckEnabled = () => {
-    if (!searchParams) return false
-
-    return searchParams.get(QUERY) === 'true'
-  }
+const SpellerSetting = () => {
+  const { updateStrictCheckMode, isStrictCheck } = useSpeller()
 
   return (
     <div className='flex items-center justify-end gap-2 pc:gap-4'>
@@ -54,13 +20,11 @@ const SpellerSetting = memo(() => {
         aria-label='강한 검사 모드 켜기/끄기'
         id='airplane-mode'
         name='isStrictCheck'
-        onCheckedChange={handleCheckedChange}
-        checked={isStrictCheckEnabled()}
+        onCheckedChange={updateStrictCheckMode}
+        checked={isStrictCheck}
       />
     </div>
   )
-})
-
-SpellerSetting.displayName = 'SpellerSetting'
+}
 
 export { SpellerSetting }
