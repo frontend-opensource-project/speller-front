@@ -9,7 +9,7 @@ const ResultsPage = () => {
   return (
     <ContentLayout className='pb-8 tab:pb-[2.625rem] pc:pb-12'>
       <SpellerRefsProvider>
-        <div className='relative mb-2 mt-[0.94rem] flex min-h-[1.625rem] items-center justify-between tab:mt-[1.75rem] tab:justify-center pc:mb-[0.78rem] pc:mt-[1.97rem] pc:min-h-8'>
+        <div className='sticky -top-2 z-10 flex min-h-[1.625rem] items-center justify-between bg-background pb-2 pt-4 tab:-top-4 tab:justify-center tab:pt-[1.75rem] pc:relative pc:top-0 pc:min-h-8 pc:pb-3 pc:pt-8'>
           <Navigator />
           <StrongCheckMessage />
         </div>
