@@ -56,16 +56,30 @@
 
 ### 요구 사항
 
-바른 한글을 로컬로 실행하려면 다음이 필요합니다.
+바른 한글을 로컬에서 실행하려면 다음이 필요합니다.
 
 - Node(LTS): v22.11.0
 - npm: v10.9.0
 
-### 1. 프로젝트 클론
+### 1. 저장소 Fork 및 클론
+
+> ✅ 본 프로젝트는 Fork 기반 기여 방식을 권장합니다.
+
+1. [저장소](https://github.com/frontend-opensource-project/speller-front)를 자신의 GitHub 계정으로 Fork합니다.
+2. Fork한 저장소를 클론합니다.
 
 ```bash
-git clone https://github.com/frontend-opensource-project/speller-front.git
+git clone https://github.com/[본인 GitHub 아이디]/speller-front.git
 ```
+
+3. 원본 저장소를 upstream으로 등록합니다.
+
+```bash
+git remote add upstream https://github.com/frontend-opensource-project/speller-front.git
+```
+
+> 📝 포크(Fork)에 대한 자세한 내용은 <a href="https://docs.github.com/en/get-started/quickstart/fork-a-repo">GitHub Fork 가이드</a>
+> 에서 확인하실 수 있습니다.
 
 ### 2. 의존성 설치
 
@@ -80,7 +94,9 @@ npm install
 
 ```bash
 # .env.local
-NEXT_PUBLIC_API_ENDPOINT=https://your-api-url.com
+NEXT_PUBLIC_BASE_URL=https://your-api-url.com
+SERVER_API_URL=https://your-api-url.com
+NEXT_PUBLIC_AD_CLIENT="XX-XXX-XXXXXXXXXX"
 NEXT_PUBLIC_GA4_ID=G-XXXXXXXXXX
 ```
 
@@ -105,7 +121,7 @@ npm run dev
 > 1. 제공된 환경 변수는 외부에 공개하거나 저장소에 커밋하지 마세요.
 > 2. 해당 환경 변수는 오직 로컬 개발 용도로만 사용해 주세요.
 > 3. 제3자 또는 외부로의 공유는 금지되어 있습니다.
-> 4. 일정 기간 내에 PR이 생성되지 않을 경우, 환경 변수 사용이 제한될 수 있습니다. 자세한 내용은 <a>이슈 작업 기간</a>을 참조해 주세요.
+> 4. 일정 기간 내에 PR이 생성되지 않을 경우, 환경 변수 사용이 제한될 수 있습니다. 자세한 내용은 <a href="#작업-기한-안내">이슈 작업 기한 안내</a>를 참조해 주세요.
 
 ## 폴더 구조
 
@@ -311,3 +327,5 @@ Close #123
 | `우선순위:높음` | 긴급하거나 심각한 이슈        |
 | `우선순위:중간` | 일반적인 중요도의 이슈        |
 | `우선순위:낮음` | 상대적으로 긴급하지 않은 작업 |
+
+> ⚠️ `확정` 레이블이 붙은 이슈에 한해서만 작업이 가능합니다.

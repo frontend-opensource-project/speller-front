@@ -24,10 +24,6 @@
     <a href="https://nara-speller.co.kr/speller">Website</a>
     ·
     <a href="https://github.com/frontend-opensource-project/speller-front/issues">Issues</a>
-    <!-- ·
-    <a href="#">Upcoming Releases</a>
-    ·
-    <a href="#">Roadmap</a> -->
 </p>
 
 ## 소개
