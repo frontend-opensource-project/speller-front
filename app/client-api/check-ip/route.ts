@@ -4,13 +4,18 @@ import { checkIpAllowed, CheckIpResponse } from '@/shared/api'
 
 export const POST = async (req: Request) => {
   try {
-    const { clientIP } = await req.json()
-    const allowed = await checkIpAllowed(clientIP)
+    const { clientIp } = await req.json()
+    const allowed = await checkIpAllowed(clientIp)
     const response: CheckIpResponse = { allowed }
 
     return NextResponse.json(response)
-  } catch {
-    const errorResponse: CheckIpResponse = { allowed: false }
+  } catch (error) {
+    console.warn(
+      error instanceof Error
+        ? error.message
+        : 'An unknown error occurred while looking up the IP.',
+    )
+    const errorResponse: CheckIpResponse = { allowed: true }
 
     return NextResponse.json(errorResponse, { status: 400 })
   }

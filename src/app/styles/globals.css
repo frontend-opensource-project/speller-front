@@ -82,11 +82,6 @@ body {
     --os-track-border-radius: 4px;
   }
 
-  [contenteditable='true']:empty:before {
-    content: attr(data-placeholder);
-    pointer-events: none;
-  }
-
   * {
     @apply border-border;
   }

@@ -1,6 +1,7 @@
 'use server'
 
 import { ENDPOINT } from '../../config'
+import { baseURL } from '../client'
 import { CheckIpRequest, CheckIpResponseSchema, IpSchema } from './schema'
 
 const REVALIDATE_SEC = 300 // 5분(300초)
@@ -17,17 +18,14 @@ const checkIpAllowed = async (clientIp: string): Promise<boolean> => {
     throw new Error(errorMsg.invalid)
   }
 
-  const payload: CheckIpRequest = { clientIP: clientIp }
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}${ENDPOINT.FILTER_IP}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      cache: 'force-cache',
-      next: { revalidate: REVALIDATE_SEC },
-    },
-  )
+  const payload: CheckIpRequest = { clientIp }
+  const response = await fetch(`${baseURL}${ENDPOINT.FILTER_IP}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    cache: 'force-cache',
+    next: { revalidate: REVALIDATE_SEC },
+  })
 
   if (!response.ok) {
     throw new Error(errorMsg.unknown)

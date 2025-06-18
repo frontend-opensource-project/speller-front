@@ -15,7 +15,7 @@ const useCheckClientIpAccess = (clientIp: ClientIpResult | undefined) => {
 
       if (canCheckIpAccess) {
         try {
-          const payload: CheckIpRequest = { clientIP: clientIp.ip }
+          const payload: CheckIpRequest = { clientIp: clientIp.ip }
           const response = await fetch(ENDPOINT.CHECK_IP, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
