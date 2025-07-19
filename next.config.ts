@@ -10,19 +10,17 @@ const nextConfig: NextConfig = {
     })
     return config
   },
-  experimental: {
-    turbo:
-      process.env.NODE_ENV === 'development'
-        ? {
-            rules: {
-              '*.svg': {
-                loaders: ['@svgr/webpack'],
-                as: '*.js',
-              },
+  turbopack:
+    process.env.NODE_ENV === 'development'
+      ? {
+          rules: {
+            '*.svg': {
+              loaders: ['@svgr/webpack'],
+              as: '*.js',
             },
-          }
-        : {},
-  },
+          },
+        }
+      : {},
 }
 
 export default nextConfig

@@ -19,10 +19,16 @@
 
 # production
 /build
+/app.js
+/ecosystem.config.js
+/public/ads.txt
+/public/robots.txt
+/public/sitemap.xml
 
 # misc
 .DS_Store
 *.pem
+/.nvmrc
 
 # debug
 npm-debug.log*

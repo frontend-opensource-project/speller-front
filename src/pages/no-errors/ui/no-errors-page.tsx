@@ -57,7 +57,7 @@ const NoErrorsPage = () => {
             </Button>
             <Button
               className='h-14 w-32 text-lg font-semibold pc:h-16 pc:w-[9.5rem] pc:text-[1.375rem]'
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/speller')}
             >
               처음 페이지
             </Button>

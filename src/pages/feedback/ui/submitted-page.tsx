@@ -32,9 +32,9 @@ const SubmittedPage = async ({
       />
       <Image
         src={submittedWebImage}
-        alt='submitted_tab'
+        alt='submitted_web'
         sizes='100vw'
-        className='hidden h-auto w-full bg-background pc:block'
+        className='hidden h-auto w-full self-center bg-background pc:block pc:rounded-sm pc-lg:rounded-none'
       />
       <div className='-mt-28 space-y-7 px-4 tab:-mt-28 tab:space-y-8 tab:px-[3.75rem] pc:-mt-0 pc:max-w-[36.25rem] pc:space-y-0 pc:px-0 pc:pl-[2.25rem] pc:pt-[6.125rem]'>
         {/* 의견 제출 성공 메시지 */}

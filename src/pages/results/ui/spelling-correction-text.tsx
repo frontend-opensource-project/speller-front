@@ -1,4 +1,5 @@
 import { ClipboardEvent, Fragment, memo, ReactNode, useMemo } from 'react'
+import { cn } from '@/shared/lib/tailwind-merge'
 
 import {
   useSpeller,
@@ -6,7 +7,8 @@ import {
   getTextMethodColor,
   CorrectInfo,
 } from '@/entities/speller'
-import { cn } from '@/shared/lib/tailwind-merge'
+import { sendCorrectionWordClickedEvent } from '@/shared/lib/send-ga-event'
+import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-error-type'
 
 const SpellingCorrectionText = memo(() => {
   const { correctRefs, scrollSection } = useSpellerRefs()
@@ -56,6 +58,13 @@ const SpellingCorrectionText = memo(() => {
                   handleUpdateCorrectInfo({
                     ...position,
                     crtStr: recommendedWord,
+                  })
+                  sendCorrectionWordClickedEvent({
+                    sectionType: 'corrected_text',
+                    wordTextType: 'suggested',
+                    correctedErrorType: getCorrectedErrorType(
+                      position.correctMethod,
+                    ),
                   })
                 }}
               >

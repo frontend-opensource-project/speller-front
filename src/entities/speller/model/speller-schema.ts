@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
 export enum CorrectMethod {
-  띄어쓰기 = 1,
-  오탈자 = 2,
-  문맥 = 3,
+  어법 = 1,
+  문맥 = 2,
+  분석실패 = 3,
 }
 
 export const CorrectMethodEnum = z.nativeEnum(CorrectMethod)

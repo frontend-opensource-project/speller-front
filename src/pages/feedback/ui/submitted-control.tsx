@@ -17,7 +17,7 @@ const SubmittedControl = () => {
       </Button>
       <Button
         className={`${BUTTON_BASE_STYLE} text-white`}
-        onClick={() => router.push('/')}
+        onClick={() => router.push('/speller')}
       >
         홈으로 이동
       </Button>

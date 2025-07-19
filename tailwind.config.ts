@@ -1,4 +1,9 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import type { Config } from 'tailwindcss'
+
+export const TABLET = 726
+export const DESKTOP = 1024
+export const LARGE_DESKTOP = 1377
 
 export default {
   darkMode: ['class'],
@@ -9,8 +14,9 @@ export default {
   ],
   theme: {
     screens: {
-      tab: '726px',
-      pc: '1377px',
+      tab: `${TABLET}px`,
+      pc: `${DESKTOP}px`,
+      ['pc-lg']: `${LARGE_DESKTOP}px`,
     },
     colors: {
       transparent: 'transparent',
@@ -109,6 +115,8 @@ export default {
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    require('@tailwindcss/container-queries'),
+  ],
 } satisfies Config

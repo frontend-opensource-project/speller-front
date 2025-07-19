@@ -3,19 +3,28 @@ import {
   useDebounce,
   useWindowSize,
 } from '@frontend-opensource/use-react-hooks'
+
 import { Button } from '@/shared/ui/button'
 import { cn } from '@/shared/lib/tailwind-merge'
 import ArrowBottomIcon from '@/shared/ui/icon/icon-arrow-bottom.svg'
+import { DESKTOP, TABLET } from '../../../../tailwind.config'
+import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-error-type'
+import {
+  sendErrorDetailClosedEvent,
+  sendErrorDetailOpenedEvent,
+} from '@/shared/lib/send-ga-event'
 
 interface HelpSectionProps {
   help: string
+  correctMethod: number
 }
 
-const HelpSection = ({ help }: HelpSectionProps) => {
+const HelpSection = ({ help, correctMethod }: HelpSectionProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const [showButton, setShowButton] = useState<boolean>(false)
   const contentRef = useRef<HTMLParagraphElement>(null)
   const { width } = useWindowSize()
+  const correctedErrorType = getCorrectedErrorType(correctMethod)
 
   const checkContentHeight = useDebounce(() => {
     if (!contentRef.current) return
@@ -23,8 +32,8 @@ const HelpSection = ({ help }: HelpSectionProps) => {
     const rem = 16
     // threshold: 각 디바이스 화면에서 도움말이 2줄까지 보이는 높이
     let threshold = 4.5 * rem // mobile
-    if (width! >= 726) threshold = 3.5 * rem // tab
-    if (width! >= 1377) threshold = 3 * rem // pc
+    if (width! >= TABLET) threshold = 3.5 * rem // tab
+    if (width! >= DESKTOP) threshold = 3 * rem // pc
 
     setShowButton(contentRef.current.scrollHeight > threshold)
   }, 300)
@@ -56,7 +65,17 @@ const HelpSection = ({ help }: HelpSectionProps) => {
           isExpanded && 'text-slate-400',
           showButton && 'visible',
         )}
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => {
+          const next = !isExpanded
+
+          if (next) {
+            sendErrorDetailOpenedEvent({ correctedErrorType })
+          } else {
+            sendErrorDetailClosedEvent({ correctedErrorType })
+          }
+
+          setIsExpanded(next)
+        }}
       >
         {isExpanded ? '접기' : '자세히 보기'}
         <ArrowBottomIcon

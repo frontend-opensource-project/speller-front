@@ -7,7 +7,7 @@ export default function GlobalError() {
     <html lang='ko'>
       <body>
         <BaseLayout>
-          <div className='mx-4 my-12 flex w-full flex-col items-center justify-center rounded-2xl bg-white p-5 tab:m-[3.75rem]'>
+          <div className='mx-4 mb-12 mt-[3.065rem] flex w-full flex-col items-center justify-center rounded-lg bg-white p-5 tab:mx-[3.75rem] tab:mt-[3.875rem] tab:rounded-[1rem] pc:mx-0 pc:mt-[4.5rem]'>
             <h2 className='text-2xl font-semibold leading-[150%] tracking-tight tab:text-[2rem] pc:text-[3rem]'>
               오류가 발생했습니다
             </h2>
@@ -26,7 +26,7 @@ export default function GlobalError() {
                 문의하기
               </a>
               <a
-                href='/'
+                href='/speller'
                 className='flex h-[3.375rem] w-[8rem] items-center justify-center rounded-lg bg-primary p-0 text-lg font-semibold text-white pc:h-[4rem] pc:w-[9.5rem] pc:text-xl'
               >
                 처음 페이지

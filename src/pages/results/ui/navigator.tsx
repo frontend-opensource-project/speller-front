@@ -1,16 +1,20 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { CheckPayload, useSpeller, useSpellerRefs } from '@/entities/speller'
 import { Spinner } from '@/shared/ui/spinner'
 import { toast } from '@/shared/lib/use-toast'
 import { spellCheckAction } from '../api/spell-check-action'
 
-const Navigator = () => {
+// props 인터페이스 추가
+interface NavigatorProps {
+  currentPage?: number
+}
+
+const Navigator = ({ currentPage: propCurrentPage }: NavigatorProps) => {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const {
     response,
     responseMap,
@@ -21,15 +25,20 @@ const Navigator = () => {
   const { correctScrollContainerRef, errorScrollContainerRef } =
     useSpellerRefs()
   const [isFetching, setIsFetching] = useState(false)
-  const currentPage = Number(searchParams?.get('page')) || 1
+
+  // currentPage 로직 변경
+  const getCurrentPage = () => {
+    if (propCurrentPage) return propCurrentPage
+
+    // props가 없으면 URL에서 추출
+    const match = pathname?.match(/\/results\/(\d+)$/)
+    return match ? Number(match[1]) : 1
+  }
+  const currentPage = getCurrentPage()
   const currentPageRef = useRef<number | null>(null)
 
   const createPageURL = (nextPage: number) => {
-    if (!searchParams) return `${pathname}`
-
-    const params = new URLSearchParams(searchParams)
-    params.set('page', nextPage.toString())
-    return `${pathname}?${params.toString()}`
+    return nextPage === 1 ? '/results' : `/results/${nextPage}`
   }
 
   const fetchSpellCheck = async (payload: Required<CheckPayload>) => {
@@ -77,7 +86,8 @@ const Navigator = () => {
       }
 
       handleReceiveResponse(data)
-      router.push(createPageURL(page))
+      const newUrl = createPageURL(page)
+      router.push(newUrl)
       setIsFetching(false)
     } catch (error) {
       throw new Error(error as string)

@@ -2,21 +2,21 @@
 
 import React from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useClipboard } from '@frontend-opensource/use-react-hooks'
-
+import { useSpeller } from '@/entities/speller'
+import { toast } from '@/shared/lib/use-toast'
+import { getWordsAroundIndex } from '@/shared/lib/util'
 import { Button } from '@/shared/ui/button'
 import { TextCounter } from '@/shared/ui/text-counter'
-import { useSpeller } from '@/entities/speller'
-import { useRouter } from 'next/navigation'
-import { toast } from '@/shared/lib/use-toast'
 import { logCopyAction } from '../api/log-copy-action'
-import { getWordsAroundIndex } from '@/shared/lib/util'
 
 const ResultsControl = () => {
   const {
     displayText,
     response: { str },
     correctInfo,
+    handleTextChange,
   } = useSpeller()
   const router = useRouter()
   const { copyText } = useClipboard()
@@ -38,14 +38,23 @@ const ResultsControl = () => {
   }
 
   return (
-    <div className='mt-2 flex flex-shrink-0 justify-between'>
-      <TextCounter count={str.length} />
+    <div className='flex flex-shrink-0 justify-between pt-5'>
+      <TextCounter count={str.length} className='pc:-translate-y-3' />
       <div className='flex gap-3'>
+        <ActionButton
+          icon='/new-article.svg'
+          label='새글쓰기'
+          ariaLabel='새글쓰기'
+          onClick={() => {
+            handleTextChange('')
+            router.push('/speller')
+          }}
+        />
         <ActionButton
           icon='/arrow-return-left.svg'
           label='돌아가기'
           ariaLabel='페이지 돌아가기'
-          onClick={() => router.back()}
+          onClick={() => router.push('/speller')}
         />
         <ActionButton
           icon='/copy.svg'
