@@ -16,7 +16,7 @@ export default {
     screens: {
       tab: `${TABLET}px`,
       pc: `${DESKTOP}px`,
-      ['pc-lg']: `${LARGE_DESKTOP}px`,
+      'pc-lg': `${LARGE_DESKTOP}px`,
     },
     colors: {
       transparent: 'transparent',

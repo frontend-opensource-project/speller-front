@@ -70,7 +70,7 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(
             style={{ height: '100%' }}
             placeholder={placeholder}
             className={cn(
-              'flex h-full w-full resize-none overflow-hidden whitespace-pre-wrap break-all border-none border-input text-justify align-top text-[1.125rem] text-base font-normal leading-[1.8rem] tracking-[-0.0225rem] text-slate-600 ring-offset-background placeholder:text-muted-foreground placeholder:text-slate-300 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 tab:leading-[1.9125rem] pc:text-[1.25rem] pc:leading-[2.125rem] pc:tracking-[-0.025rem]',
+              'flex h-full w-full resize-none overflow-hidden whitespace-pre-wrap break-all border-none border-input text-justify align-top text-[1.125rem] text-base font-normal leading-7 tracking-[-0.0225rem] text-slate-600 ring-offset-background placeholder:text-muted-foreground placeholder:text-slate-300 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 pc:text-[1.25rem] pc:leading-8 pc:tracking-[-0.025rem]',
               className,
             )}
             onInput={({ currentTarget: { value } }) => {

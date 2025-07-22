@@ -104,12 +104,12 @@ const SpellerPage = () => {
   return (
     <>
       <form action={formAction} className='flex-1'>
-        <ContentLayout className='min-h-[35.75rem] pb-9 pc:pb-[3.125rem]'>
+        <ContentLayout className='min-h-[35.75rem] pb-4 pc:pb-5'>
           {/* 강한 검사 */}
           <div className='mb-2 mt-[0.94rem] min-h-[1.625rem] tab:mt-[1.75rem] pc:mb-[0.78rem] pc:mt-[1.97rem] pc:min-h-8'>
             <SpellerSetting />
           </div>
-          <div className='flex h-full w-full flex-col rounded-lg bg-white p-5 tab:rounded-[1rem] tab:p-10'>
+          <div className='flex h-full w-full flex-col rounded-lg bg-white p-4 tab:rounded-[1rem] tab:p-5 pc:p-6'>
             <SpellerTextInput />
             {/* 글자수 & 검사하기 버튼 */}
             <SpellerControl />
