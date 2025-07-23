@@ -11,8 +11,9 @@ import {
   setSelectedErrIdx,
   setResponseMap,
   resetResponseMap,
-  type SpellerState,
   setStrictMode,
+  setIsAutoScroll,
+  type SpellerState,
 } from './speller-slice'
 import { CorrectInfo } from './speller-schema'
 
@@ -66,6 +67,13 @@ const useSpeller = () => {
     dispatch(resetResponseMap())
   }, [dispatch])
 
+  const updateIsAutoScroll = useCallback(
+    (value: boolean) => {
+      dispatch(setIsAutoScroll(value))
+    },
+    [dispatch],
+  )
+
   return {
     ...state,
     handleTextChange,
@@ -75,6 +83,7 @@ const useSpeller = () => {
     updateErrInfoIndex,
     updateResponseMap,
     initResponseMap,
+    updateIsAutoScroll,
   }
 }
 

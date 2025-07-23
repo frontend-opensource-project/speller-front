@@ -5,10 +5,12 @@ import React from 'react'
 import { SpellingCorrectionText } from './spelling-correction-text'
 import { ScrollGradientFade } from '@/shared/ui/scroll-gradient-fade'
 import { ScrollContainer } from '@/shared/ui/scroll-container'
-import { useSpellerRefs } from '@/entities/speller'
+import { useSpeller, useSpellerRefs } from '@/entities/speller'
+import { Switch } from '@/shared/ui/switch'
 
 const CorrectionContent = () => {
   const { correctScrollContainerRef } = useSpellerRefs()
+  const { isAutoScroll, updateIsAutoScroll } = useSpeller()
 
   return (
     <>
@@ -17,6 +19,12 @@ const CorrectionContent = () => {
         <h2 className='text-lg font-semibold leading-[1.9125rem] tracking-[-0.0225rem] tab:text-[1.375rem] tab:leading-[2.3375rem] tab:tracking-[-0.0275rem] pc:text-[1.5rem] pc:leading-[2.55rem] pc:tracking-[-0.03rem]'>
           교정 문서
         </h2>
+        <div className='flex items-center gap-2'>
+          <span className='text-base text-slate-600 pc:text-xl'>
+            자동스크롤
+          </span>
+          <Switch checked={isAutoScroll} onCheckedChange={updateIsAutoScroll} />
+        </div>
       </div>
       {/* 교정 텍스트 */}
       <div className='min-w-0 flex-1'>

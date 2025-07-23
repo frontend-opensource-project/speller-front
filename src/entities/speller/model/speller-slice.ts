@@ -9,12 +9,13 @@ type Response = CheckResponse & { requestedWithStrictMode: boolean }
 
 interface SpellerState {
   text: string // 입력된 텍스트 원본
-  displayText: string // 교정문서에 표시되는 텍스트
-  isStrictCheck: boolean // 강한 검사
-  response: Response
-  responseMap: Record<number, Response>
-  correctInfo: Record<number, CorrectInfo>
-  selectedErrIdx: number
+  displayText: string // 교정 문서에 표시되는 텍스트
+  isStrictCheck: boolean // 강한 검사 여부
+  response: Response // 검사 결과
+  responseMap: Record<number, Response> // 페이지별 검사 결과
+  correctInfo: Record<number, CorrectInfo> // 오류 정보
+  selectedErrIdx: number // 선택된 오류 인덱스
+  isAutoScroll: boolean // 자동 스크롤 여부
 }
 
 const initialState: SpellerState = {
@@ -31,6 +32,7 @@ const initialState: SpellerState = {
   responseMap: {},
   correctInfo: {},
   selectedErrIdx: -1,
+  isAutoScroll: true,
 }
 
 const spellerSlice = createSlice({
@@ -40,11 +42,9 @@ const spellerSlice = createSlice({
     setText: (state, action: PayloadAction<string>) => {
       state.text = action.payload
     },
-
     setStrictMode: (state, action: PayloadAction<boolean>) => {
       state.isStrictCheck = action.payload
     },
-
     updateResponse: (state, action: PayloadAction<Response>) => {
       state.displayText = action.payload.str
       state.response = action.payload
@@ -53,7 +53,6 @@ const spellerSlice = createSlice({
         {},
       )
     },
-
     updateCorrectInfo: (state, action: PayloadAction<CorrectInfo>) => {
       state.correctInfo[action.payload.errorIdx] = action.payload
 
@@ -62,11 +61,9 @@ const spellerSlice = createSlice({
         state.correctInfo,
       )
     },
-
     setSelectedErrIdx: (state, action: PayloadAction<number>) => {
       state.selectedErrIdx = action.payload
     },
-
     setResponseMap: (
       state,
       action: PayloadAction<Response & { pageIdx: number }>,
@@ -74,9 +71,11 @@ const spellerSlice = createSlice({
       const { pageIdx, ...response } = action.payload
       state.responseMap[pageIdx] = response
     },
-
     resetResponseMap: state => {
       state.responseMap = {}
+    },
+    setIsAutoScroll: (state, action: PayloadAction<boolean>) => {
+      state.isAutoScroll = action.payload
     },
   },
 })
@@ -89,6 +88,7 @@ const {
   setSelectedErrIdx,
   setResponseMap,
   resetResponseMap,
+  setIsAutoScroll,
 } = spellerSlice.actions
 const spellerReducer = spellerSlice.reducer
 
@@ -100,6 +100,7 @@ export {
   setSelectedErrIdx,
   setResponseMap,
   resetResponseMap,
+  setIsAutoScroll,
   spellerReducer,
   type SpellerState,
 }
