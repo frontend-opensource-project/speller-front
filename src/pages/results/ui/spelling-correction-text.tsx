@@ -12,7 +12,8 @@ import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-erro
 
 const SpellingCorrectionText = memo(() => {
   const { correctRefs, scrollSection } = useSpellerRefs()
-  const { response, correctInfo, handleUpdateCorrectInfo } = useSpeller()
+  const { response, correctInfo, isAutoScroll, handleUpdateCorrectInfo } =
+    useSpeller()
   const { str: text } = response
 
   const parts = useMemo(() => {
@@ -45,7 +46,10 @@ const SpellingCorrectionText = memo(() => {
                 if (!correctRefs || !el) return
                 correctRefs.current[currentIndex] = el
               }}
-              onMouseOver={() => scrollSection('error', currentIndex)}
+              onMouseOver={() => {
+                if (!isAutoScroll) return
+                scrollSection('error', currentIndex)
+              }}
               aria-label={`추천 단어 - ${recommendedWord}`}
             >
               <button
@@ -93,7 +97,7 @@ const SpellingCorrectionText = memo(() => {
         },
       },
     })
-  }, [correctInfo, response.str])
+  }, [correctInfo, response.str, isAutoScroll])
 
   return (
     <div

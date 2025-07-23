@@ -14,7 +14,7 @@ import { BulletBadge } from '../ui/bullet-badge'
 
 const ErrorTrackingSection = () => {
   const { errorRefs, errorScrollContainerRef, scrollSection } = useSpellerRefs()
-  const { response } = useSpeller()
+  const { response, isAutoScroll } = useSpeller()
   const { errInfo } = response ?? {}
 
   return (
@@ -42,7 +42,10 @@ const ErrorTrackingSection = () => {
                   if (!errorRefs || !el) return
                   errorRefs.current[idx] = el
                 }}
-                onMouseOver={() => scrollSection('correct', idx)}
+                onMouseOver={() => {
+                  if (!isAutoScroll) return
+                  scrollSection('correct', idx)
+                }}
               />
             </Fragment>
           ))}
