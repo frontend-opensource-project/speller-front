@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export const AboutPage = () => {
   return (
-    <div className='flex min-h-[calc(100vh-8rem)] w-full flex-col items-center px-4 py-10 pc:py-16'>
+    <div className='flex w-full flex-col items-center px-4 py-10 pc:py-16'>
       <div className='flex w-full max-w-[32rem] flex-col gap-8 pc:gap-10'>
         {/* 상단: 기여자 안내 */}
         <div className='flex flex-col items-center gap-2'>
