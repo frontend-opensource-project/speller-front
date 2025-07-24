@@ -1,13 +1,9 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
 import { cn } from '../lib/tailwind-merge'
 import { FooterAdSense } from './footer-ad-sense'
-import { FooterInfoSection } from './footer-info-section'
 
 const Footer = () => {
-  const pathname = usePathname()
-  const isInfoHidden = pathname === '/results'
   return (
     <>
       <FooterAdSense includeDevice={['mobile', 'tablet']} />
@@ -18,11 +14,9 @@ const Footer = () => {
       >
         <div
           className={cn(
-            'flex h-full flex-col items-center pc-lg:container pc:mx-auto pc:w-full pc:flex-row pc:justify-between pc:space-x-7 pc:px-[2.25rem] pc:py-2 pc-lg:space-x-0 pc-lg:px-[4.5rem]',
-            isInfoHidden && 'pc:justify-center pc:space-x-0',
+            'flex h-full flex-col items-center pc-lg:container pc:mx-auto pc:w-full pc:flex-row pc:justify-center pc:space-x-0 pc:px-[2.25rem] pc:py-2 pc-lg:space-x-0 pc-lg:px-[4.5rem]',
           )}
         >
-          {!isInfoHidden && <FooterInfoSection />}
           <FooterAdSense includeDevice={['desktop', 'desktop-large']} />
         </div>
       </footer>
