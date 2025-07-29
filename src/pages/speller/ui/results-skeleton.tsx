@@ -21,6 +21,7 @@ const ResultsSkeleton = () => {
             <div className='flex gap-3'>
               <Skeleton className='tab:h-13 tab:w-15 h-12 w-14 rounded-sm' />
               <Skeleton className='tab:h-13 tab:w-15 h-12 w-14 rounded-sm' />
+              <Skeleton className='tab:h-13 tab:w-15 h-12 w-14 rounded-sm' />
             </div>
           </div>
         </div>

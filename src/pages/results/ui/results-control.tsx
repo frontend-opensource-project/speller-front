@@ -42,19 +42,19 @@ const ResultsControl = () => {
       <TextCounter count={str.length} className='pc:-translate-y-3' />
       <div className='flex gap-3'>
         <ActionButton
-          icon='/new-article.svg'
+          icon='/icon/icon-new-article.svg'
           label='새글쓰기'
           ariaLabel='새글쓰기'
           onClick={() => {
             handleTextChange('')
-            router.push('/speller')
+            router.push('/')
           }}
         />
         <ActionButton
           icon='/arrow-return-left.svg'
           label='돌아가기'
           ariaLabel='페이지 돌아가기'
-          onClick={() => router.push('/speller')}
+          onClick={router.back}
         />
         <ActionButton
           icon='/copy.svg'
