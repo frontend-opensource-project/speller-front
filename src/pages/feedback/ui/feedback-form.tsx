@@ -51,7 +51,7 @@ const FeedbackForm = () => {
         </div>
       </div>
       {/* 폼 전송 버튼 */}
-      <div className='mt-3 flex items-center justify-between pb-[5.4375rem] text-end tab:mt-4'>
+      <div className='mt-3 flex flex-col-reverse items-center justify-between gap-2 pb-[5.4375rem] text-end tab:mt-4 pc:flex-row'>
         <ContactInfo />
         <Button
           className='h-[3.375rem] w-full text-lg tab:w-32 pc:h-16 pc:w-[9.625rem] pc:text-[1.375rem]'
