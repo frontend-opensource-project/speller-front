@@ -8,6 +8,7 @@ import { Label } from '@/shared/ui/label'
 import { TextCounter } from '@/shared/ui/text-counter'
 import { Textarea } from '@/shared/ui/textarea'
 import { feedbackReportAction } from '../api/feedback-report-action'
+import { ContactInfo } from './contact-info'
 
 const FeedbackForm = () => {
   const router = useRouter()
@@ -50,7 +51,8 @@ const FeedbackForm = () => {
         </div>
       </div>
       {/* 폼 전송 버튼 */}
-      <div className='mt-3 pb-[5.4375rem] text-end tab:mt-4'>
+      <div className='mt-3 flex flex-col-reverse items-center justify-between gap-2 pb-[5.4375rem] text-end tab:mt-4 pc:flex-row'>
+        <ContactInfo />
         <Button
           className='h-[3.375rem] w-full text-lg tab:w-32 pc:h-16 pc:w-[9.625rem] pc:text-[1.375rem]'
           type='submit'
