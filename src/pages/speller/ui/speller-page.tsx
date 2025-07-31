@@ -17,6 +17,7 @@ import {
   sendCheckResultResponseErrorEvent,
   sendCheckResultResponseUnknownEvent,
 } from '@/shared/lib/send-ga-event'
+import { VersionInfo } from './version-info'
 
 const SpellerPage = () => {
   const router = useRouter()
@@ -105,8 +106,9 @@ const SpellerPage = () => {
     <>
       <form action={formAction} className='flex-1'>
         <ContentLayout className='min-h-[35.75rem] pb-4 pc:pb-5'>
-          {/* 강한 검사 */}
-          <div className='mb-2 mt-[0.94rem] min-h-[1.625rem] tab:mt-[1.75rem] pc:mb-[0.78rem] pc:mt-[1.97rem] pc:min-h-8'>
+          {/* 강한 검사 및 버전*/}
+          <div className='mb-2 mt-[0.94rem] flex min-h-[1.625rem] items-center justify-between tab:mt-[1.75rem] pc:mb-[0.78rem] pc:mt-[1.97rem] pc:min-h-8'>
+            <VersionInfo />
             <SpellerSetting />
           </div>
           <div className='flex h-full w-full flex-col rounded-lg bg-white p-4 tab:rounded-[1rem] tab:p-5 pc:p-6'>
