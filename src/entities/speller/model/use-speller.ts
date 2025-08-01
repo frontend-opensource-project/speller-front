@@ -2,10 +2,10 @@
 
 import { useCallback } from 'react'
 import { shallowEqual } from 'react-redux'
-
+import { usePathname } from 'next/navigation'
 import { useAppDispatch, useAppSelector } from '@/shared/lib/use-redux'
 import {
-  setText,
+  setOriginalText,
   updateResponse,
   updateCorrectInfo,
   setSelectedErrIdx,
@@ -20,10 +20,16 @@ import { CorrectInfo } from './speller-schema'
 const useSpeller = () => {
   const dispatch = useAppDispatch()
   const state = useAppSelector(state => state.speller, shallowEqual)
+  const pathname = usePathname()
 
-  const handleTextChange = useCallback(
+  const getCurrentPage = () => {
+    const match = pathname?.match(/\/results\/(\d+)$/)
+    return match ? Number(match[1]) : 1
+  }
+
+  const handleOriginalTextChange = useCallback(
     (value: string) => {
-      dispatch(setText(value))
+      dispatch(setOriginalText(value))
     },
     [dispatch],
   )
@@ -44,9 +50,10 @@ const useSpeller = () => {
 
   const handleUpdateCorrectInfo = useCallback(
     (payload: CorrectInfo) => {
-      dispatch(updateCorrectInfo(payload))
+      const pageIdx = getCurrentPage()
+      dispatch(updateCorrectInfo({ ...payload, pageIdx }))
     },
-    [dispatch],
+    [dispatch, getCurrentPage],
   )
 
   const updateErrInfoIndex = useCallback(
@@ -76,7 +83,7 @@ const useSpeller = () => {
 
   return {
     ...state,
-    handleTextChange,
+    handleOriginalTextChange,
     updateStrictCheckMode,
     handleReceiveResponse,
     handleUpdateCorrectInfo,

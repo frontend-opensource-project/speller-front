@@ -16,7 +16,7 @@ const ResultsControl = () => {
     displayText,
     response: { str },
     correctInfo,
-    handleTextChange,
+    handleOriginalTextChange,
   } = useSpeller()
   const router = useRouter()
   const { copyText } = useClipboard()
@@ -46,7 +46,7 @@ const ResultsControl = () => {
           label='새글쓰기'
           ariaLabel='새글쓰기'
           onClick={() => {
-            handleTextChange('')
+            handleOriginalTextChange('')
             router.push('/speller')
           }}
         />

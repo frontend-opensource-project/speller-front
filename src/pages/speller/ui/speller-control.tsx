@@ -8,8 +8,8 @@ import { useSpeller } from '@/entities/speller'
 import { sendCheckTriggeredEvent } from '@/shared/lib/send-ga-event'
 
 const SpellerControl = () => {
-  const { text, isStrictCheck } = useSpeller()
-  const textLength = text.length
+  const { originalText, isStrictCheck } = useSpeller()
+  const textLength = originalText.length
   const isButtonDisabled = textLength <= 0
 
   return (
