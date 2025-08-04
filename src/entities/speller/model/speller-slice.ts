@@ -71,17 +71,18 @@ const spellerSlice = createSlice({
       if (!state.displayTextMap) state.displayTextMap = {}
       state.displayTextMap[action.payload.pageIdx] = state.displayText
 
-      let offset = 0
+      let offset = 0 // 대치어 적용을 시작할 인덱스
       if (action.payload.pageIdx > 1) {
         for (let i = 1; i < action.payload.pageIdx; i++) {
           if (state.displayTextMap[i]) {
+            // n 페이지의 시작 인덱스는 n-1 페이지까지의 길이를 더한 값
             offset += state.displayTextMap[i].length
           }
         }
       }
 
       state.correctedText = applyCorrections(
-        state.correctedText,
+        state.originalText.replace(/(\r\n|\n|\r)/g, ''),
         state.correctInfo,
         offset,
       )
