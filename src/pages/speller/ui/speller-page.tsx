@@ -12,7 +12,7 @@ import {
   sendCheckResultResponseErrorEvent,
   sendCheckResultResponseUnknownEvent,
 } from '@/shared/lib/send-ga-event'
-import { spellCheckAction } from '../api/spell-check'
+import { spellCheckAction } from '../api/spell-check-action'
 import { TIMEOUT_ERROR_CODE } from '../model/error-code'
 import { spellCheckSchema } from '../model/spell-check-schema'
 import { SpellerTextInput } from './speller-text-input'

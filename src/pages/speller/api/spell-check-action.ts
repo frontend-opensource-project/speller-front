@@ -1,67 +1,40 @@
-'use server'
-
+import { z } from 'zod'
 import axios from 'axios'
-import { z, ZodError } from 'zod'
-
 import {
   SpellerApi,
-  type SpellerState,
+  CheckPayload,
   checkPayloadSchema,
   checkResponseSchema,
 } from '@/entities/speller'
+import {
+  spellCheckSchema,
+  serverErrorResponseSchema,
+} from '../model/spell-check-schema'
+import { normalizeLineBreaks } from '../lib/utils'
 
-const errorResponseSchema = z.object({
-  errorMessage: z.string(),
-  errorCode: z.number(),
-})
-
-type ActionState = {
-  data: SpellerState['response'] | null
-  error:
-    | null
-    | {
-        errorMessage: string
-        type: 'zodError' | 'unknown'
-      }
-    | {
-        errorMessage: string
-        type: 'server'
-        errorCode: number
-        requestPayload: {
-          isStrictCheck: boolean
-          textLength: number
-        }
-      }
-  elapsedTimeMs: number
-}
-
-// 개행 문자 정규화 함수
-const normalizeLineBreaks = (text: string): string => {
-  return text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
-}
+export type SpellCheckResponse = z.infer<typeof spellCheckSchema>
 
 const spellCheckAction = async (
-  _prevState: ActionState,
-  formData: FormData,
-): Promise<ActionState> => {
+  payload: CheckPayload,
+): Promise<SpellCheckResponse> => {
   const start = Date.now()
 
   try {
-    const rawText = formData.get('speller-text') as string
-    const text = normalizeLineBreaks(rawText) // 개행 문자 정규화
-    const isStrictCheck = formData.get('isStrictCheck') === 'on'
+    const normalizedText = normalizeLineBreaks(payload.text) // 개행 문자 정규화
     const validateCheckPayload = checkPayloadSchema.parse({
-      text,
-      isStrictCheck,
+      ...payload,
+      text: normalizedText,
     })
+
     const { data } = await SpellerApi.check(validateCheckPayload)
     const validateCheckResponse = checkResponseSchema.parse(data)
+
     const elapsedTimeMs = Date.now() - start
 
     return {
       data: {
         ...validateCheckResponse,
-        requestedWithStrictMode: isStrictCheck,
+        requestedWithStrictMode: payload.isStrictCheck ?? false,
       },
       error: null,
       elapsedTimeMs,
@@ -69,49 +42,22 @@ const spellCheckAction = async (
   } catch (error) {
     const elapsedTimeMs = Date.now() - start
 
-    if (axios.isAxiosError(error) && error.response?.data) {
-      try {
-        const { errorCode, errorMessage } = errorResponseSchema.parse(
-          error.response.data,
-        )
-        const requestDataRaw = error.config?.data // 직렬화된 요청 데이터
-        const requestDataParsed = JSON.parse(requestDataRaw)
-        const { text, isStrictCheck = false } =
-          checkPayloadSchema.parse(requestDataParsed)
+    if (axios.isAxiosError(error)) {
+      const serverErrorResponse = serverErrorResponseSchema.parse(
+        error.response?.data,
+      )
+      const requestDataRaw = error.config?.data // 직렬화된 요청 데이터
+      const requestData = JSON.parse(requestDataRaw)
+      const parsedRequestData = checkPayloadSchema.parse(requestData)
 
-        return {
-          data: null,
-          error: {
-            errorCode,
-            errorMessage,
-            type: 'server',
-            requestPayload: {
-              isStrictCheck,
-              textLength: text.length,
-            },
-          },
-          elapsedTimeMs,
-        }
-      } catch {
-        return {
-          data: null,
-          error: {
-            errorMessage:
-              "spellCheckAction: Response field value attribute and type don't match.",
-            type: 'zodError',
-          },
-          elapsedTimeMs,
-        }
-      }
-    }
-
-    if (error instanceof ZodError) {
       return {
         data: null,
         error: {
-          errorMessage:
-            'spellCheckAction: Received invalid form field value — type or format mismatch.',
-          type: 'zodError',
+          ...serverErrorResponse,
+          requestPayload: {
+            isStrictCheck: parsedRequestData.isStrictCheck ?? false,
+            textLength: parsedRequestData.text.length,
+          },
         },
         elapsedTimeMs,
       }
@@ -120,9 +66,8 @@ const spellCheckAction = async (
     return {
       data: null,
       error: {
-        errorMessage:
-          'spellCheckAction: An unknown error occurred while executing a function.',
         type: 'unknown',
+        errorMessage: 'An unknown error occurred while executing a function.',
       },
       elapsedTimeMs,
     }
