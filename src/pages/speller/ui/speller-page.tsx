@@ -51,12 +51,21 @@ const SpellerPage = () => {
     })
   }
 
+  // 검사하기 단축키 설정
   useKeyCombination({
     shortcutKeys: ['ControlLeft', 'Enter'],
     callback: handleSpellCheck,
   })
   useKeyCombination({
+    shortcutKeys: ['ControlRight', 'Enter'],
+    callback: handleSpellCheck,
+  })
+  useKeyCombination({
     shortcutKeys: ['MetaLeft', 'Enter'],
+    callback: handleSpellCheck,
+  })
+  useKeyCombination({
+    shortcutKeys: ['MetaRight', 'Enter'],
     callback: handleSpellCheck,
   })
 
