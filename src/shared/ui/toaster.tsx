@@ -11,13 +11,27 @@ import {
 } from '@/shared/ui/toast'
 import WarningIcon from '@/shared/ui/icon/toast-warning.svg'
 import CheckIcon from '@/shared/ui/icon/toast-check.svg'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 
 export function Toaster() {
-  const { toasts } = useToast()
+  const { toasts, dismiss } = useToast()
+  const viewportRef = useRef<HTMLOListElement>(null)
+
+  useEffect(() => {
+    if (toasts.length === 0) return
+
+    function handleClickOutside() {
+      if (!viewportRef.current) return
+      // 외부 클릭 시 모든 토스트 닫기
+      toasts.forEach(t => dismiss(t.id))
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [toasts, dismiss])
 
   return (
-    <ToastProvider swipeDirection='up' duration={3000}>
+    <ToastProvider swipeDirection='up' duration={2000}>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast key={id} {...props}>
@@ -45,7 +59,7 @@ export function Toaster() {
           </Toast>
         )
       })}
-      <ToastViewport />
+      <ToastViewport ref={viewportRef} />
     </ToastProvider>
   )
 }
