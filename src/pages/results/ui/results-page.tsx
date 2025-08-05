@@ -51,7 +51,7 @@ const ResultsPage = ({ pageParam = '1' }: ResultsPageProps) => {
   return (
     <SpellerRefsProvider>
       <ContentLayout className='pb-4 tab:pb-10 pc:pb-5'>
-        <div className='sticky -top-2 z-10 flex min-h-[1.625rem] items-center justify-between bg-background pb-2 pt-4 tab:-top-3 tab:justify-center tab:pt-[1.25rem] pc:relative pc:top-0 pc:min-h-8 pc:pb-3 pc:pt-6'>
+        <div className='sticky -top-2 z-10 flex min-h-[1.625rem] items-center justify-between bg-background pb-2 pt-4 tab:-top-3 tab:justify-center tab:pt-[1.25rem] pc:min-h-8 pc:pb-3 pc:pt-6'>
           <Navigator currentPage={Number(pageParam)} />
           <StrongCheckMessage />
         </div>
