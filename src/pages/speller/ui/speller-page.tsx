@@ -20,8 +20,12 @@ import {
 
 const SpellerPage = () => {
   const router = useRouter()
-  const { handleReceiveResponse, initResponseMap, updateResponseMap } =
-    useSpeller()
+  const {
+    handleReceiveResponse,
+    initResponseMap,
+    initDisplayTextMap,
+    updateResponseMap,
+  } = useSpeller()
   const [state, formAction, isPending] = useActionState(spellCheckAction, {
     data: null,
     error: null,
@@ -41,6 +45,7 @@ const SpellerPage = () => {
       setIsRedirectingToResult(true)
       handleReceiveResponse(data)
       initResponseMap()
+      initDisplayTextMap()
       updateResponseMap({
         ...data,
         requestedWithStrictMode: payload.isStrictCheck,

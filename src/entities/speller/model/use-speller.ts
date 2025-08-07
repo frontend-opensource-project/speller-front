@@ -11,6 +11,7 @@ import {
   setSelectedErrIdx,
   setResponseMap,
   resetResponseMap,
+  resetDisplayTextMap,
   setStrictMode,
   setIsAutoScroll,
   type SpellerState,
@@ -74,6 +75,10 @@ const useSpeller = () => {
     dispatch(resetResponseMap())
   }, [dispatch])
 
+  const initDisplayTextMap = useCallback(() => {
+    dispatch(resetDisplayTextMap())
+  }, [dispatch])
+
   const updateIsAutoScroll = useCallback(
     (value: boolean) => {
       dispatch(setIsAutoScroll(value))
@@ -90,6 +95,7 @@ const useSpeller = () => {
     updateErrInfoIndex,
     updateResponseMap,
     initResponseMap,
+    initDisplayTextMap,
     updateIsAutoScroll,
   }
 }

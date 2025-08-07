@@ -1,28 +1,50 @@
 'use client'
 
-import React from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
 import { useClipboard } from '@frontend-opensource/use-react-hooks'
 import { useSpeller } from '@/entities/speller'
-import { toast } from '@/shared/lib/use-toast'
-import { getWordsAroundIndex } from '@/shared/lib/util'
 import { Button } from '@/shared/ui/button'
 import { TextCounter } from '@/shared/ui/text-counter'
+import { toast } from '@/shared/lib/use-toast'
+import { getWordsAroundIndex } from '@/shared/lib/util'
 import { logCopyAction } from '../api/log-copy-action'
 
 const ResultsControl = () => {
   const {
-    displayText,
-    response: { str },
+    originalText,
+    displayTextMap,
+    response: { str, totalPageCnt },
+    responseMap,
     correctInfo,
     handleOriginalTextChange,
   } = useSpeller()
   const router = useRouter()
   const { copyText } = useClipboard()
+  const [correctedText, setCorrectedText] = useState('')
+
+  useEffect(() => {
+    const text = originalText.replace(/(\r\n|\n|\r)/g, '')
+    let correctedText = ''
+
+    for (let i = 1; i <= totalPageCnt; i++) {
+      const displayTextMapValue = displayTextMap?.[i]
+      if (displayTextMapValue) {
+        correctedText += displayTextMapValue
+      } else {
+        const prevPageResponse = responseMap[i - 1]
+        if (prevPageResponse) {
+          correctedText += text.substring(prevPageResponse.end)
+          break
+        }
+      }
+    }
+    setCorrectedText(correctedText)
+  }, [displayTextMap])
 
   const handleCopy = () => {
-    copyText(displayText)
+    copyText(correctedText)
     toast({
       description: '복사 완료!\n원하는 곳에 붙여넣어 보세요.',
     })
