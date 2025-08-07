@@ -6,14 +6,14 @@ import { usePathname } from 'next/navigation'
 import { useAppDispatch, useAppSelector } from '@/shared/lib/use-redux'
 import {
   setOriginalText,
-  updateResponse,
-  updateCorrectInfo,
-  setSelectedErrIdx,
+  setResponse,
   setResponseMap,
+  setCorrectInfo,
+  setSelectedErrIdx,
+  setStrictMode,
+  setAutoScrollMode,
   resetResponseMap,
   resetDisplayTextMap,
-  setStrictMode,
-  setIsAutoScroll,
   type SpellerState,
 } from './speller-slice'
 import { CorrectInfo } from './speller-schema'
@@ -35,24 +35,24 @@ const useSpeller = () => {
     [dispatch],
   )
 
-  const updateStrictCheckMode = useCallback(
-    (value: boolean) => {
-      dispatch(setStrictMode(value))
-    },
-    [dispatch],
-  )
-
-  const handleReceiveResponse = useCallback(
+  const updateResponse = useCallback(
     (payload: SpellerState['response']) => {
-      dispatch(updateResponse(payload))
+      dispatch(setResponse(payload))
     },
     [dispatch],
   )
 
-  const handleUpdateCorrectInfo = useCallback(
+  const updateResponseMap = useCallback(
+    (payload: SpellerState['response'] & { pageIdx: number }) => {
+      dispatch(setResponseMap(payload))
+    },
+    [dispatch],
+  )
+
+  const updateCorrectInfo = useCallback(
     (payload: CorrectInfo) => {
       const pageIdx = getCurrentPage()
-      dispatch(updateCorrectInfo({ ...payload, pageIdx }))
+      dispatch(setCorrectInfo({ ...payload, pageIdx }))
     },
     [dispatch, getCurrentPage],
   )
@@ -64,9 +64,16 @@ const useSpeller = () => {
     [dispatch],
   )
 
-  const updateResponseMap = useCallback(
-    (payload: SpellerState['response'] & { pageIdx: number }) => {
-      dispatch(setResponseMap(payload))
+  const updateStrictMode = useCallback(
+    (value: boolean) => {
+      dispatch(setStrictMode(value))
+    },
+    [dispatch],
+  )
+
+  const updateAutoScrollMode = useCallback(
+    (value: boolean) => {
+      dispatch(setAutoScrollMode(value))
     },
     [dispatch],
   )
@@ -79,24 +86,17 @@ const useSpeller = () => {
     dispatch(resetDisplayTextMap())
   }, [dispatch])
 
-  const updateIsAutoScroll = useCallback(
-    (value: boolean) => {
-      dispatch(setIsAutoScroll(value))
-    },
-    [dispatch],
-  )
-
   return {
     ...state,
     handleOriginalTextChange,
-    updateStrictCheckMode,
-    handleReceiveResponse,
-    handleUpdateCorrectInfo,
-    updateErrInfoIndex,
+    updateResponse,
     updateResponseMap,
+    updateCorrectInfo,
+    updateErrInfoIndex,
+    updateStrictMode,
+    updateAutoScrollMode,
     initResponseMap,
     initDisplayTextMap,
-    updateIsAutoScroll,
   }
 }
 

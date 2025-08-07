@@ -15,7 +15,7 @@ const ResultsControl = () => {
   const {
     originalText,
     displayTextMap,
-    response: { str, totalPageCnt },
+    response,
     responseMap,
     correctInfo,
     handleOriginalTextChange,
@@ -28,7 +28,7 @@ const ResultsControl = () => {
     const text = originalText.replace(/(\r\n|\n|\r)/g, '')
     let correctedText = ''
 
-    for (let i = 1; i <= totalPageCnt; i++) {
+    for (let i = 1; i <= response.totalPageCnt; i++) {
       const displayTextMapValue = displayTextMap?.[i]
       if (displayTextMapValue) {
         correctedText += displayTextMapValue
@@ -54,14 +54,14 @@ const ResultsControl = () => {
       .map(item => ({
         errorWord: item.orgStr,
         replaceWord: item.candWord.split('|')[0],
-        sentence: getWordsAroundIndex(str, item.start),
+        sentence: getWordsAroundIndex(response.str, item.start),
       }))
     logCopyAction(unfixedErrors)
   }
 
   return (
     <div className='flex flex-shrink-0 justify-between pt-5'>
-      <TextCounter count={str.length} className='pc:-translate-y-3' />
+      <TextCounter count={response.str.length} className='pc:-translate-y-3' />
       <div className='flex gap-3'>
         <ActionButton
           icon='/new-article.svg'

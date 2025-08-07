@@ -12,7 +12,7 @@ import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-erro
 
 const SpellingCorrectionText = memo(() => {
   const { correctRefs, scrollSection } = useSpellerRefs()
-  const { response, correctInfo, isAutoScroll, handleUpdateCorrectInfo } =
+  const { response, correctInfo, isAutoScroll, updateCorrectInfo } =
     useSpeller()
   const { str: text } = response
 
@@ -59,7 +59,7 @@ const SpellingCorrectionText = memo(() => {
                   isResolved && '-z-10 opacity-0',
                 )}
                 onClick={() => {
-                  handleUpdateCorrectInfo({
+                  updateCorrectInfo({
                     ...position,
                     crtStr: recommendedWord,
                   })

@@ -13,7 +13,7 @@ export const useUserReplace = ({ handleClose }: useUserReplaceParams) => {
     response: { errInfo, str },
     selectedErrIdx,
   } = useAppSelector(state => state.speller)
-  const { handleUpdateCorrectInfo } = useSpeller()
+  const { updateCorrectInfo } = useSpeller()
 
   const { orgStr: errorWord, start, correctMethod } = errInfo[selectedErrIdx]
 
@@ -26,7 +26,7 @@ export const useUserReplace = ({ handleClose }: useUserReplaceParams) => {
   }
 
   const handleEdit = async () => {
-    handleUpdateCorrectInfo({ ...errInfo[selectedErrIdx], crtStr: value })
+    updateCorrectInfo({ ...errInfo[selectedErrIdx], crtStr: value })
 
     try {
       await logUserReplaceAction({

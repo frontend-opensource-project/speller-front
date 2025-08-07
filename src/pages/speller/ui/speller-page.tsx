@@ -21,10 +21,10 @@ import {
 const SpellerPage = () => {
   const router = useRouter()
   const {
-    handleReceiveResponse,
+    updateResponse,
+    updateResponseMap,
     initResponseMap,
     initDisplayTextMap,
-    updateResponseMap,
   } = useSpeller()
   const [state, formAction, isPending] = useActionState(spellCheckAction, {
     data: null,
@@ -43,7 +43,7 @@ const SpellerPage = () => {
       }
 
       setIsRedirectingToResult(true)
-      handleReceiveResponse(data)
+      updateResponse(data)
       initResponseMap()
       initDisplayTextMap()
       updateResponseMap({
@@ -55,8 +55,6 @@ const SpellerPage = () => {
 
       if (data.errInfo.length === 0) {
         sendCheckResultNoErrorEvent(payload)
-
-        //return router.push(`/no-errors`)
       }
 
       return router.push('/results')
@@ -96,7 +94,7 @@ const SpellerPage = () => {
 
       return router.push(`/timeout`)
     }
-  }, [state, router, handleReceiveResponse, updateResponseMap])
+  }, [state, router, updateResponse, updateResponseMap])
 
   useEffect(() => {
     router.prefetch('/results')

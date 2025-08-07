@@ -10,7 +10,7 @@ import { Switch } from '@/shared/ui/switch'
 
 const CorrectionContent = () => {
   const { correctScrollContainerRef } = useSpellerRefs()
-  const { isAutoScroll, updateIsAutoScroll } = useSpeller()
+  const { isAutoScroll, updateAutoScrollMode } = useSpeller()
 
   return (
     <>
@@ -23,7 +23,10 @@ const CorrectionContent = () => {
           <span className='text-base text-slate-600 pc:text-xl'>
             자동스크롤
           </span>
-          <Switch checked={isAutoScroll} onCheckedChange={updateIsAutoScroll} />
+          <Switch
+            checked={isAutoScroll}
+            onCheckedChange={updateAutoScrollMode}
+          />
         </div>
       </div>
       {/* 교정 텍스트 */}

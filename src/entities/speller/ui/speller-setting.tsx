@@ -5,7 +5,7 @@ import { Switch } from '@/shared/ui/switch'
 import { useSpeller } from '../model/use-speller'
 
 const SpellerSetting = () => {
-  const { updateStrictCheckMode, isStrictCheck } = useSpeller()
+  const { isStrictCheck, updateStrictMode } = useSpeller()
 
   return (
     <div className='flex items-center justify-end gap-2 pc:gap-4'>
@@ -20,8 +20,8 @@ const SpellerSetting = () => {
         aria-label='강한 검사 모드 켜기/끄기'
         id='airplane-mode'
         name='isStrictCheck'
-        onCheckedChange={updateStrictCheckMode}
         checked={isStrictCheck}
+        onCheckedChange={updateStrictMode}
       />
     </div>
   )
