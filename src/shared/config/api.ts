@@ -7,4 +7,5 @@ export const ENDPOINT = {
   SEND_REPORT_MAIL: '/sendReportMail',
   FILTER_IP: '/filterIP',
   CHECK_IP: '/client-api/check-ip', // API Route
+  VERSION: '/version',
 }

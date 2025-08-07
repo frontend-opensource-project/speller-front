@@ -217,21 +217,21 @@ export const sendCheckResultResponseErrorEvent = ({
  * 요청 정보나 사용자의 입력 상태 등 추가 맥락을 파악할 수 없을 때 호출됩니다.
  * 예를 들어, 요청 payload가 파싱되지 않거나 오류가 명확하게 분류되지 않는 경우 등에 해당합니다.
  *
- * @param elapsedTimeMs 요청 시작부터 예외 발생까지의 소요 시간 (밀리초 단위)
- * @param errorCode 서버 또는 내부 시스템이 부여한 오류 코드
  * @param errorStage 오류 발생 단계 (예: 'unknown' 등)
+ * @param errorCode 서버 또는 내부 시스템이 부여한 오류 코드
  * @param errorMessage 에러 메시지 또는 상세 설명
+ * @param elapsedTimeMs 요청 시작부터 예외 발생까지의 소요 시간 (밀리초 단위)
  */
 export const sendCheckResultResponseUnknownEvent = ({
-  elapsedTimeMs,
   errorStage,
   errorCode,
   errorMessage,
+  elapsedTimeMs,
 }: {
-  elapsedTimeMs: number
-  errorCode: number
   errorStage: (typeof ERROR_STAGE)[number]
+  errorCode: number
   errorMessage: string
+  elapsedTimeMs: number
 }) => {
   GAEvents.checkResultResponseUnknown({
     error_stage: errorStage,

@@ -22,14 +22,14 @@ const Header = () => {
           </Link>
         </div>
         <div className='hidden items-center gap-4 pc:flex'>
+          <Link href='/about' className={classes.linkButton}>
+            소개
+          </Link>
           <Link href='/guide' className={classes.linkButton}>
             사용법
           </Link>
           <Link href='/feedback' className={classes.linkButton}>
             문의하기
-          </Link>
-          <Link href='/about' className={classes.linkButton}>
-            소개
           </Link>
           <Link
             href='https://nara-speller.co.kr/old_speller/'
@@ -50,6 +50,14 @@ const Header = () => {
           >
             <ul>
               <li className='group'>
+                <Link href='/about' className={classes.popoverButton}>
+                  <i
+                    className={`${classes.popoverIcon} bg-icon-question group-hover:bg-icon-question-white`}
+                  />
+                  소개
+                </Link>
+              </li>
+              <li className='group'>
                 <Link
                   href='/guide'
                   className='flex items-center gap-2 border-b border-slate-200 px-2 py-2.5 pr-3 text-sm leading-none group-hover:text-primary tab:text-base'
@@ -66,14 +74,6 @@ const Header = () => {
                     className={`${classes.popoverIcon} bg-icon-question group-hover:bg-icon-question-white`}
                   />
                   문의하기
-                </Link>
-              </li>
-              <li className='group'>
-                <Link href='/about' className={classes.popoverButton}>
-                  <i
-                    className={`${classes.popoverIcon} bg-icon-question group-hover:bg-icon-question-white`}
-                  />
-                  소개
                 </Link>
               </li>
               <li className='group'>

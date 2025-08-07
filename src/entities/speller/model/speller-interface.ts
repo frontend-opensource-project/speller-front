@@ -17,9 +17,14 @@ export type NotChangePayload = {
   sentence: string // 오류 문자열을 포함한 주변 문맥 문자열 (오류 문자열 좌/우)
 }[]
 
+export interface VersionResponse {
+  curVersion: string
+}
+
 export interface SpellerService {
   check: (payload: CheckPayload) => Promise<AxiosResponse<CheckResponse>>
   logUserReplace: (payload: UserReplacePayload) => void
   logClickReplace: (payload: ClickReplacePayload) => void
   notChange: (payload: NotChangePayload) => void
+  version: () => void
 }

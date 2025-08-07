@@ -107,7 +107,7 @@ export const OrderPage = () => {
           <h3 className='text-xl font-semibold leading-[2.4rem] pc:text-2xl'>
             구매 문의
           </h3>
-          <p className='text-sm text-slate-300'>
+          <p className='text-slate-300'>
             {CONTACT_INFO.email.label}({CONTACT_INFO.email.value})
             <br />
             {CONTACT_INFO.tel.label}({CONTACT_INFO.tel.value})

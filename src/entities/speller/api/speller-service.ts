@@ -6,6 +6,7 @@ import {
   NotChangePayload,
   SpellerService,
   UserReplacePayload,
+  VersionResponse,
 } from '../model/speller-interface'
 import {
   CheckPayload,
@@ -34,6 +35,10 @@ class SpellerApiService implements SpellerService {
 
   async notChange(payload: NotChangePayload) {
     return this.#client.post(ENDPOINT.NOT_CHANGE, payload)
+  }
+
+  async version(): Promise<AxiosResponse<VersionResponse>> {
+    return this.#client.post(ENDPOINT.VERSION)
   }
 }
 
