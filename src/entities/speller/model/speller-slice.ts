@@ -18,9 +18,9 @@ type ResponseMap = Record<
 
 interface SpellerState {
   originalText: string // 입력된 텍스트 원본
-  displayText: string // 현재 페이지의 교정 문서에 표시되는 텍스트
   response: Response // 검사 결과
   responseMap: ResponseMap // 페이지별 검사 결과
+  displayText: string // 현재 페이지의 교정 문서에 표시되는 텍스트
   displayTextMap: Record<number, string> // 페이지별 교정 문서에 표시되는 텍스트
   correctInfo: Record<number, CorrectInfo> // 오류 정보
   selectedErrIdx: number // 선택된 오류 인덱스
@@ -30,7 +30,6 @@ interface SpellerState {
 
 const initialState: SpellerState = {
   originalText: '',
-  displayText: '',
   response: {
     str: '',
     errInfo: [],
@@ -39,6 +38,7 @@ const initialState: SpellerState = {
     requestedWithStrictMode: true,
   },
   responseMap: {},
+  displayText: '',
   displayTextMap: {},
   correctInfo: {},
   selectedErrIdx: -1,

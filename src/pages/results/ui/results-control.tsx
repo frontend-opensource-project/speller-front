@@ -14,9 +14,10 @@ import { logCopyAction } from '../api/log-copy-action'
 const ResultsControl = () => {
   const {
     originalText,
-    displayTextMap,
     response,
     responseMap,
+    displayText,
+    displayTextMap,
     correctInfo,
     handleOriginalTextChange,
   } = useSpeller()
@@ -43,8 +44,8 @@ const ResultsControl = () => {
     setCorrectedText(correctedText)
   }, [displayTextMap])
 
-  const handleCopy = () => {
-    copyText(correctedText)
+  const handleCopy = (text: string) => {
+    copyText(text)
     toast({
       description: '복사 완료!\n원하는 곳에 붙여넣어 보세요.',
     })
@@ -75,14 +76,20 @@ const ResultsControl = () => {
         <ActionButton
           icon='/arrow-return-left.svg'
           label='돌아가기'
-          ariaLabel='페이지 돌아가기'
+          ariaLabel='이전 페이지로 돌아가기'
           onClick={() => router.push('/speller')}
         />
         <ActionButton
           icon='/copy.svg'
           label='복사하기'
           ariaLabel='텍스트 복사하기'
-          onClick={handleCopy}
+          onClick={() => handleCopy(displayText)}
+        />
+        <ActionButton
+          icon='/copy.svg'
+          label='전체복사'
+          ariaLabel='전체 텍스트 복사하기'
+          onClick={() => handleCopy(correctedText)}
         />
       </div>
     </div>
