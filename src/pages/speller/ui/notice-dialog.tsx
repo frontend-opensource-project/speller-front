@@ -56,7 +56,7 @@ export function NoticeDialog() {
   return (
     <Dialog defaultOpen>
       <DialogContent
-        className='max-w-[19.125rem] overflow-hidden rounded-xl px-4 py-[1.125rem] tab:max-w-[22.5rem] tab:gap-5 tab:rounded-2xl tab:px-[1.125rem] tab:py-[1.375rem] pc:max-w-[28.125rem] pc:gap-6 pc:rounded-[1.25rem] pc:px-[1.5rem] pc:py-[1.625rem] [&>button]:hidden'
+        className='max-w-[19.125rem] rounded-xl px-4 py-[1.125rem] tab:max-w-[22.5rem] tab:gap-5 tab:rounded-2xl tab:px-[1.125rem] tab:py-[1.375rem] pc:max-w-[28.125rem] pc:gap-6 pc:rounded-[1.25rem] pc:px-[1.5rem] pc:py-[1.625rem] [&>button]:hidden'
         aria-describedby={undefined}
       >
         <DialogTitle className='sr-only'>{notice.title}</DialogTitle>
@@ -72,7 +72,7 @@ export function NoticeDialog() {
             {notice.title}
           </h2>
         </div>
-        <div className='space-y-2 text-base tab:text-lg pc:text-xl'>
+        <div className='max-h-[45vh] space-y-2 overflow-y-auto text-base tab:max-h-[55vh] tab:text-lg pc:max-h-[60vh] pc:text-xl'>
           {Array.isArray(notice.contents)
             ? notice.contents.map((line: string, idx: number) => (
                 <p key={idx}>{line}</p>
