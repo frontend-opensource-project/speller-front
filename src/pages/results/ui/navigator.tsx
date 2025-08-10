@@ -129,6 +129,8 @@ const Navigator = ({ currentPage: propCurrentPage }: NavigatorProps) => {
 
   useEffect(() => {
     if (response.totalPageCnt <= 1) return
+    if (currentPage > 1) return // 1 페이지에서만 토스트 표시
+
     toast({
       variant: 'noIcon',
       description: `총 ${response.totalPageCnt} 페이지입니다.\n화살표를 눌러 페이지를 이동해 주세요.`,

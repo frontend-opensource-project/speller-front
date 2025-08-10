@@ -1,39 +1,78 @@
 'use client'
 
-import { useActionState, useEffect, useState } from 'react'
+import { z } from 'zod'
 import { useRouter } from 'next/navigation'
-
-import { useSpeller, SpellerSetting } from '@/entities/speller'
+import { useEffect, useState, useTransition } from 'react'
+import { useKeyCombination } from '@frontend-opensource/use-react-hooks'
+import { useSpeller, SpellerSetting, CheckPayload } from '@/entities/speller'
 import { ContentLayout } from '@/shared/ui/content-layout'
-import { spellCheckAction } from '../api/spell-check-action'
-import { TIMEOUT_ERROR_CODE } from '../model/error-code'
-import { SpellerTextInput } from './speller-text-input'
-import { ResultsSkeleton } from './results-skeleton'
-import { SpellerControl } from './speller-control'
 import {
   sendCheckCompletedEvent,
   sendCheckResultNoErrorEvent,
   sendCheckResultResponseErrorEvent,
   sendCheckResultResponseUnknownEvent,
 } from '@/shared/lib/send-ga-event'
+import { spellCheckAction } from '../api/spell-check-action'
+import { TIMEOUT_ERROR_CODE } from '../model/error-code'
+import { spellCheckSchema } from '../model/spell-check-schema'
+import { SpellerTextInput } from './speller-text-input'
+import { ResultsSkeleton } from './results-skeleton'
+import { SpellerControl } from './speller-control'
 import { VersionInfo } from './version-info'
+
+export type SpellCheckResponse = z.infer<typeof spellCheckSchema>
 import { NoticeDialog } from './notice-dialog'
 
 const SpellerPage = () => {
   const router = useRouter()
-  const { handleReceiveResponse, initResponseMap, updateResponseMap } =
-    useSpeller()
-  const [state, formAction, isPending] = useActionState(spellCheckAction, {
+  const {
+    text,
+    isStrictCheck,
+    handleReceiveResponse,
+    initResponseMap,
+    updateResponseMap,
+  } = useSpeller()
+  const [isPending, startTransition] = useTransition()
+  const [serverState, setServerState] = useState<SpellCheckResponse>({
     data: null,
     error: null,
     elapsedTimeMs: 0,
   })
   const [isRedirectingToResult, setIsRedirectingToResult] = useState(false)
 
+  const handleSpellCheck = () => {
+    const payload: CheckPayload = {
+      text,
+      isStrictCheck,
+    }
+    startTransition(async () => {
+      const response = await spellCheckAction(payload)
+      setServerState(response)
+    })
+  }
+
+  // 검사하기 단축키 설정
+  useKeyCombination({
+    shortcutKeys: ['ControlLeft', 'Enter'],
+    callback: handleSpellCheck,
+  })
+  useKeyCombination({
+    shortcutKeys: ['ControlRight', 'Enter'],
+    callback: handleSpellCheck,
+  })
+  useKeyCombination({
+    shortcutKeys: ['MetaLeft', 'Enter'],
+    callback: handleSpellCheck,
+  })
+  useKeyCombination({
+    shortcutKeys: ['MetaRight', 'Enter'],
+    callback: handleSpellCheck,
+  })
+
   useEffect(() => {
-    if (state.data) {
-      const { data, elapsedTimeMs } = state
-      const payload: Parameters<typeof sendCheckCompletedEvent>[0] = {
+    if (serverState.data) {
+      const { data, elapsedTimeMs } = serverState
+      const payload = {
         textLength: data.str.length,
         isStrictCheck: data.requestedWithStrictMode,
         elapsedTimeMs: elapsedTimeMs,
@@ -48,20 +87,16 @@ const SpellerPage = () => {
         pageIdx: 1,
       })
       sendCheckCompletedEvent(payload)
-
       if (data.errInfo.length === 0) {
         sendCheckResultNoErrorEvent(payload)
-
-        //return router.push(`/no-errors`)
       }
 
       return router.push('/results')
     }
 
-    if (state.error) {
+    if (serverState.error) {
       setIsRedirectingToResult(false)
-
-      if (state.error.type === 'server') {
+      if (serverState.error.type === 'server') {
         const {
           error: {
             errorCode,
@@ -69,7 +104,7 @@ const SpellerPage = () => {
             requestPayload: { isStrictCheck, textLength },
           },
           elapsedTimeMs,
-        } = state
+        } = serverState
         const errorStage =
           errorCode === TIMEOUT_ERROR_CODE ? 'timeout' : 'request'
 
@@ -85,14 +120,14 @@ const SpellerPage = () => {
         sendCheckResultResponseUnknownEvent({
           errorStage: 'unknown',
           errorCode: 9999,
-          errorMessage: state.error.errorMessage,
-          elapsedTimeMs: state.elapsedTimeMs,
+          errorMessage: serverState.error.errorMessage,
+          elapsedTimeMs: serverState.elapsedTimeMs,
         })
       }
 
       return router.push(`/timeout`)
     }
-  }, [state, router, handleReceiveResponse, updateResponseMap])
+  }, [serverState])
 
   useEffect(() => {
     router.prefetch('/results')
@@ -104,7 +139,7 @@ const SpellerPage = () => {
 
   return (
     <>
-      <form action={formAction} className='flex-1'>
+      <form action={handleSpellCheck} className='flex-1'>
         <ContentLayout className='min-h-[35.75rem] pb-4 pc:pb-5'>
           {/* 강한 검사 및 버전*/}
           <div className='mb-2 mt-[0.94rem] flex min-h-[1.625rem] items-center justify-between tab:mt-[1.75rem] pc:mb-[0.78rem] pc:mt-[1.97rem] pc:min-h-8'>
