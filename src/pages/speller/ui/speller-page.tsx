@@ -10,7 +10,6 @@ import { TIMEOUT_ERROR_CODE } from '../model/error-code'
 import { SpellerTextInput } from './speller-text-input'
 import { ResultsSkeleton } from './results-skeleton'
 import { SpellerControl } from './speller-control'
-import { ServiceUpdateInfoDialog } from './service-update-info-dialog'
 import {
   sendCheckCompletedEvent,
   sendCheckResultNoErrorEvent,
@@ -18,6 +17,7 @@ import {
   sendCheckResultResponseUnknownEvent,
 } from '@/shared/lib/send-ga-event'
 import { VersionInfo } from './version-info'
+import { NoticeDialog } from './notice-dialog'
 
 const SpellerPage = () => {
   const router = useRouter()
@@ -118,7 +118,7 @@ const SpellerPage = () => {
           </div>
         </ContentLayout>
       </form>
-      <ServiceUpdateInfoDialog />
+      <NoticeDialog />
     </>
   )
 }
