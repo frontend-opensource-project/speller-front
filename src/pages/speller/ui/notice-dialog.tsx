@@ -79,7 +79,7 @@ export function NoticeDialog() {
               ))
             : null}
         </div>
-        <DialogFooter className='-mx-4 -mb-[1.125rem] bg-slate-200 p-4 tab:-mx-[1.125rem] tab:-mb-[1.375rem] pc:-mx-[1.5rem] pc:-mb-[1.625rem] pc:p-[1.125rem]'>
+        <DialogFooter className='-mx-4 -mb-[1.125rem] rounded-b-xl bg-slate-200 p-4 tab:-mx-[1.125rem] tab:-mb-[1.375rem] tab:rounded-b-2xl pc:-mx-[1.5rem] pc:-mb-[1.625rem] pc:rounded-b-[1.25rem] pc:p-[1.125rem]'>
           <div className='flex items-center justify-between'>
             {notice.allowWeeklyDismiss && (
               <div className='flex items-center gap-2'>
