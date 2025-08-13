@@ -1,20 +1,18 @@
-import Head from 'next/head'
 import Script from 'next/script'
 
 export const AdsTestPage = () => {
   return (
     <>
-      <Head>
-        <script id='adpushup-init'>
-          {`window.adpushup = window.adpushup || {que:[]};`}
-        </script>
-        <script
-          id='adpushup-main'
-          src='//cdn.adpushup.com/48280/adpushup.js'
-          crossOrigin='anonymous'
-          async
-        />
-      </Head>
+      <Script id='adpushup-init' strategy='beforeInteractive'>
+        {`window.adpushup = window.adpushup || {que:[]};`}
+      </Script>
+      <Script
+        id='adpushup-main'
+        src='//cdn.adpushup.com/48280/adpushup.js'
+        strategy='beforeInteractive'
+        crossOrigin='anonymous'
+        async
+      />
       <div className='flex w-full flex-col items-center px-4 py-10 text-base leading-[140%] tracking-[-0.02rem] tab:text-lg tab:tracking-[-0.0225rem] pc:py-16 pc:text-[1.375rem] pc:leading-[170%] pc:tracking-[-0.0275rem]'>
         <div className='flex w-full flex-col gap-8 pc:gap-10'>
           <div className='flex flex-col items-center gap-2'>
@@ -42,7 +40,7 @@ export const AdsTestPage = () => {
             Copyrightⓒ2001 AI Lab &amp; Narainfotech. All Rights Reserved
           </div>
           {/* ad tags Size: 300x250 ZoneId:1597527 */}
-          <Script src='https://js.genieessp.com/t/597/527/a1597527.js'></Script>
+          <script type='text/javascript' src='https://js.genieessp.com/t/597/527/a1597527.js'></script>
         </div>
       </div>
     </>
