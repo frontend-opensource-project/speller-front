@@ -40,7 +40,7 @@ export const AdsTestPage = () => {
             Copyrightⓒ2001 AI Lab &amp; Narainfotech. All Rights Reserved
           </div>
           {/* ad tags Size: 300x250 ZoneId:1597527 */}
-          <script type='text/javascript' src='https://js.genieessp.com/t/597/527/a1597527.js'></script>
+          <Script src='https://js.genieessp.com/t/597/527/a1597527.js'></Script>
         </div>
       </div>
     </>
