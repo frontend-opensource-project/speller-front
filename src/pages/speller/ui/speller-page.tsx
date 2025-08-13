@@ -18,10 +18,10 @@ import { spellCheckSchema } from '../model/spell-check-schema'
 import { SpellerTextInput } from './speller-text-input'
 import { ResultsSkeleton } from './results-skeleton'
 import { SpellerControl } from './speller-control'
-import { ServiceUpdateInfoDialog } from './service-update-info-dialog'
 import { VersionInfo } from './version-info'
 
 export type SpellCheckResponse = z.infer<typeof spellCheckSchema>
+import { NoticeDialog } from './notice-dialog'
 
 const SpellerPage = () => {
   const router = useRouter()
@@ -153,7 +153,7 @@ const SpellerPage = () => {
           </div>
         </ContentLayout>
       </form>
-      <ServiceUpdateInfoDialog />
+      <NoticeDialog />
     </>
   )
 }

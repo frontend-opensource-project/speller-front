@@ -1,0 +1,11 @@
+{
+  "id": "notice-20250813",
+  "title": "서비스 점검 안내",
+  "contents": [
+    "8월 10일 오전 2시~4시 서버 점검이 진행됩니다.",
+    "불편을 드려 죄송합니다."
+  ],
+  "startDate": "2025-08-10",
+  "enabled": false,
+  "allowWeeklyDismiss": true
+}
