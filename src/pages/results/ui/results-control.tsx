@@ -26,9 +26,7 @@ const ResultsControl = () => {
   const [correctedText, setCorrectedText] = useState('')
 
   useEffect(() => {
-    const text = originalText.replace(/(\r\n|\n|\r)/g, '')
     let correctedText = ''
-
     for (let i = 1; i <= response.totalPageCnt; i++) {
       const displayTextMapValue = displayTextMap?.[i]
       if (displayTextMapValue) {
@@ -36,7 +34,7 @@ const ResultsControl = () => {
       } else {
         const prevPageResponse = responseMap[i - 1]
         if (prevPageResponse) {
-          correctedText += text.substring(prevPageResponse.end)
+          correctedText += originalText.substring(prevPageResponse.end)
           break
         }
       }

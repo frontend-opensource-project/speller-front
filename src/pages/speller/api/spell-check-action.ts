@@ -53,7 +53,9 @@ const spellCheckAction = async (
       return {
         data: null,
         error: {
-          ...serverErrorResponse,
+          type: 'server',
+          errorMessage: serverErrorResponse?.errorMessage ?? '',
+          errorCode: serverErrorResponse?.errorCode ?? 9999,
           requestPayload: {
             isStrictCheck: parsedRequestData.isStrictCheck ?? false,
             textLength: parsedRequestData.text.length,

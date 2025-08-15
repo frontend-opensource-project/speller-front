@@ -118,6 +118,12 @@ const SpellerPage = () => {
           textLength,
           elapsedTimeMs,
         })
+
+        if (errorCode === TIMEOUT_ERROR_CODE) {
+          return router.push('/timeout')
+        } else {
+          throw new Error(errorMessage)
+        }
       } else {
         sendCheckResultResponseUnknownEvent({
           errorStage: 'unknown',
@@ -125,9 +131,8 @@ const SpellerPage = () => {
           errorMessage: serverState.error.errorMessage,
           elapsedTimeMs: serverState.elapsedTimeMs,
         })
+        throw new Error(serverState.error.errorMessage)
       }
-
-      return router.push(`/timeout`)
     }
   }, [serverState])
 

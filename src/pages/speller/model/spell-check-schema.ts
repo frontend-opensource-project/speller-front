@@ -6,15 +6,17 @@ export const unknownErrorResponseSchema = z.object({
   errorMessage: z.string(),
 })
 
-export const serverErrorResponseSchema = z.object({
-  type: z.literal('server'),
-  errorMessage: z.string(),
-  errorCode: z.number(),
-  requestPayload: z.object({
-    isStrictCheck: z.boolean(),
-    textLength: z.number(),
-  }),
-})
+export const serverErrorResponseSchema = z
+  .object({
+    type: z.literal('server'),
+    errorMessage: z.string(),
+    errorCode: z.number(),
+    requestPayload: z.object({
+      isStrictCheck: z.boolean(),
+      textLength: z.number(),
+    }),
+  })
+  .optional()
 
 export const errorResponseSchema = unknownErrorResponseSchema.or(
   serverErrorResponseSchema,
