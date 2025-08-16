@@ -1,28 +1,49 @@
 'use client'
 
-import React from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
 import { useClipboard } from '@frontend-opensource/use-react-hooks'
 import { useSpeller } from '@/entities/speller'
-import { toast } from '@/shared/lib/use-toast'
-import { getWordsAroundIndex } from '@/shared/lib/util'
 import { Button } from '@/shared/ui/button'
 import { TextCounter } from '@/shared/ui/text-counter'
+import { toast } from '@/shared/lib/use-toast'
+import { getWordsAroundIndex } from '@/shared/lib/util'
 import { logCopyAction } from '../api/log-copy-action'
 
 const ResultsControl = () => {
   const {
+    originalText,
+    response,
+    responseMap,
     displayText,
-    response: { str },
+    displayTextMap,
     correctInfo,
-    handleTextChange,
+    handleOriginalTextChange,
   } = useSpeller()
   const router = useRouter()
   const { copyText } = useClipboard()
+  const [correctedText, setCorrectedText] = useState('')
 
-  const handleCopy = () => {
-    copyText(displayText)
+  useEffect(() => {
+    let correctedText = ''
+    for (let i = 1; i <= response.totalPageCnt; i++) {
+      const displayTextMapValue = displayTextMap?.[i]
+      if (displayTextMapValue) {
+        correctedText += displayTextMapValue
+      } else {
+        const prevPageResponse = responseMap[i - 1]
+        if (prevPageResponse) {
+          correctedText += originalText.substring(prevPageResponse.end)
+          break
+        }
+      }
+    }
+    setCorrectedText(correctedText)
+  }, [displayTextMap])
+
+  const handleCopy = (text: string) => {
+    copyText(text)
     toast({
       description: '복사 완료!\n원하는 곳에 붙여넣어 보세요.',
     })
@@ -32,35 +53,41 @@ const ResultsControl = () => {
       .map(item => ({
         errorWord: item.orgStr,
         replaceWord: item.candWord.split('|')[0],
-        sentence: getWordsAroundIndex(str, item.start),
+        sentence: getWordsAroundIndex(response.str, item.start),
       }))
     logCopyAction(unfixedErrors)
   }
 
   return (
     <div className='flex flex-shrink-0 justify-between pt-5'>
-      <TextCounter count={str.length} className='pc:-translate-y-3' />
+      <TextCounter count={response.str.length} className='pc:-translate-y-3' />
       <div className='flex gap-3'>
         <ActionButton
           icon='/new-article.svg'
           label='새글쓰기'
           ariaLabel='새글쓰기'
           onClick={() => {
-            handleTextChange('')
+            handleOriginalTextChange('')
             router.push('/speller')
           }}
         />
         <ActionButton
           icon='/arrow-return-left.svg'
           label='돌아가기'
-          ariaLabel='페이지 돌아가기'
+          ariaLabel='이전 페이지로 돌아가기'
           onClick={() => router.push('/speller')}
         />
         <ActionButton
           icon='/copy.svg'
           label='복사하기'
           ariaLabel='텍스트 복사하기'
-          onClick={handleCopy}
+          onClick={() => handleCopy(displayText)}
+        />
+        <ActionButton
+          icon='/copy.svg'
+          label='전체복사'
+          ariaLabel='전체 텍스트 복사하기'
+          onClick={() => handleCopy(correctedText)}
         />
       </div>
     </div>

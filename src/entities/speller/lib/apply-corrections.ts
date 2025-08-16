@@ -3,14 +3,14 @@ import { CorrectInfo } from '../model/speller-schema'
 export const applyCorrections = (
   originalText: string,
   correctInfo: Record<number, CorrectInfo>,
+  offset = 0,
 ) => {
   let displayText = originalText
-  let offset = 0
 
   Object.values(correctInfo).forEach(({ start, end, crtStr }) => {
     // 앞의 변경이 적용되었으므로 새로운 인덱스를 계산
-    const adjustedStart = start + offset
-    const adjustedEnd = end + offset
+    const adjustedStart = offset + start
+    const adjustedEnd = offset + end
 
     if (!crtStr) return
 

@@ -33,7 +33,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
   errorInfo,
   ...props
 }: ErrorInfoSectionProps<T>) => {
-  const { response, correctInfo, handleUpdateCorrectInfo, updateErrInfoIndex } =
+  const { response, correctInfo, updateCorrectInfo, updateErrInfoIndex } =
     useSpeller()
   const { errorIdx, correctMethod, orgStr, candWord, help } = errorInfo ?? {}
   const candidateWords = parseCandidateWords(candWord)
@@ -50,7 +50,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
   }
 
   const handleRevert = () => {
-    handleUpdateCorrectInfo({ ...errorInfo, crtStr: orgStr })
+    updateCorrectInfo({ ...errorInfo, crtStr: orgStr })
     sendCorrectionWordClickedEvent({
       sectionType: 'correction_item',
       wordTextType: 'suggested',
@@ -120,7 +120,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
                       'font-bold text-blue-500',
                   )}
                   onClick={() => {
-                    handleUpdateCorrectInfo({ ...errorInfo, crtStr: word })
+                    updateCorrectInfo({ ...errorInfo, crtStr: word })
                     if (id > 0) handleClickReplace(word)
                   }}
                 >

@@ -12,7 +12,7 @@ import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-erro
 
 const SpellingCorrectionText = memo(() => {
   const { correctRefs, scrollSection } = useSpellerRefs()
-  const { response, correctInfo, isAutoScroll, handleUpdateCorrectInfo } =
+  const { response, correctInfo, isAutoScroll, updateCorrectInfo } =
     useSpeller()
   const { str: text } = response
 
@@ -59,7 +59,7 @@ const SpellingCorrectionText = memo(() => {
                   isResolved && '-z-10 opacity-0',
                 )}
                 onClick={() => {
-                  handleUpdateCorrectInfo({
+                  updateCorrectInfo({
                     ...position,
                     crtStr: recommendedWord,
                   })
@@ -138,8 +138,8 @@ type RenderCorrectionSegments = (args: {
 }) => ReactNode[]
 
 const renderCorrectionSegments: RenderCorrectionSegments = ({
-  options,
   payload,
+  options,
 }) => {
   let lastIndex = 0 // useRef 대신 일반 변수 사용 - 매 렌더링마다 초기화 필요
   const parts: React.ReactNode[] = []

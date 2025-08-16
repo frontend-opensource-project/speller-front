@@ -9,7 +9,7 @@ import { Button } from '@/shared/ui/button'
 
 const SpellerTextInput = () => {
   const textareaRef = useRef<TextareaHandle>(null)
-  const { handleTextChange, text } = useSpeller()
+  const { originalText, handleOriginalTextChange } = useSpeller()
   const [showGradient, setShowGradient] = useState(false)
 
   const handleOnClear = useCallback(() => {
@@ -26,7 +26,7 @@ const SpellerTextInput = () => {
   useEffect(() => {
     if (!textareaRef.current) return
 
-    textareaRef.current.hydrateText(text)
+    textareaRef.current.hydrateText(originalText)
   }, [])
 
   return (
@@ -53,7 +53,7 @@ const SpellerTextInput = () => {
         <Textarea
           ref={textareaRef}
           name='speller-text'
-          onChange={handleTextChange}
+          onChange={handleOriginalTextChange}
           onScroll={handleScroll}
           placeholder='내용을 입력해 주세요.'
         />

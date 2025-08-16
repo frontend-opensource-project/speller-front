@@ -19,7 +19,7 @@ const Navigator = ({ currentPage: propCurrentPage }: NavigatorProps) => {
     response,
     responseMap,
     correctInfo,
-    handleReceiveResponse,
+    updateResponse,
     updateResponseMap,
   } = useSpeller()
   const { correctScrollContainerRef, errorScrollContainerRef } =
@@ -85,7 +85,7 @@ const Navigator = ({ currentPage: propCurrentPage }: NavigatorProps) => {
         errorScrollContainerRef.current.scrollTo({ top: 0 })
       }
 
-      handleReceiveResponse(data)
+      updateResponse(data)
       const newUrl = createPageURL(page)
       router.push(newUrl)
       setIsFetching(false)

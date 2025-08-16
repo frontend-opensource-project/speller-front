@@ -26,11 +26,12 @@ import { NoticeDialog } from './notice-dialog'
 const SpellerPage = () => {
   const router = useRouter()
   const {
-    text,
+    originalText,
     isStrictCheck,
-    handleReceiveResponse,
-    initResponseMap,
+    updateResponse,
     updateResponseMap,
+    initResponseMap,
+    initDisplayTextMap,
   } = useSpeller()
   const [isPending, startTransition] = useTransition()
   const [serverState, setServerState] = useState<SpellCheckResponse>({
@@ -42,7 +43,7 @@ const SpellerPage = () => {
 
   const handleSpellCheck = () => {
     const payload: CheckPayload = {
-      text,
+      text: originalText,
       isStrictCheck,
     }
     startTransition(async () => {
@@ -79,8 +80,9 @@ const SpellerPage = () => {
       }
 
       setIsRedirectingToResult(true)
-      handleReceiveResponse(data)
+      updateResponse(data)
       initResponseMap()
+      initDisplayTextMap()
       updateResponseMap({
         ...data,
         requestedWithStrictMode: payload.isStrictCheck,
@@ -116,6 +118,12 @@ const SpellerPage = () => {
           textLength,
           elapsedTimeMs,
         })
+
+        if (errorCode === TIMEOUT_ERROR_CODE) {
+          return router.push('/timeout')
+        } else {
+          throw new Error(errorMessage)
+        }
       } else {
         sendCheckResultResponseUnknownEvent({
           errorStage: 'unknown',
@@ -123,9 +131,8 @@ const SpellerPage = () => {
           errorMessage: serverState.error.errorMessage,
           elapsedTimeMs: serverState.elapsedTimeMs,
         })
+        throw new Error(serverState.error.errorMessage)
       }
-
-      return router.push(`/timeout`)
     }
   }, [serverState])
 

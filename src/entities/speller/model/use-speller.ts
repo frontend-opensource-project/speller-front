@@ -2,17 +2,18 @@
 
 import { useCallback } from 'react'
 import { shallowEqual } from 'react-redux'
-
+import { usePathname } from 'next/navigation'
 import { useAppDispatch, useAppSelector } from '@/shared/lib/use-redux'
 import {
-  setText,
-  updateResponse,
-  updateCorrectInfo,
-  setSelectedErrIdx,
+  setOriginalText,
+  setResponse,
   setResponseMap,
-  resetResponseMap,
+  setCorrectInfo,
+  setSelectedErrIdx,
   setStrictMode,
-  setIsAutoScroll,
+  setAutoScrollMode,
+  resetResponseMap,
+  resetDisplayTextMap,
   type SpellerState,
 } from './speller-slice'
 import { CorrectInfo } from './speller-schema'
@@ -20,38 +21,23 @@ import { CorrectInfo } from './speller-schema'
 const useSpeller = () => {
   const dispatch = useAppDispatch()
   const state = useAppSelector(state => state.speller, shallowEqual)
+  const pathname = usePathname()
 
-  const handleTextChange = useCallback(
+  const getCurrentPage = () => {
+    const match = pathname?.match(/\/results\/(\d+)$/)
+    return match ? Number(match[1]) : 1
+  }
+
+  const handleOriginalTextChange = useCallback(
     (value: string) => {
-      dispatch(setText(value))
+      dispatch(setOriginalText(value))
     },
     [dispatch],
   )
 
-  const updateStrictCheckMode = useCallback(
-    (value: boolean) => {
-      dispatch(setStrictMode(value))
-    },
-    [dispatch],
-  )
-
-  const handleReceiveResponse = useCallback(
+  const updateResponse = useCallback(
     (payload: SpellerState['response']) => {
-      dispatch(updateResponse(payload))
-    },
-    [dispatch],
-  )
-
-  const handleUpdateCorrectInfo = useCallback(
-    (payload: CorrectInfo) => {
-      dispatch(updateCorrectInfo(payload))
-    },
-    [dispatch],
-  )
-
-  const updateErrInfoIndex = useCallback(
-    (index: number) => {
-      dispatch(setSelectedErrIdx(index))
+      dispatch(setResponse(payload))
     },
     [dispatch],
   )
@@ -63,27 +49,54 @@ const useSpeller = () => {
     [dispatch],
   )
 
-  const initResponseMap = useCallback(() => {
-    dispatch(resetResponseMap())
-  }, [dispatch])
+  const updateCorrectInfo = useCallback(
+    (payload: CorrectInfo) => {
+      const pageIdx = getCurrentPage()
+      dispatch(setCorrectInfo({ ...payload, pageIdx }))
+    },
+    [dispatch, getCurrentPage],
+  )
 
-  const updateIsAutoScroll = useCallback(
-    (value: boolean) => {
-      dispatch(setIsAutoScroll(value))
+  const updateErrInfoIndex = useCallback(
+    (index: number) => {
+      dispatch(setSelectedErrIdx(index))
     },
     [dispatch],
   )
 
+  const updateStrictMode = useCallback(
+    (value: boolean) => {
+      dispatch(setStrictMode(value))
+    },
+    [dispatch],
+  )
+
+  const updateAutoScrollMode = useCallback(
+    (value: boolean) => {
+      dispatch(setAutoScrollMode(value))
+    },
+    [dispatch],
+  )
+
+  const initResponseMap = useCallback(() => {
+    dispatch(resetResponseMap())
+  }, [dispatch])
+
+  const initDisplayTextMap = useCallback(() => {
+    dispatch(resetDisplayTextMap())
+  }, [dispatch])
+
   return {
     ...state,
-    handleTextChange,
-    updateStrictCheckMode,
-    handleReceiveResponse,
-    handleUpdateCorrectInfo,
-    updateErrInfoIndex,
+    handleOriginalTextChange,
+    updateResponse,
     updateResponseMap,
+    updateCorrectInfo,
+    updateErrInfoIndex,
+    updateStrictMode,
+    updateAutoScrollMode,
     initResponseMap,
-    updateIsAutoScroll,
+    initDisplayTextMap,
   }
 }
 
