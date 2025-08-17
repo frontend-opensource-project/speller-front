@@ -1,9 +1,23 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from './button'
 import { Popover, PopoverContent, PopoverTrigger } from './popover'
+import { sendPreviousVersionClickedEvent } from '../lib/send-ga-event'
 
 const Header = () => {
+  const handlePreviousVersionClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+  ) => {
+    e.preventDefault()
+    sendPreviousVersionClickedEvent()
+    // GA 이벤트 전송을 잠깐 기다린 후 이동
+    setTimeout(() => {
+      window.location.href = 'https://nara-speller.co.kr/old_speller/'
+    }, 200)
+  }
+
   return (
     <div className='flex items-center justify-center bg-white'>
       <header className='flex flex-1 items-center justify-between p-[1rem_1.5rem] pc-lg:container tab:p-[1.25rem_3.75rem] pc:w-full pc:p-[1rem_1.875rem] pc-lg:p-[1.25rem_2rem]'>
@@ -31,12 +45,13 @@ const Header = () => {
           <Link href='/feedback' className={classes.linkButton}>
             문의하기
           </Link>
-          <Link
-            href='https://nara-speller.co.kr/old_speller/'
+          <a
+            href='#'
             className='hidden rounded-lg border border-[#B8B8BE] p-3 font-semibold !leading-none text-slate-500 hover:bg-accent tab:inline-flex tab:text-xl pc:text-base'
+            onClick={handlePreviousVersionClick}
           >
             이전 버전 사용하기
-          </Link>
+          </a>
         </div>
         <Popover>
           <PopoverTrigger asChild>
@@ -77,15 +92,16 @@ const Header = () => {
                 </Link>
               </li>
               <li className='group'>
-                <Link
-                  href='https://nara-speller.co.kr/old_speller/'
+                <a
+                  href='#'
                   className={`${classes.popoverButton} border-none`}
+                  onClick={handlePreviousVersionClick}
                 >
                   <i
                     className={`${classes.popoverIcon} bg-icon-history-back group-hover:bg-icon-history-back-white`}
                   />
                   이전 버전 사용하기
-                </Link>
+                </a>
               </li>
             </ul>
           </PopoverContent>
