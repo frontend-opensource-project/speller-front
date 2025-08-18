@@ -6,6 +6,7 @@ import { useSpeller } from '@/entities/speller'
 import { ScrollGradientFade } from '@/shared/ui/scroll-gradient-fade'
 import { Textarea, TextareaHandle } from '@/shared/ui/textarea'
 import { Button } from '@/shared/ui/button'
+import { sendButtonClickedEvent } from '@/shared/lib/send-ga-event'
 
 const SpellerTextInput = () => {
   const textareaRef = useRef<TextareaHandle>(null)
@@ -16,6 +17,10 @@ const SpellerTextInput = () => {
     if (!textareaRef.current) return
 
     textareaRef.current.textClear()
+
+    sendButtonClickedEvent({
+      buttonType: 'remove',
+    })
   }, [])
 
   const handleScroll = useCallback(

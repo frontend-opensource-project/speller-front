@@ -12,6 +12,8 @@ export const GA_ACTIONS = {
   MANUAL_CORRECTION_SUBMITTED: 'manual_correction_submitted',
   CORRECTION_FEEDBACK_OPENED: 'correction_feedback_opened',
   CORRECTION_FEEDBACK_SUBMITTED: 'correction_feedback_submitted',
+  PREVIOUS_VERSION_CLICKED: 'previous_version_clicked',
+  BUTTON_CLICKED: 'button_clicked',
 } as const
 
 export const GA_EVENT_TYPE = {
@@ -42,6 +44,15 @@ export const SECTION = [
 export type SectionType = (typeof SECTION)[number]
 
 export const ERROR_STAGE = ['unknown', 'timeout', 'request'] as const
+
+export const BUTTON_TYPE = [
+  'write',
+  'remove',
+  'back',
+  'partial_copy',
+  'all_copy',
+] as const
+export type ButtonType = (typeof BUTTON_TYPE)[number]
 
 export const CheckTriggeredSchema = z.object({
   original_text_length: z.number(),
@@ -121,6 +132,15 @@ export const CorrectionFeedbackSubmittedSchema = z.object({
   corrected_error_type: z.enum(CORRECTED_ERROR_TYPE),
 })
 
+export const PreviousVersionClickedSchema = z.object({
+  method: z.enum(METHOD),
+})
+
+export const ButtonClickedSchema = z.object({
+  method: z.enum(METHOD),
+  button_type: z.enum(BUTTON_TYPE),
+})
+
 export type CheckTriggeredParams = z.infer<typeof CheckTriggeredSchema>
 export type CheckCompletedParams = z.infer<typeof CheckCompletedSchema>
 export type CheckResultNoErrorParams = z.infer<typeof CheckResultNoErrorSchema>
@@ -144,6 +164,10 @@ export type CorrectionFeedbackOpenedParams = z.infer<
 export type CorrectionFeedbackSubmittedParams = z.infer<
   typeof CorrectionFeedbackSubmittedSchema
 >
+export type PreviousVersionClickedParams = z.infer<
+  typeof PreviousVersionClickedSchema
+>
+export type ButtonClickedParams = z.infer<typeof ButtonClickedSchema>
 
 type GAEventMap = {
   checkTriggered: z.infer<typeof CheckTriggeredSchema>
@@ -157,6 +181,8 @@ type GAEventMap = {
   manualCorrectionSubmitted: z.infer<typeof ManualCorrectionSubmittedSchema>
   correctionFeedbackOpened: z.infer<typeof CorrectionFeedbackOpenedSchema>
   correctionFeedbackSubmitted: z.infer<typeof CorrectionFeedbackSubmittedSchema>
+  previousVersionClicked: z.infer<typeof PreviousVersionClickedSchema>
+  buttonClicked: z.infer<typeof ButtonClickedSchema>
 }
 
 export type GAEventTrackerMap = {

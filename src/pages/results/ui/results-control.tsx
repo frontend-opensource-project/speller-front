@@ -10,6 +10,7 @@ import { TextCounter } from '@/shared/ui/text-counter'
 import { toast } from '@/shared/lib/use-toast'
 import { getWordsAroundIndex } from '@/shared/lib/util'
 import { logCopyAction } from '../api/log-copy-action'
+import { sendButtonClickedEvent } from '@/shared/lib/send-ga-event'
 
 const ResultsControl = () => {
   const {
@@ -68,6 +69,9 @@ const ResultsControl = () => {
           ariaLabel='새글쓰기'
           onClick={() => {
             handleOriginalTextChange('')
+            sendButtonClickedEvent({
+              buttonType: 'write',
+            })
             router.push('/speller')
           }}
         />
@@ -75,19 +79,34 @@ const ResultsControl = () => {
           icon='/arrow-return-left.svg'
           label='돌아가기'
           ariaLabel='이전 페이지로 돌아가기'
-          onClick={() => router.push('/speller')}
+          onClick={() => {
+            sendButtonClickedEvent({
+              buttonType: 'back',
+            })
+            router.push('/speller')
+          }}
         />
         <ActionButton
           icon='/copy.svg'
           label='복사하기'
           ariaLabel='텍스트 복사하기'
-          onClick={() => handleCopy(displayText)}
+          onClick={() => {
+            handleCopy(displayText)
+            sendButtonClickedEvent({
+              buttonType: 'partial_copy',
+            })
+          }}
         />
         <ActionButton
           icon='/copy.svg'
           label='전체복사'
           ariaLabel='전체 텍스트 복사하기'
-          onClick={() => handleCopy(correctedText)}
+          onClick={() => {
+            handleCopy(correctedText)
+            sendButtonClickedEvent({
+              buttonType: 'all_copy',
+            })
+          }}
         />
       </div>
     </div>
