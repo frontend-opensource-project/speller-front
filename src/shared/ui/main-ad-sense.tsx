@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
+import { useDetectAdBlock } from 'adblock-detect-react'
 
 import GoogleAdSense from '../lib/google-ad-sense'
 import { cn } from '../lib/tailwind-merge'
@@ -146,9 +147,7 @@ const MainAdSlot = () => {
     <div className={cn('relative', isAdUnFilledStatus && 'hidden')}>
       {/* 광고 로딩 UI */}
       {isLoading ? (
-        <Skeleton
-          className={cn(AdStyle, 'absolute inset-0 m-auto bg-slate-300')}
-        />
+        <Skeleton className={cn(AdStyle, 'absolute inset-0 bg-slate-300')} />
       ) : null}
       <div
         className={cn(
@@ -170,9 +169,15 @@ const MainAdSlot = () => {
 }
 
 const AdStyle =
-  'my-24 h-[37.5rem] w-40 self-center overflow-hidden rounded-sm pc:ml-5 pc:block'
+  'my-24 h-[37.5rem] w-40 overflow-hidden rounded-sm pc:ml-5 pc:block'
 
 const MainAdSense = () => {
+  const adBlockDetected = useDetectAdBlock()
+
+  if (adBlockDetected) {
+    return null
+  }
+
   return (
     <AdProvider>
       <MainAdSlot />
