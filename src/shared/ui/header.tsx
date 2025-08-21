@@ -27,7 +27,7 @@ const Header = () => {
               <div className='relative h-[1.375rem] w-[5.625rem] tab:h-[1.6875rem] tab:w-[7.1875rem] pc:h-[1.6875rem] pc:w-[7.5rem]'>
                 <Image
                   src='/logo.svg'
-                  alt='바른 한글 로고'
+                  alt='바른 한글 로고 (구 한국어 맞춤법/문법 검사기, 부산대 맞춤법/문법 검사기, 부산대학교, ㈜나라인포테크, 우리말 배움터 스펠러, Korean speller, spelling checker)'
                   fill
                   className='object-contain'
                 />
