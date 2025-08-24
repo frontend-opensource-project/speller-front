@@ -23,15 +23,10 @@ declare global {
 
 interface GenieeSSPProps {
   adIds: string[]
-  onScriptReady?: () => void
   onAdLoaded?: (adId: string) => void
 }
 
-export const GenieeSSP = ({
-  adIds,
-  onScriptReady,
-  onAdLoaded,
-}: GenieeSSPProps) => {
+export const GenieeSSP = ({ adIds, onAdLoaded }: GenieeSSPProps) => {
   useEffect(() => {
     const win = window as Window
     win.gnshbrequest = win.gnshbrequest || { cmd: [] }
@@ -45,12 +40,7 @@ export const GenieeSSP = ({
       const script = document.createElement('script')
       script.src = SCRIPT_URL
       script.async = true
-      script.onload = () => {
-        onScriptReady?.()
-      }
       document.body.appendChild(script)
-    } else {
-      onScriptReady?.()
     }
 
     // 각 광고 슬롯에 대한 요청을 큐에 추가
@@ -73,7 +63,7 @@ export const GenieeSSP = ({
         }
       })
     })
-  }, [adIds, onScriptReady, onAdLoaded])
+  }, [adIds, onAdLoaded])
 
   return null
 }
