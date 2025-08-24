@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useCallback } from 'react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useDetectAdBlock } from 'adblock-detect-react'
 
 import { cn } from '../lib/tailwind-merge'
@@ -12,44 +12,47 @@ import { AdProvider, useAdContext } from '../model/ad-context'
 import { Skeleton } from './skeleton'
 import { GenieeSSP, GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
 
-const MAX_RETRIES = 2
 const isDev = process.env.NODE_ENV === 'development'
 
 // 경로 변경과 파라미터 변경에 대한 다른 시간 간격 설정
 const PATH_CHANGE_INTERVAL = 5000 // 경로 변경 시 5초
 
-const CenterGenieeSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
+const CenterGenieeSlot = ({
+  includeDevice,
+}: {
+  includeDevice: Breakpoint[]
+}) => {
   const {
     adState: { isAdFilled, isDoneAd, isLoading },
     resetAdState,
     readyAdState,
-    failAdState,
   } = useAdContext()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const isClient = useClient()
   const breakpoint = useBreakpoint()
 
-  // This identifier changes immediately with any relevant navigation or breakpoint change.
-  const currentRawIdentifier = `${pathname}-${breakpoint}`
+  // This identifier changes immediately with any relevant navigation, searchParams, or breakpoint change.
+  const currentRawIdentifier = `${pathname}-${searchParams.toString()}-${breakpoint}`
 
   const adRefreshControl = useRef({
     lastEffectiveIdentifier: currentRawIdentifier, // Identifier for which an ad load was last permitted
     lastAdRefreshTime: 0,
     lastPath: pathname,
+    lastSearchParams: searchParams.toString(),
     lastBreakpoint: breakpoint,
     isInitialRender: true,
   })
 
   // useAdRetryKey's key should change only when we *decide* to refresh the ad.
   // So, it uses `lastEffectiveIdentifier` from the ref.
-  const [adKey, retryCount, attemptRetry, resetAdKeyAndRetries] = useAdRetryKey(
+  const [adKey, , , resetAdKeyAndRetries] = useAdRetryKey(
     `center-geniee-${adRefreshControl.current.lastEffectiveIdentifier}`,
-    MAX_RETRIES,
+    0,
   )
 
   // 광고 로딩은 완료되었으나, 표시할 광고가 없는 상태
-  const isAdUnFilledStatus =
-    !isAdFilled && isDoneAd && retryCount >= MAX_RETRIES
+  const isAdUnFilledStatus = !isAdFilled && isDoneAd
   const shouldRender = isClient && includeDevice.includes(breakpoint)
 
   useEffect(() => {
@@ -63,12 +66,15 @@ const CenterGenieeSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) =>
       refs.isInitialRender = false
       refs.lastAdRefreshTime = now
       refs.lastPath = pathname
+      refs.lastSearchParams = searchParams.toString()
       refs.lastBreakpoint = breakpoint
       // `currentRawIdentifier` is already set as `lastEffectiveIdentifier`
       needsAdStateReset = true
       reasonForRefresh = '🚀 Initial Ad Setup'
     } else {
       const pathChanged = refs.lastPath !== pathname
+      const searchParamsChanged =
+        refs.lastSearchParams !== searchParams.toString()
       const breakpointChanged = refs.lastBreakpoint !== breakpoint
 
       let canRefreshThrottled = false
@@ -76,6 +82,9 @@ const CenterGenieeSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) =>
       if (breakpointChanged) {
         canRefreshThrottled = true
         reasonForRefresh = '📱 Breakpoint Change'
+      } else if (searchParamsChanged) {
+        canRefreshThrottled = true
+        reasonForRefresh = '🔍 Search Params Change'
       } else if (pathChanged) {
         if (now - refs.lastAdRefreshTime >= PATH_CHANGE_INTERVAL) {
           canRefreshThrottled = true
@@ -97,6 +106,7 @@ const CenterGenieeSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) =>
         }
         refs.lastAdRefreshTime = now
         refs.lastPath = pathname
+        refs.lastSearchParams = searchParams.toString()
         refs.lastBreakpoint = breakpoint
         needsAdStateReset = true
       }
@@ -111,25 +121,12 @@ const CenterGenieeSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) =>
     }
   }, [
     pathname,
+    searchParams,
     breakpoint,
     resetAdState,
     resetAdKeyAndRetries,
     currentRawIdentifier,
   ])
-
-  const handleAdUnfilled = useCallback(() => {
-    if (retryCount < MAX_RETRIES) {
-      console.warn(
-        `🔁 Geniee center ad unfilled. Retry attempt: ${retryCount + 1}/${MAX_RETRIES} for key ${adKey}`,
-      )
-      attemptRetry()
-    } else {
-      console.warn(
-        `🛑 Max retries reached for Geniee center ad key ${adKey}. Ad will be hidden.`,
-      )
-      failAdState() // Mark as failed, AdContext can then decide to hide
-    }
-  }, [retryCount, attemptRetry, failAdState, adKey])
 
   const handleAdFilled = useCallback(() => {
     console.log(`✅ Geniee center ad successfully loaded for key ${adKey}`)
@@ -171,11 +168,11 @@ const CenterGenieeSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) =>
       )}
     >
       {/* Geniee SSP 스크립트 및 광고 요청 */}
-      <GenieeSSP 
-        adIds={[GENIEE_IDS.BANNER_ID_729x90]} 
+      <GenieeSSP
+        adIds={[GENIEE_IDS.BANNER_ID_729x90]}
         onScriptReady={handleScriptReady}
       />
-      
+
       {/* 광고 로딩 UI */}
       {isLoading ? (
         <Skeleton
@@ -192,7 +189,7 @@ const CenterGenieeSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) =>
         )}
       >
         <GenieeAdSlot
-          key={`${adKey}-${retryCount}`}
+          key={adKey}
           adId={GENIEE_IDS.BANNER_ID_729x90}
           className={cn(
             'h-full max-h-[6.25rem] w-full max-w-[29rem] overflow-hidden rounded-sm tab:max-w-[38rem] pc-lg:max-w-[45.5rem]',

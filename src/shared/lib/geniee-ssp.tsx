@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 // Geniee SSP 광고 ID 상수
 export const GENIEE_IDS = {
   OVERLAY_ID: '1597526_nara-speller.co.kr_overlay',
-  BANNER_ID_160x600: '1597525_nara-speller.co.kr_standardbanner_160x600', 
+  BANNER_ID_160x600: '1597525_nara-speller.co.kr_standardbanner_160x600',
   BANNER_ID_729x90: '1598714_nara-speller.co.kr_standardbanner_729x90',
 } as const
 
@@ -68,8 +68,8 @@ interface GenieeAdSlotProps {
 
 export const GenieeAdSlot = ({ adId, className, style }: GenieeAdSlotProps) => {
   return (
-    <div 
-      data-cptid={adId} 
+    <div
+      data-cptid={adId}
       className={className}
       style={{ display: 'block', ...style }}
     />
