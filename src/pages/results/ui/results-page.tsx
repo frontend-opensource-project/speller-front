@@ -14,11 +14,7 @@ import { ErrorTrackingSection } from './error-tracking-section'
 import { CenterAdSense } from '@/shared/ui/center-ad-sense'
 import { cn } from '@/shared/lib/tailwind-merge'
 
-interface ResultsPageProps {
-  pageParam?: string
-}
-
-const ResultsPage = ({ pageParam = '1' }: ResultsPageProps) => {
+const ResultsPage = () => {
   const router = useRouter()
   const { responseMap } = useSpeller()
   const contentRef = useRef<HTMLDivElement>(null)
@@ -26,7 +22,7 @@ const ResultsPage = ({ pageParam = '1' }: ResultsPageProps) => {
 
   useEffect(() => {
     if (Object.keys(responseMap).length === 0) {
-      router.replace('/speller')
+      router.replace('/invalid-access')
       return
     }
 
@@ -45,6 +41,7 @@ const ResultsPage = ({ pageParam = '1' }: ResultsPageProps) => {
   }, [responseMap, router, breakpoint])
 
   if (Object.keys(responseMap).length === 0) {
+    router.replace('/invalid-access')
     return null
   }
 
@@ -52,7 +49,7 @@ const ResultsPage = ({ pageParam = '1' }: ResultsPageProps) => {
     <SpellerRefsProvider>
       <ContentLayout className='pb-4 tab:pb-10 pc:pb-5'>
         <div className='sticky -top-2 z-10 flex min-h-[1.625rem] items-center justify-between bg-background pb-2 pt-4 tab:-top-3 tab:justify-center tab:pt-[1.25rem] pc:min-h-8 pc:pb-3 pc:pt-6'>
-          <Navigator currentPage={Number(pageParam)} />
+          <Navigator />
           <StrongCheckMessage />
         </div>
         {/* 교정 문서 & 맞춤법/문법 오류 레이아웃*/}
