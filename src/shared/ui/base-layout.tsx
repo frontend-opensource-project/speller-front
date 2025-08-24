@@ -2,7 +2,7 @@ import { FC, PropsWithChildren } from 'react'
 
 import { Header } from './header'
 import { Footer } from './footer'
-import { MainAdSense } from './main-ad-sense'
+import { MainGeniee } from './main-geniee'
 
 const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -12,7 +12,7 @@ const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
         {/* 레이아웃 쉬프트 방지 */}
         <div className='flex h-full flex-1'>{children}</div>
         {/* 광고 영역 */}
-        <MainAdSense />
+        <MainGeniee />
       </div>
       <Footer />
     </div>
