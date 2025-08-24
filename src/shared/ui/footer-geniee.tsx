@@ -1,12 +1,11 @@
 'use client'
 
-import { useCallback, Suspense } from 'react'
+import { Suspense } from 'react'
 import { useDetectAdBlock } from 'adblock-detect-react'
 
 import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
 import { Breakpoint, useBreakpoint } from '../lib/use-break-point'
-import { AdProvider, useAdContext } from '../model/ad-context'
 import { GenieeSSP, GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -16,21 +15,10 @@ const FooterGenieeSlot = ({
 }: {
   includeDevice: Breakpoint[]
 }) => {
-  const { readyAdState } = useAdContext()
   const isClient = useClient()
   const breakpoint = useBreakpoint()
 
   const shouldRender = isClient && includeDevice.includes(breakpoint)
-
-  const handleAdLoaded = useCallback(
-    (adId: string) => {
-      if (adId === GENIEE_IDS.OVERLAY_ID) {
-        console.log(`✅ Geniee footer ad loaded: ${adId}`)
-        readyAdState()
-      }
-    },
-    [readyAdState],
-  )
 
   if (!shouldRender) return null
 
@@ -57,7 +45,7 @@ const FooterGenieeSlot = ({
       )}
     >
       {/* Geniee SSP 스크립트 및 광고 요청 */}
-      <GenieeSSP adIds={[GENIEE_IDS.OVERLAY_ID]} onAdLoaded={handleAdLoaded} />
+      <GenieeSSP adIds={[GENIEE_IDS.OVERLAY_ID]} />
 
       {/* 오버레이 광고는 바로 표시 */}
       <div
@@ -86,9 +74,7 @@ const FooterGeniee = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
 
   return (
     <Suspense fallback={null}>
-      <AdProvider>
-        <FooterGenieeSlot includeDevice={includeDevice} />
-      </AdProvider>
+      <FooterGenieeSlot includeDevice={includeDevice} />
     </Suspense>
   )
 }

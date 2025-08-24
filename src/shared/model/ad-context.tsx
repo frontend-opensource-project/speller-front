@@ -27,7 +27,7 @@ const AdContext = createContext<AdContextType | null>(null)
 const AdProvider: FC<PropsWithChildren> = ({ children }) => {
   const [adState, setAdStateInternal] = useState<AdState>({
     isAdFilled: false,
-    isLoading: true,
+    isLoading: false,
     isDoneAd: false,
   })
 
