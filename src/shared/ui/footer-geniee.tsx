@@ -9,7 +9,6 @@ import { useClient } from '../lib/use-client'
 import { Breakpoint, useBreakpoint } from '../lib/use-break-point'
 import { useAdRetryKey } from '../lib/use-ad-retry-key'
 import { AdProvider, useAdContext } from '../model/ad-context'
-import { Skeleton } from './skeleton'
 import { GenieeSSP, GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -23,7 +22,7 @@ const FooterGenieeSlot = ({
   includeDevice: Breakpoint[]
 }) => {
   const {
-    adState: { isAdFilled, isDoneAd, isLoading },
+    adState: { isAdFilled, isDoneAd },
     resetAdState,
     readyAdState,
   } = useAdContext()
@@ -32,14 +31,16 @@ const FooterGenieeSlot = ({
   const isClient = useClient()
   const breakpoint = useBreakpoint()
 
+  const searchParamsString = searchParams?.toString() || ''
+
   // This identifier changes immediately with any relevant navigation, searchParams, or breakpoint change.
-  const currentRawIdentifier = `${pathname}-${searchParams.toString()}-${breakpoint}`
+  const currentRawIdentifier = `${pathname}-${searchParamsString}-${breakpoint}`
 
   const adRefreshControl = useRef({
     lastEffectiveIdentifier: currentRawIdentifier, // Identifier for which an ad load was last permitted
     lastAdRefreshTime: 0,
     lastPath: pathname,
-    lastSearchParams: searchParams.toString(),
+    lastSearchParams: searchParamsString,
     lastBreakpoint: breakpoint,
     isInitialRender: true,
   })
@@ -66,15 +67,14 @@ const FooterGenieeSlot = ({
       refs.isInitialRender = false
       refs.lastAdRefreshTime = now
       refs.lastPath = pathname
-      refs.lastSearchParams = searchParams.toString()
+      refs.lastSearchParams = searchParamsString
       refs.lastBreakpoint = breakpoint
       // `currentRawIdentifier` is already set as `lastEffectiveIdentifier`
       needsAdStateReset = true
       reasonForRefresh = '🚀 Initial Ad Setup'
     } else {
       const pathChanged = refs.lastPath !== pathname
-      const searchParamsChanged =
-        refs.lastSearchParams !== searchParams.toString()
+      const searchParamsChanged = refs.lastSearchParams !== searchParamsString
       const breakpointChanged = refs.lastBreakpoint !== breakpoint
 
       let canRefreshThrottled = false
@@ -106,7 +106,7 @@ const FooterGenieeSlot = ({
         }
         refs.lastAdRefreshTime = now
         refs.lastPath = pathname
-        refs.lastSearchParams = searchParams.toString()
+        refs.lastSearchParams = searchParamsString
         refs.lastBreakpoint = breakpoint
         needsAdStateReset = true
       }
@@ -134,11 +134,19 @@ const FooterGenieeSlot = ({
   }, [readyAdState, adKey])
 
   const handleScriptReady = useCallback(() => {
-    // Geniee SSP 스크립트 준비 완료 후 광고 로딩 상태로 전환
-    setTimeout(() => {
-      handleAdFilled() // 일단 로딩 완료로 처리 (실제로는 더 정교한 검증 필요)
-    }, 1000)
-  }, [handleAdFilled])
+    console.log(`🚀 Geniee script ready for footer ad ${adKey}`)
+    // 스크립트 준비 완료, 실제 광고 로딩은 onAdLoaded에서 처리
+  }, [adKey])
+
+  const handleAdLoaded = useCallback(
+    (adId: string) => {
+      if (adId === GENIEE_IDS.OVERLAY_ID) {
+        console.log(`✅ Geniee footer ad loaded: ${adId}`)
+        handleAdFilled()
+      }
+    },
+    [handleAdFilled],
+  )
 
   if (!shouldRender) return null
 
@@ -171,21 +179,13 @@ const FooterGenieeSlot = ({
       <GenieeSSP
         adIds={[GENIEE_IDS.OVERLAY_ID]}
         onScriptReady={handleScriptReady}
+        onAdLoaded={handleAdLoaded}
       />
 
-      {/* 광고 로딩 UI */}
-      {isLoading ? (
-        <Skeleton
-          className={cn(
-            'absolute left-1/2 min-h-[6.25rem] w-full max-w-[29rem] -translate-x-1/2 overflow-hidden rounded-sm bg-slate-300 tab:max-w-[38rem] pc:w-full pc:min-w-[31.25rem] pc-lg:max-w-[45.5rem]',
-            'pc:left-auto pc:right-0 pc:translate-x-0',
-          )}
-        />
-      ) : null}
+      {/* 오버레이 광고는 바로 표시 */}
       <div
         className={cn(
-          'relative grid min-h-[6.25rem] items-center justify-items-center transition-opacity pc:justify-items-end',
-          isLoading ? 'pointer-events-none opacity-0' : 'opacity-100',
+          'relative grid min-h-[6.25rem] items-center justify-items-center pc:justify-items-end',
         )}
       >
         <GenieeAdSlot

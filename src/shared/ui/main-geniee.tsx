@@ -28,14 +28,16 @@ const MainGenieeSlot = () => {
   const isClient = useClient()
   const breakpoint = useBreakpoint()
 
+  const searchParamsString = searchParams?.toString() || ''
+
   // This identifier changes immediately with any relevant navigation, searchParams, or breakpoint change.
-  const currentRawIdentifier = `${pathname}-${searchParams.toString()}-${breakpoint}`
+  const currentRawIdentifier = `${pathname}-${searchParamsString}-${breakpoint}`
 
   const adRefreshControl = useRef({
     lastEffectiveIdentifier: currentRawIdentifier, // Identifier for which an ad load was last permitted
     lastAdRefreshTime: 0,
     lastPath: pathname,
-    lastSearchParams: searchParams.toString(),
+    lastSearchParams: searchParamsString,
     lastBreakpoint: breakpoint,
     isInitialRender: true,
   })
@@ -63,15 +65,14 @@ const MainGenieeSlot = () => {
       refs.isInitialRender = false
       refs.lastAdRefreshTime = now
       refs.lastPath = pathname
-      refs.lastSearchParams = searchParams.toString()
+      refs.lastSearchParams = searchParamsString
       refs.lastBreakpoint = breakpoint
       // `currentRawIdentifier` is already set as `lastEffectiveIdentifier`
       needsAdStateReset = true
       reasonForRefresh = '🚀 Initial Ad Setup'
     } else {
       const pathChanged = refs.lastPath !== pathname
-      const searchParamsChanged =
-        refs.lastSearchParams !== searchParams.toString()
+      const searchParamsChanged = refs.lastSearchParams !== searchParamsString
       const breakpointChanged = refs.lastBreakpoint !== breakpoint
 
       let canRefreshThrottled = false
@@ -103,7 +104,7 @@ const MainGenieeSlot = () => {
         }
         refs.lastAdRefreshTime = now
         refs.lastPath = pathname
-        refs.lastSearchParams = searchParams.toString()
+        refs.lastSearchParams = searchParamsString
         refs.lastBreakpoint = breakpoint
         needsAdStateReset = true
       }
@@ -131,11 +132,19 @@ const MainGenieeSlot = () => {
   }, [readyAdState, adKey])
 
   const handleScriptReady = useCallback(() => {
-    // Geniee SSP 스크립트 준비 완료 후 광고 로딩 상태로 전환
-    setTimeout(() => {
-      handleAdFilled() // 일단 로딩 완료로 처리 (실제로는 더 정교한 검증 필요)
-    }, 1000)
-  }, [handleAdFilled])
+    console.log(`🚀 Geniee script ready for main ad ${adKey}`)
+    // 스크립트 준비 완료, 실제 광고 로딩은 onAdLoaded에서 처리
+  }, [adKey])
+
+  const handleAdLoaded = useCallback(
+    (adId: string) => {
+      if (adId === GENIEE_IDS.BANNER_ID_160x600) {
+        console.log(`✅ Geniee main ad loaded: ${adId}`)
+        handleAdFilled()
+      }
+    },
+    [handleAdFilled],
+  )
 
   if (!shouldRender) return null
 
@@ -149,6 +158,7 @@ const MainGenieeSlot = () => {
       <GenieeSSP
         adIds={[GENIEE_IDS.BANNER_ID_160x600]}
         onScriptReady={handleScriptReady}
+        onAdLoaded={handleAdLoaded}
       />
 
       {/* 광고 로딩 UI */}

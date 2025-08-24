@@ -24,9 +24,14 @@ declare global {
 interface GenieeSSPProps {
   adIds: string[]
   onScriptReady?: () => void
+  onAdLoaded?: (adId: string) => void
 }
 
-export const GenieeSSP = ({ adIds, onScriptReady }: GenieeSSPProps) => {
+export const GenieeSSP = ({
+  adIds,
+  onScriptReady,
+  onAdLoaded,
+}: GenieeSSPProps) => {
   useEffect(() => {
     const win = window as Window
     win.gnshbrequest = win.gnshbrequest || { cmd: [] }
@@ -53,9 +58,22 @@ export const GenieeSSP = ({ adIds, onScriptReady }: GenieeSSPProps) => {
       win.gnshbrequest.cmd.push(() => {
         win.gnshbrequest.forceInternalRequest()
         win.gnshbrequest.applyPassback(adId, `[data-cptid='${adId}']`)
+
+        // 광고 로딩 완료 체크
+        if (onAdLoaded) {
+          const checkAdLoaded = () => {
+            const adElement = document.querySelector(`[data-cptid='${adId}']`)
+            if (adElement && adElement.children.length > 0) {
+              onAdLoaded(adId)
+            } else {
+              setTimeout(checkAdLoaded, 500) // 0.5초마다 체크
+            }
+          }
+          setTimeout(checkAdLoaded, 1000) // 1초 후 체크 시작
+        }
       })
     })
-  }, [adIds, onScriptReady])
+  }, [adIds, onScriptReady, onAdLoaded])
 
   return null
 }
