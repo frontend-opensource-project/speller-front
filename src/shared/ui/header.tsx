@@ -1,9 +1,23 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from './button'
 import { Popover, PopoverContent, PopoverTrigger } from './popover'
+import { sendPreviousVersionClickedEvent } from '../lib/send-ga-event'
 
 const Header = () => {
+  const handlePreviousVersionClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+  ) => {
+    e.preventDefault()
+    sendPreviousVersionClickedEvent()
+    // GA 이벤트 전송을 잠깐 기다린 후 이동
+    setTimeout(() => {
+      window.location.href = 'https://nara-speller.co.kr/old_speller/'
+    }, 200)
+  }
+
   return (
     <div className='flex items-center justify-center bg-white'>
       <header className='flex flex-1 items-center justify-between p-[1rem_1.5rem] pc-lg:container tab:p-[1.25rem_3.75rem] pc:w-full pc:p-[1rem_1.875rem] pc-lg:p-[1.25rem_2rem]'>
@@ -13,7 +27,7 @@ const Header = () => {
               <div className='relative h-[1.375rem] w-[5.625rem] tab:h-[1.6875rem] tab:w-[7.1875rem] pc:h-[1.6875rem] pc:w-[7.5rem]'>
                 <Image
                   src='/logo.svg'
-                  alt='바른 한글 로고'
+                  alt='바른 한글 로고 (구 한국어 맞춤법/문법 검사기, 부산대 맞춤법/문법 검사기, 부산대학교, ㈜나라인포테크, 우리말 배움터 스펠러, Korean speller, spelling checker)'
                   fill
                   className='object-contain'
                 />
@@ -31,12 +45,13 @@ const Header = () => {
           <Link href='/feedback' className={classes.linkButton}>
             문의하기
           </Link>
-          <Link
-            href='https://nara-speller.co.kr/old_speller/'
+          <a
+            href='#'
             className='hidden rounded-lg border border-[#B8B8BE] p-3 font-semibold !leading-none text-slate-500 hover:bg-accent tab:inline-flex tab:text-xl pc:text-base'
+            onClick={handlePreviousVersionClick}
           >
             이전 버전 사용하기
-          </Link>
+          </a>
         </div>
         <Popover>
           <PopoverTrigger asChild>
@@ -77,15 +92,16 @@ const Header = () => {
                 </Link>
               </li>
               <li className='group'>
-                <Link
-                  href='https://nara-speller.co.kr/old_speller/'
+                <a
+                  href='#'
                   className={`${classes.popoverButton} border-none`}
+                  onClick={handlePreviousVersionClick}
                 >
                   <i
                     className={`${classes.popoverIcon} bg-icon-history-back group-hover:bg-icon-history-back-white`}
                   />
                   이전 버전 사용하기
-                </Link>
+                </a>
               </li>
             </ul>
           </PopoverContent>

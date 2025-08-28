@@ -18,6 +18,9 @@ import {
   ManualCorrectionSubmittedParams,
   CorrectionFeedbackOpenedParams,
   CorrectionFeedbackSubmittedParams,
+  PreviousVersionClickedParams,
+  ButtonClickedParams,
+  ButtonType,
 } from './analytics-event-types'
 
 type Event = (typeof GA_EVENT_TYPE)[keyof typeof GA_EVENT_TYPE]
@@ -88,6 +91,14 @@ const GAEvents: GAEventTrackerMap = {
   correctionFeedbackSubmitted: createTracker<CorrectionFeedbackSubmittedParams>(
     GA_EVENT_TYPE.EVENT,
     GA_ACTIONS.CORRECTION_FEEDBACK_SUBMITTED,
+  ),
+  previousVersionClicked: createTracker<PreviousVersionClickedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.PREVIOUS_VERSION_CLICKED,
+  ),
+  buttonClicked: createTracker<ButtonClickedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.BUTTON_CLICKED,
   ),
 }
 
@@ -378,5 +389,29 @@ export const sendCorrectionFeedbackSubmittedEvent = ({
     corrected_error_type: correctedErrorType,
     section: sectionType,
     method: 'button',
+  })
+}
+
+/**
+ * 이전 버전 사용하기 버튼 클릭 시 GA 이벤트를 전송합니다.
+ */
+export const sendPreviousVersionClickedEvent = () => {
+  GAEvents.previousVersionClicked({
+    method: 'button',
+  })
+}
+
+/**
+ * 교정 문서 버튼 클릭 시 GA 이벤트를 전송합니다.
+ * @param buttonType 클릭된 버튼 유형
+ */
+export const sendButtonClickedEvent = ({
+  buttonType,
+}: {
+  buttonType: ButtonType
+}) => {
+  GAEvents.buttonClicked({
+    method: 'button',
+    button_type: buttonType,
   })
 }

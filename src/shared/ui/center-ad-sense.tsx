@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
+import { useDetectAdBlock } from 'adblock-detect-react'
 
 import GoogleAdSense from '../lib/google-ad-sense'
 import { cn } from '../lib/tailwind-merge'
@@ -192,6 +193,12 @@ const CenterAdSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
 }
 
 const CenterAdSense = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
+  const adBlockDetected = useDetectAdBlock()
+
+  if (adBlockDetected) {
+    return null
+  }
+
   return (
     <AdProvider>
       <CenterAdSlot includeDevice={includeDevice} />

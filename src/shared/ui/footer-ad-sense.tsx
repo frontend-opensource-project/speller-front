@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, Suspense } from 'react'
 import { usePathname } from 'next/navigation'
+import { useDetectAdBlock } from 'adblock-detect-react'
 
 import GoogleAdSense from '../lib/google-ad-sense'
 import { cn } from '../lib/tailwind-merge'
@@ -193,8 +194,12 @@ const FooterAdSlot = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
 }
 
 const FooterAdSense = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
+  const adBlockDetected = useDetectAdBlock()
   const isClient = useClient()
-  if (!isClient) return null
+
+  if (!isClient || adBlockDetected) {
+    return null
+  }
 
   return (
     <Suspense fallback={null}>
