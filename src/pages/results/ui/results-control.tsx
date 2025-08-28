@@ -61,9 +61,9 @@ const ResultsControl = () => {
   return (
     <div className='flex flex-shrink-0 justify-between pt-5'>
       <TextCounter count={response.str.length} className='pc:-translate-y-3' />
-      <div className='flex gap-3'>
+      <div className='flex'>
         <ActionButton
-          icon='/new-article.svg'
+          icon='icon/icon-new-article.svg'
           label='새글쓰기'
           ariaLabel='새글쓰기'
           onClick={() => {
@@ -72,19 +72,19 @@ const ResultsControl = () => {
           }}
         />
         <ActionButton
-          icon='/arrow-return-left.svg'
+          icon='icon/icon-arrow-return-left.svg'
           label='돌아가기'
           ariaLabel='이전 페이지로 돌아가기'
           onClick={() => router.push('/speller')}
         />
         <ActionButton
-          icon='/copy.svg'
-          label='복사하기'
-          ariaLabel='텍스트 복사하기'
+          icon='icon/icon-copy.svg'
+          label='부분복사'
+          ariaLabel='현재 텍스트 복사하기'
           onClick={() => handleCopy(displayText)}
         />
         <ActionButton
-          icon='/copy.svg'
+          icon='icon/icon-copy-all.svg'
           label='전체복사'
           ariaLabel='전체 텍스트 복사하기'
           onClick={() => handleCopy(correctedText)}
@@ -111,7 +111,7 @@ const ActionButton = ({
     variant='ghost'
     aria-label={ariaLabel}
     onClick={onClick}
-    className='size-fit p-1 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-4 focus-visible:ring-offset-white'
+    className='size-fit rounded-lg p-1 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-4 focus-visible:ring-offset-white tab:p-2'
   >
     <div className='flex flex-col items-center justify-center'>
       <div className='relative size-[1.5rem]'>
