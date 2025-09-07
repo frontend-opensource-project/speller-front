@@ -88,7 +88,7 @@ const ResultsControl = () => {
         />
         <ActionButton
           icon='icon/icon-copy.svg'
-          label='부분복사'
+          label='복사하기'
           ariaLabel='현재 텍스트 복사하기'
           onClick={() => {
             handleCopy(displayText)
