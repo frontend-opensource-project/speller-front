@@ -11,7 +11,7 @@ import { StrongCheckMessage } from './strong-check-message'
 import { CorrectionContent } from './correction-content'
 import { ResultsControl } from './results-control'
 import { ErrorTrackingSection } from './error-tracking-section'
-import { CenterAdSense } from '@/shared/ui/center-ad-sense'
+import { CenterGeniee } from '@/shared/ui/center-geniee'
 import { cn } from '@/shared/lib/tailwind-merge'
 
 const ResultsPage = () => {
@@ -63,7 +63,7 @@ const ResultsPage = () => {
             {/* 글자수 & 돌아가기, 복사하기 버튼 */}
             <ResultsControl />
           </div>
-          <CenterAdSense includeDevice={['mobile', 'tablet']} />
+          <CenterGeniee includeDevice={['mobile', 'tablet']} />
           {/* 맞춤법/문법 오류 */}
           <div
             className={cn(

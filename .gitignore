@@ -49,3 +49,5 @@ next-env.d.ts
 *.log
 
 certificates
+
+CLAUDE.md
