@@ -1,59 +1,99 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
-// Geniee SSP 광고 ID 상수
-export const GENIEE_IDS = {
-  OVERLAY_ID: '1597526_nara-speller.co.kr_overlay',
-  BANNER_ID_160x600: '1597525_nara-speller.co.kr_standardbanner_160x600',
-  BANNER_ID_729x90: '1598714_nara-speller.co.kr_standardbanner_729x90',
+// Geniee SSP 광고 ID 상수 (guide에서 제공된 ads.ts 패턴 따름)
+export const ads = {
+  overlay: '1597526_nara-speller.co.kr_overlay',
+  banner160x600: '1597525_nara-speller.co.kr_standardbanner_160x600',
+  banner729x90: '1598714_nara-speller.co.kr_standardbanner_729x90',
 } as const
 
-const SCRIPT_URL = 'https://cpt.geniee.jp/hb/v1/223680/3011/wrapper.min.js'
+// 기존 GENIEE_IDS 호환성 유지
+export const GENIEE_IDS = {
+  OVERLAY_ID: ads.overlay,
+  BANNER_ID_160x600: ads.banner160x600,
+  BANNER_ID_729x90: ads.banner729x90,
+} as const
 
 declare global {
   interface Window {
     gnshbrequest: {
       cmd: Array<() => void>
+      registerPassback: (id: string) => void
+      rerun: () => void
       applyPassback: (id: string, selector: string) => void
       forceInternalRequest: () => void
+      preventFirstRun: () => void
+      removeOverlay: () => void
     }
   }
 }
 
-interface GenieeSSPProps {
-  adIds: string[]
+/**
+ * useBeforeMount 훅 - 컴포넌트 마운트 전에 실행되어야 할 로직을 위한 훅
+ * 부모 컴포넌트에서 자식 컴포넌트 마운트 전에 특정 로직을 실행할 때 사용
+ */
+export const useBeforeMount = (callBack: () => void) => {
+  const [called, setCalled] = useState(false)
+  if (called) return
+  callBack()
+  setCalled(true)
 }
 
-export const GenieeSSP = ({ adIds }: GenieeSSPProps) => {
-  useEffect(() => {
-    const win = window as Window
-    win.gnshbrequest = win.gnshbrequest || { cmd: [] }
+/**
+ * HB Wrapper의 라이프사이클을 리셋하는 훅
+ * registerPassback과 rerun을 실행하여 광고 시스템을 초기화
+ */
+export const useGenieeAdClient = () => {
+  useBeforeMount(() => {
+    if (typeof window === 'undefined') return
 
-    // 스크립트가 이미 로드되었는지 확인하고, 없으면 한 번만 로드
-    const scriptExists = Array.from(
-      document.getElementsByTagName('script'),
-    ).some(script => script.src === SCRIPT_URL)
-
-    if (!scriptExists) {
-      const script = document.createElement('script')
-      script.src = SCRIPT_URL
-      script.async = true
-      document.body.appendChild(script)
-    }
-
-    // 각 광고 슬롯에 대한 요청을 큐에 추가
-    adIds.forEach(adId => {
-      win.gnshbrequest.cmd.push(() => {
-        win.gnshbrequest.forceInternalRequest()
-        win.gnshbrequest.applyPassback(adId, `[data-cptid='${adId}']`)
+    window.gnshbrequest = window.gnshbrequest || { cmd: [] }
+    window.gnshbrequest.cmd.push(() => {
+      console.log(`initializing gnshbrequest.`)
+      // 모든 광고 슬롯에 대해 registerPassback 실행
+      Object.values(ads).forEach(id => {
+        window.gnshbrequest.registerPassback(id)
       })
+      window.gnshbrequest.rerun()
     })
-  }, [adIds])
+  })
 
-  return null
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    return () => {
+      window.gnshbrequest = window.gnshbrequest || { cmd: [] }
+      window.gnshbrequest.cmd.push(() => {
+        window.gnshbrequest.removeOverlay()
+      })
+    }
+  }, [])
 }
 
+/**
+ * 개별 광고 슬롯에 대한 applyPassback을 실행하는 훅
+ * 각 광고 컴포넌트에서 사용
+ */
+export const useRenderGenieeAd = (slotId: string) => {
+  const passbackQuery = `[data-cptid='${slotId}']`
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    window.gnshbrequest = window.gnshbrequest || { cmd: [] }
+    window.gnshbrequest.cmd.push(() => {
+      console.log(`executing applyPassback for ${slotId}.`)
+      window.gnshbrequest.applyPassback(slotId, passbackQuery)
+    })
+  }, [slotId, passbackQuery])
+}
+
+/**
+ * 광고 슬롯 컴포넌트
+ * data-cptid 속성을 가진 div 요소를 렌더링
+ */
 interface GenieeAdSlotProps {
   adId: string
   className?: string
@@ -61,6 +101,8 @@ interface GenieeAdSlotProps {
 }
 
 export const GenieeAdSlot = ({ adId, className, style }: GenieeAdSlotProps) => {
+  useRenderGenieeAd(adId)
+
   return (
     <div
       data-cptid={adId}
@@ -68,4 +110,12 @@ export const GenieeAdSlot = ({ adId, className, style }: GenieeAdSlotProps) => {
       style={{ display: 'block', ...style }}
     />
   )
+}
+
+// 기존 GenieeSSP 컴포넌트는 호환성을 위해 유지하지만 사용하지 않음
+export const GenieeSSP = () => {
+  console.warn(
+    'GenieeSSP is deprecated. Use useGenieeAdClient and GenieeAdSlot instead.',
+  )
+  return null
 }

@@ -20,7 +20,29 @@ const App = ({
 }>) => {
   return (
     <html lang='ko' className={`${pretendard.variable}`}>
-      <head></head>
+      <head>
+        {/* Geniee Wrapper Head Tag */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.gnshbrequest = window.gnshbrequest || { cmd: [] };
+              window.gnshbrequest.cmd.push(function () {
+                window.gnshbrequest.preventFirstRun();
+                window.gnshbrequest.forceInternalRequest();
+              });
+            `,
+          }}
+        />
+        <script
+          async
+          src='https://securepubads.g.doubleclick.net/tag/js/gpt.js'
+        />
+        <script
+          async
+          src='https://cpt.geniee.jp/hb/v1/223680/3011/wrapper.min.js'
+        />
+        {/* /Geniee Wrapper Head Tag */}
+      </head>
       <body className={`${pretendard.className} antialiased`}>
         {children}
         <Toaster />

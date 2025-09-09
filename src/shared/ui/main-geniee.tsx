@@ -5,7 +5,7 @@ import { useDetectAdBlock } from 'adblock-detect-react'
 import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
 import { Breakpoint, useBreakpoint } from '../lib/use-break-point'
-import { GenieeSSP, GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
+import { useGenieeAdClient, GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -24,8 +24,6 @@ const MainGenieeSlot = () => {
 
   return (
     <div className={cn('relative')}>
-      {/* Geniee SSP 스크립트 및 광고 요청 */}
-      <GenieeSSP adIds={[GENIEE_IDS.BANNER_ID_160x600]} />
       <GenieeAdSlot adId={GENIEE_IDS.BANNER_ID_160x600} className={AdStyle} />
     </div>
   )
@@ -36,6 +34,9 @@ const AdStyle =
 
 const MainGeniee = () => {
   const adBlockDetected = useDetectAdBlock()
+
+  // Geniee 광고 클라이언트 초기화
+  useGenieeAdClient()
 
   if (adBlockDetected) {
     return null
