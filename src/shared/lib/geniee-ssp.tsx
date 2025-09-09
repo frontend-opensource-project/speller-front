@@ -41,13 +41,18 @@ export const useBeforeMount = (callBack: () => void) => {
   setCalled(true)
 }
 
+// 전역 초기화 상태 추적
+let genieeInitialized = false
+
 /**
  * HB Wrapper의 라이프사이클을 리셋하는 훅
  * registerPassback과 rerun을 실행하여 광고 시스템을 초기화
+ * ⚠️ 이 훅은 앱에서 한 번만 호출되어야 합니다 (각 광고 컴포넌트가 아닌 상위 레벨에서)
  */
 export const useGenieeAdClient = () => {
   useBeforeMount(() => {
     if (typeof window === 'undefined') return
+    if (genieeInitialized) return // 이미 초기화된 경우 중복 실행 방지
 
     window.gnshbrequest = window.gnshbrequest || { cmd: [] }
     window.gnshbrequest.cmd.push(() => {
@@ -57,6 +62,7 @@ export const useGenieeAdClient = () => {
         window.gnshbrequest.registerPassback(id)
       })
       window.gnshbrequest.rerun()
+      genieeInitialized = true
     })
   })
 
@@ -68,6 +74,7 @@ export const useGenieeAdClient = () => {
       window.gnshbrequest.cmd.push(() => {
         window.gnshbrequest.removeOverlay()
       })
+      genieeInitialized = false
     }
   }, [])
 }

@@ -3,8 +3,11 @@ import { FC, PropsWithChildren } from 'react'
 import { Header } from './header'
 import { Footer } from './footer'
 import { MainGeniee } from './main-geniee'
+import { useGenieeAdClient } from '../lib/geniee-ssp'
 
 const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
+  // Geniee 광고 시스템 전역 초기화 (한 번만 수행)
+  useGenieeAdClient()
   return (
     <div className='grid min-h-screen grid-rows-[auto_1fr_auto] bg-slate-200 pc:bg-background'>
       <Header />
