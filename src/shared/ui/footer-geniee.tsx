@@ -6,7 +6,7 @@ import { useDetectAdBlock } from 'adblock-detect-react'
 import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
 import { Breakpoint, useBreakpoint } from '../lib/use-break-point'
-import { GenieeSSP, GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
+import { useGenieeAdClient, GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -44,9 +44,6 @@ const FooterGenieeSlot = ({
         'relative max-h-[6.5rem] min-h-[6.5rem] overflow-hidden rounded-sm bg-slate-100 pc:min-h-[6.25rem] pc:w-full pc:min-w-[31.25rem] pc:bg-slate-200 pc-lg:max-w-[45.5rem]',
       )}
     >
-      {/* Geniee SSP 스크립트 및 광고 요청 */}
-      <GenieeSSP adIds={[GENIEE_IDS.OVERLAY_ID]} />
-
       {/* 오버레이 광고는 바로 표시 */}
       <div
         className={cn(
@@ -67,6 +64,9 @@ const FooterGenieeSlot = ({
 const FooterGeniee = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
   const adBlockDetected = useDetectAdBlock()
   const isClient = useClient()
+
+  // Geniee 광고 클라이언트 초기화
+  useGenieeAdClient()
 
   if (!isClient || adBlockDetected) {
     return null
