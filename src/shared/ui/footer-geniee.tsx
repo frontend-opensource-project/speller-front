@@ -6,7 +6,7 @@ import { useDetectAdBlock } from 'adblock-detect-react'
 import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
 import { Breakpoint, useBreakpoint } from '../lib/use-break-point'
-import { useGenieeAdClient, GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
+import { GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -64,9 +64,6 @@ const FooterGenieeSlot = ({
 const FooterGeniee = ({ includeDevice }: { includeDevice: Breakpoint[] }) => {
   const adBlockDetected = useDetectAdBlock()
   const isClient = useClient()
-
-  // Geniee 광고 클라이언트 초기화
-  useGenieeAdClient()
 
   if (!isClient || adBlockDetected) {
     return null
