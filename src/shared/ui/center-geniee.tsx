@@ -40,20 +40,15 @@ const CenterGenieeSlot = ({
   return (
     <div
       className={cn(
-        'relative max-h-[6.5rem] min-h-[6.5rem] overflow-hidden rounded-sm bg-slate-100 pc:min-h-[6.25rem] pc:w-full pc:min-w-[31.25rem] pc:bg-slate-200 pc-lg:max-w-[45.5rem]',
+        'relative min-h-[6.5rem] overflow-hidden rounded-sm bg-slate-100',
       )}
     >
       <div
         className={cn(
-          'relative grid min-h-[6.25rem] items-center justify-items-center pc:justify-items-end',
+          'relative grid min-h-[6.25rem] items-center justify-items-center',
         )}
       >
-        <GenieeAdSlot
-          adId={GENIEE_IDS.BANNER_ID_729x90}
-          className={cn(
-            'h-full max-h-[6.25rem] w-full max-w-[29rem] overflow-hidden rounded-sm tab:max-w-[38rem] pc-lg:max-w-[45.5rem]',
-          )}
-        />
+        <GenieeAdSlot adId={GENIEE_IDS.BANNER_ID_729x90} />
       </div>
     </div>
   )
