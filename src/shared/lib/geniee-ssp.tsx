@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 // Geniee SSP 광고 ID 상수 (guide에서 제공된 ads.ts 패턴 따름)
 export const ads = {
@@ -30,17 +30,6 @@ declare global {
   }
 }
 
-/**
- * useBeforeMount 훅 - 컴포넌트 마운트 전에 실행되어야 할 로직을 위한 훅
- * 부모 컴포넌트에서 자식 컴포넌트 마운트 전에 특정 로직을 실행할 때 사용
- */
-export const useBeforeMount = (callBack: () => void) => {
-  const [called, setCalled] = useState(false)
-  if (called) return
-  callBack()
-  setCalled(true)
-}
-
 // 전역 초기화 상태 추적
 let genieeInitialized = false
 
@@ -50,12 +39,11 @@ let genieeInitialized = false
  * ⚠️ 이 훅은 앱에서 한 번만 호출되어야 합니다 (각 광고 컴포넌트가 아닌 상위 레벨에서)
  */
 export const useGenieeAdClient = () => {
-  useBeforeMount(() => {
+  useEffect(() => {
     if (typeof window === 'undefined') return
     if (genieeInitialized) return // 이미 초기화된 경우 중복 실행 방지
 
-    window.gnshbrequest = window.gnshbrequest || { cmd: [] }
-    window.gnshbrequest.cmd.push(() => {
+    const initializeGeniee = () => {
       console.log(`initializing gnshbrequest.`)
       // 모든 광고 슬롯에 대해 registerPassback 실행
       Object.values(ads).forEach(id => {
@@ -63,13 +51,37 @@ export const useGenieeAdClient = () => {
       })
       window.gnshbrequest.rerun()
       genieeInitialized = true
-    })
-  })
+    }
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
+    // gnshbrequest 객체 초기화
+    window.gnshbrequest = window.gnshbrequest || { cmd: [] }
+
+    // 즉시 실행을 위한 타이머 추가
+    const initTimer = setTimeout(() => {
+      // wrapper.min.js가 이미 로드되었는지 확인 (typeof로 함수 여부 체크)
+      if (typeof window.gnshbrequest.registerPassback === 'function') {
+        initializeGeniee()
+      } else {
+        // wrapper.min.js가 아직 로드되지 않은 경우 cmd 큐에 추가
+        window.gnshbrequest.cmd.push(initializeGeniee)
+
+        // 백업 계획: 일정 시간 후 재시도
+        const retryTimer = setTimeout(() => {
+          if (
+            !genieeInitialized &&
+            typeof window.gnshbrequest.registerPassback === 'function'
+          ) {
+            console.log('Retrying Geniee initialization...')
+            initializeGeniee()
+          }
+        }, 1000)
+
+        return () => clearTimeout(retryTimer)
+      }
+    }, 0)
 
     return () => {
+      clearTimeout(initTimer)
       window.gnshbrequest = window.gnshbrequest || { cmd: [] }
       window.gnshbrequest.cmd.push(() => {
         window.gnshbrequest.removeOverlay()
