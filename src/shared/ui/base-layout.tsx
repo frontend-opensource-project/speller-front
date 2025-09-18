@@ -3,13 +3,10 @@ import { FC, PropsWithChildren } from 'react'
 import { Header } from './header'
 import { Footer } from './footer'
 import { MainGeniee } from './main-geniee'
-import { GenieeProvider } from './geniee-provider'
 
 const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <div className='grid min-h-screen grid-rows-[auto_1fr_auto] bg-slate-200 pc:bg-background'>
-      {/* Geniee 광고 시스템 전역 초기화 */}
-      <GenieeProvider />
       <Header />
       <div className='flex bg-background pc-lg:container pc:mx-auto pc:w-full pc:px-[2.25rem] pc-lg:px-[4.5rem]'>
         {/* 레이아웃 쉬프트 방지 */}

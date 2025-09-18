@@ -5,6 +5,7 @@ import localFont from 'next/font/local'
 
 import { Toaster } from '@/shared/ui/toaster'
 import { GoogleAnalyticsScript } from '@/shared/lib/google-analytics-script'
+import { GenieeProvider } from '@/shared/ui/geniee-provider'
 
 const pretendard = localFont({
   src: './font/pretendard-variable.woff2',
@@ -44,6 +45,7 @@ const App = ({
         {/* /Geniee Wrapper Head Tag */}
       </head>
       <body className={`${pretendard.className} antialiased`}>
+        <GenieeProvider />
         {children}
         <Toaster />
         <GoogleAnalyticsScript />
