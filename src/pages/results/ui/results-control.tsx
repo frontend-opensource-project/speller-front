@@ -64,7 +64,7 @@ const ResultsControl = () => {
       <TextCounter count={response.str.length} className='pc:-translate-y-3' />
       <div className='flex'>
         <ActionButton
-          icon='icon/icon-new-article.svg'
+          icon='/icon/icon-new-article.svg'
           label='새글쓰기'
           ariaLabel='새글쓰기'
           onClick={() => {
@@ -76,7 +76,7 @@ const ResultsControl = () => {
           }}
         />
         <ActionButton
-          icon='icon/icon-arrow-return-left.svg'
+          icon='/icon/icon-arrow-return-left.svg'
           label='돌아가기'
           ariaLabel='이전 페이지로 돌아가기'
           onClick={() => {
@@ -87,7 +87,7 @@ const ResultsControl = () => {
           }}
         />
         <ActionButton
-          icon='icon/icon-copy.svg'
+          icon='/icon/icon-copy.svg'
           label='복사하기'
           ariaLabel='현재 텍스트 복사하기'
           onClick={() => {
@@ -98,7 +98,7 @@ const ResultsControl = () => {
           }}
         />
         <ActionButton
-          icon='icon/icon-copy-all.svg'
+          icon='/icon/icon-copy-all.svg'
           label='전체복사'
           ariaLabel='전체 텍스트 복사하기'
           onClick={() => {
