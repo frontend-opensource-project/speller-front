@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // Geniee SSP 광고 ID 상수 (guide에서 제공된 ads.ts 패턴 따름)
 export const ads = {
@@ -30,83 +30,214 @@ declare global {
   }
 }
 
-// 전역 초기화 상태 추적
-let genieeInitialized = false
+// ✅ 전역 상태: 현재 활성화된 광고 슬롯 ID 추적
+let currentActiveSlots = new Set<string>()
+let initPromise: Promise<void> | null = null
 
 /**
- * HB Wrapper의 라이프사이클을 리셋하는 훅
- * registerPassback과 rerun을 실행하여 광고 시스템을 초기화
- * ⚠️ 이 훅은 앱에서 한 번만 호출되어야 합니다 (각 광고 컴포넌트가 아닌 상위 레벨에서)
+ * ✅ registerPassback + rerun을 실행하는 Promise 반환
+ * @param slots - 초기화할 광고 슬롯 ID 배열
  */
-export const useGenieeAdClient = () => {
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (genieeInitialized) return // 이미 초기화된 경우 중복 실행 방지
-
-    const initializeGeniee = () => {
-      console.log(`initializing gnshbrequest.`)
-      // 모든 광고 슬롯에 대해 registerPassback 실행
-      Object.values(ads).forEach(id => {
-        window.gnshbrequest.registerPassback(id)
-      })
-      window.gnshbrequest.rerun()
-      genieeInitialized = true
+const initializeGenieeSlots = (slots: string[]): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    if (typeof window === 'undefined') {
+      reject(new Error('Window is not available'))
+      return
     }
 
-    // gnshbrequest 객체 초기화
+    const performInit = () => {
+      try {
+        console.log(`[Geniee] Initializing slots: ${slots.join(', ')}`)
+
+        // ① removeOverlay 실행 (가장 먼저)
+        window.gnshbrequest.removeOverlay()
+
+        // ② registerPassback 실행
+        slots.forEach(id => {
+          window.gnshbrequest.registerPassback(id)
+        })
+
+        // ③ rerun 실행
+        window.gnshbrequest.rerun()
+
+        console.log('[Geniee] Initialization completed.')
+        resolve()
+      } catch (error) {
+        console.error('[Geniee] Initialization failed:', error)
+        reject(error)
+      }
+    }
+
     window.gnshbrequest = window.gnshbrequest || { cmd: [] }
 
-    // 즉시 실행을 위한 타이머 추가
-    const initTimer = setTimeout(() => {
-      // wrapper.min.js가 이미 로드되었는지 확인 (typeof로 함수 여부 체크)
-      if (typeof window.gnshbrequest.registerPassback === 'function') {
-        initializeGeniee()
-      } else {
-        // wrapper.min.js가 아직 로드되지 않은 경우 cmd 큐에 추가
-        window.gnshbrequest.cmd.push(initializeGeniee)
+    if (typeof window.gnshbrequest.registerPassback === 'function') {
+      performInit()
+    } else {
+      window.gnshbrequest.cmd.push(performInit)
 
-        // 백업 계획: 일정 시간 후 재시도
-        const retryTimer = setTimeout(() => {
-          if (
-            !genieeInitialized &&
-            typeof window.gnshbrequest.registerPassback === 'function'
-          ) {
-            console.log('Retrying Geniee initialization...')
-            initializeGeniee()
-          }
-        }, 1000)
+      // 백업: 5초 타임아웃
+      setTimeout(() => {
+        if (typeof window.gnshbrequest.registerPassback === 'function') {
+          console.log('[Geniee] Retrying initialization...')
+          performInit()
+        } else {
+          reject(new Error('Geniee wrapper not loaded'))
+        }
+      }, 5000)
+    }
+  })
+}
 
-        return () => clearTimeout(retryTimer)
-      }
-    }, 0)
+/**
+ * ✅ HB Wrapper 최초 초기화 훅 (앱에서 한 번만 실행)
+ */
+export const useGenieeAdClient = () => {
+  const [isInitialized, setIsInitialized] = useState(false)
+  const initStartedRef = useRef(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (initStartedRef.current) return
+
+    initStartedRef.current = true
+
+    // 최초 로드 시 모든 광고 슬롯 초기화
+    const allSlots = Object.values(ads)
+    currentActiveSlots = new Set(allSlots)
+
+    initPromise = initializeGenieeSlots(allSlots)
+    initPromise
+      .then(() => {
+        console.log(
+          '[Geniee] Initialization successful, setting isInitialized to true',
+        )
+        setIsInitialized(true)
+      })
+      .catch(error => {
+        console.error('[Geniee] Failed to initialize:', error)
+        setIsInitialized(false)
+      })
 
     return () => {
-      clearTimeout(initTimer)
       window.gnshbrequest = window.gnshbrequest || { cmd: [] }
       window.gnshbrequest.cmd.push(() => {
         window.gnshbrequest.removeOverlay()
       })
-      genieeInitialized = false
     }
   }, [])
+
+  return { isInitialized }
 }
 
 /**
- * 개별 광고 슬롯에 대한 applyPassback을 실행하는 훅
- * 각 광고 컴포넌트에서 사용
+ * ✅ 개별 광고 슬롯 렌더링 훅
+ * - 슬롯이 처음 마운트되거나 이전과 다른 슬롯일 경우 재초기화
+ * - isInitialized가 true가 될 때까지 대기
  */
-export const useRenderGenieeAd = (slotId: string) => {
-  const passbackQuery = `[data-cptid='${slotId}']`
+export const useRenderGenieeAd = (slotId: string, isInitialized: boolean) => {
+  const processedRef = useRef(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
+    if (!isInitialized) {
+      console.log(
+        `[Geniee] Waiting for initialization before rendering ${slotId}`,
+      )
+      return
+    }
+    if (processedRef.current) return
 
-    window.gnshbrequest = window.gnshbrequest || { cmd: [] }
-    window.gnshbrequest.cmd.push(() => {
-      console.log(`executing applyPassback for ${slotId}.`)
-      window.gnshbrequest.applyPassback(slotId, passbackQuery)
+    const passbackQuery = `[data-cptid='${slotId}']`
+
+    const renderAd = async () => {
+      try {
+        // ③-1 현재 활성 슬롯에 없는 경우 재초기화 필요
+        if (!currentActiveSlots.has(slotId)) {
+          console.log(
+            `[Geniee] New slot detected: ${slotId}. Re-initializing...`,
+          )
+
+          // 모든 슬롯 재등록 (Geniee 요구사항)
+          const allSlots = Object.values(ads)
+          currentActiveSlots = new Set(allSlots)
+
+          // 기존 Promise 무효화 후 재초기화
+          initPromise = initializeGenieeSlots(allSlots)
+          await initPromise
+        } else {
+          // 이미 초기화된 경우 Promise 대기
+          if (initPromise) {
+            await initPromise
+          }
+        }
+
+        // ③-2 applyPassback 실행
+        window.gnshbrequest = window.gnshbrequest || { cmd: [] }
+        window.gnshbrequest.cmd.push(() => {
+          console.log(`[Geniee] Executing applyPassback for ${slotId}.`)
+          window.gnshbrequest.applyPassback(slotId, passbackQuery)
+          processedRef.current = true
+        })
+      } catch (error) {
+        console.error(`[Geniee] Failed to apply passback for ${slotId}:`, error)
+      }
+    }
+
+    renderAd()
+  }, [slotId, isInitialized])
+}
+
+/**
+ * 특정 광고 슬롯을 재로드하는 함수
+ * 사용자 액션 후 광고를 새로고침할 때 사용
+ */
+export const reloadAd = (slotId: string) => {
+  if (typeof window === 'undefined') {
+    console.warn('[Geniee] Cannot reload ad on server side')
+    return
+  }
+
+  window.gnshbrequest = window.gnshbrequest || { cmd: [] }
+  window.gnshbrequest.cmd.push(() => {
+    console.log(`[Geniee] Reloading ad: ${slotId}`)
+
+    // 슬롯 재등록
+    window.gnshbrequest.registerPassback(slotId)
+    window.gnshbrequest.rerun()
+
+    // 재렌더링
+    const selector = `[data-cptid='${slotId}']`
+    window.gnshbrequest.applyPassback(slotId, selector)
+  })
+}
+
+/**
+ * 모든 광고 슬롯을 재로드하는 함수
+ */
+export const reloadAllAds = () => {
+  if (typeof window === 'undefined') {
+    console.warn('[Geniee] Cannot reload ads on server side')
+    return
+  }
+
+  const allSlots = Object.values(ads)
+  console.log('[Geniee] Reloading all ads:', allSlots)
+
+  window.gnshbrequest = window.gnshbrequest || { cmd: [] }
+  window.gnshbrequest.cmd.push(() => {
+    // 모든 슬롯 재등록
+    allSlots.forEach(slotId => {
+      window.gnshbrequest.registerPassback(slotId)
     })
-  }, [slotId, passbackQuery])
+
+    window.gnshbrequest.rerun()
+
+    // 모든 슬롯 재렌더링
+    allSlots.forEach(slotId => {
+      const selector = `[data-cptid='${slotId}']`
+      window.gnshbrequest.applyPassback(slotId, selector)
+    })
+  })
 }
 
 /**
@@ -115,12 +246,18 @@ export const useRenderGenieeAd = (slotId: string) => {
  */
 interface GenieeAdSlotProps {
   adId: string
+  isInitialized: boolean
   className?: string
   style?: React.CSSProperties
 }
 
-export const GenieeAdSlot = ({ adId, className, style }: GenieeAdSlotProps) => {
-  useRenderGenieeAd(adId)
+export const GenieeAdSlot = ({
+  adId,
+  isInitialized,
+  className,
+  style,
+}: GenieeAdSlotProps) => {
+  useRenderGenieeAd(adId, isInitialized)
 
   return (
     <div

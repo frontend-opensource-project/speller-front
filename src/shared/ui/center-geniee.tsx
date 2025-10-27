@@ -6,6 +6,7 @@ import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
 import { Breakpoint, useBreakpoint } from '../lib/use-break-point'
 import { GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
+import { useGenieeContext } from './geniee-provider'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -16,6 +17,7 @@ const CenterGenieeSlot = ({
 }) => {
   const isClient = useClient()
   const breakpoint = useBreakpoint()
+  const { isInitialized } = useGenieeContext()
 
   const shouldRender = isClient && includeDevice.includes(breakpoint)
 
@@ -48,7 +50,10 @@ const CenterGenieeSlot = ({
           'relative grid min-h-[6.25rem] items-center justify-items-center',
         )}
       >
-        <GenieeAdSlot adId={GENIEE_IDS.BANNER_ID_729x90} />
+        <GenieeAdSlot
+          adId={GENIEE_IDS.BANNER_ID_729x90}
+          isInitialized={isInitialized}
+        />
       </div>
     </div>
   )

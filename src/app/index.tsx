@@ -45,10 +45,11 @@ const App = ({
         {/* /Geniee Wrapper Head Tag */}
       </head>
       <body className={`${pretendard.className} antialiased`}>
-        <GenieeProvider />
-        {children}
-        <Toaster />
-        <GoogleAnalyticsScript />
+        <GenieeProvider>
+          {children}
+          <Toaster />
+          <GoogleAnalyticsScript />
+        </GenieeProvider>
       </body>
     </html>
   )

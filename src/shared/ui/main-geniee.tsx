@@ -6,12 +6,14 @@ import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
 import { Breakpoint, useBreakpoint } from '../lib/use-break-point'
 import { GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
+import { useGenieeContext } from './geniee-provider'
 
 const isDev = process.env.NODE_ENV === 'development'
 
 const MainGenieeSlot = () => {
   const isClient = useClient()
   const breakpoint = useBreakpoint()
+  const { isInitialized } = useGenieeContext()
 
   const allowedBreakpoints: Breakpoint[] = ['desktop', 'desktop-large']
   const shouldRender = isClient && allowedBreakpoints.includes(breakpoint)
@@ -24,7 +26,11 @@ const MainGenieeSlot = () => {
 
   return (
     <div className={cn('relative')}>
-      <GenieeAdSlot adId={GENIEE_IDS.BANNER_ID_160x600} className={AdStyle} />
+      <GenieeAdSlot
+        adId={GENIEE_IDS.BANNER_ID_160x600}
+        isInitialized={isInitialized}
+        className={AdStyle}
+      />
     </div>
   )
 }
