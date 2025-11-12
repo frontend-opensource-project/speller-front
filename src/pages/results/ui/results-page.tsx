@@ -26,7 +26,7 @@ const ResultsPage = () => {
       return
     }
 
-    if (breakpoint === 'desktop' || breakpoint === 'desktop-large') {
+    /*if (breakpoint === 'desktop' || breakpoint === 'desktop-large') {
       if (
         document.documentElement.scrollHeight >
         document.documentElement.clientHeight
@@ -37,7 +37,7 @@ const ResultsPage = () => {
           block: 'start',
         })
       }
-    }
+    }*/
   }, [responseMap, router, breakpoint])
 
   if (Object.keys(responseMap).length === 0) {
