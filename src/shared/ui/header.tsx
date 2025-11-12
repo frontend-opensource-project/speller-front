@@ -45,6 +45,9 @@ const Header = () => {
           <Link href='/feedback' className={classes.linkButton}>
             문의하기
           </Link>
+          <Link href='/urimal/urimal_new/' className={classes.linkButton}>
+            우리말배움터↗️
+          </Link>
           <a
             href='#'
             className='hidden rounded-lg border border-[#B8B8BE] p-3 font-semibold !leading-none text-slate-500 hover:bg-accent tab:inline-flex tab:text-xl pc:text-base'
