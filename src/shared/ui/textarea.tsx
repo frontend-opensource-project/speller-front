@@ -8,6 +8,7 @@ import { cn } from '../lib/tailwind-merge'
 export interface TextareaHandle {
   textClear: () => void
   hydrateText: (payload: string) => void
+  focus: () => void
 }
 
 interface TextareaProps {
@@ -53,6 +54,16 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(
         hydrateText: payload => {
           setTextareaValue(payload)
           syncTextareaHeight()
+        },
+        focus: () => {
+          if (!textareaRef.current) return
+
+          const textarea = textareaRef.current
+          textarea.focus()
+
+          // 커서를 텍스트 맨 끝으로 이동
+          const length = textarea.value.length
+          textarea.setSelectionRange(length, length)
         },
       }),
       [onChange],

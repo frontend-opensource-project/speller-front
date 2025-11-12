@@ -32,6 +32,7 @@ const SpellerTextInput = () => {
     if (!textareaRef.current) return
 
     textareaRef.current.hydrateText(originalText)
+    textareaRef.current.focus()
   }, [])
 
   return (
