@@ -45,7 +45,11 @@ const Header = () => {
           <Link href='/feedback' className={classes.linkButton}>
             문의하기
           </Link>
-          <Link href='/urimal/urimal_new/' className={classes.linkButton}>
+          <Link
+            href='/urimal/urimal_new/'
+            className={classes.linkButton}
+            target='_blank'
+          >
             우리말배움터↗️
           </Link>
           <a
