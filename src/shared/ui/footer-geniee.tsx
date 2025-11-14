@@ -1,12 +1,13 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
 import { useDetectAdBlock } from 'adblock-detect-react'
 
 import { cn } from '../lib/tailwind-merge'
 import { useClient } from '../lib/use-client'
 import { Breakpoint, useBreakpoint } from '../lib/use-break-point'
-import { GenieeAdSlot, GENIEE_IDS } from '../lib/geniee-ssp'
+import { GenieeAdSlot, GENIEE_IDS, reloadAd } from '../lib/geniee-ssp'
 import { useGenieeContext } from './geniee-provider'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -19,8 +20,24 @@ const FooterGenieeSlot = ({
   const isClient = useClient()
   const breakpoint = useBreakpoint()
   const { isInitialized } = useGenieeContext()
+  const pathname = usePathname()
+  const isFirstMount = useRef(true)
 
   const shouldRender = isClient && includeDevice.includes(breakpoint)
+
+  // pathname 변경 시 광고 재로드 (최초 마운트 제외)
+  useEffect(() => {
+    if (!isInitialized || !shouldRender) return
+
+    // 최초 마운트 시에는 useRenderGenieeAd가 처리하므로 스킵
+    if (isFirstMount.current) {
+      isFirstMount.current = false
+      return
+    }
+
+    console.log('[FooterGeniee] Pathname changed, reloading ad')
+    reloadAd(GENIEE_IDS.OVERLAY_ID)
+  }, [pathname, isInitialized, shouldRender])
 
   if (!shouldRender) return null
 

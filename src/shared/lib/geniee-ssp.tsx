@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 // Geniee SSP 광고 ID 상수 (guide에서 제공된 ads.ts 패턴 따름)
 export const ads = {
@@ -45,22 +45,24 @@ const initializeGenieeSlots = (slots: string[]): Promise<void> => {
       return
     }
 
+    let initialized = false
+
     const performInit = () => {
+      if (initialized) return // 이미 초기화된 경우 중복 실행 방지
+
       try {
         console.log(`[Geniee] Initializing slots: ${slots.join(', ')}`)
 
-        // ① removeOverlay 실행 (가장 먼저)
-        window.gnshbrequest.removeOverlay()
-
-        // ② registerPassback 실행
+        // ① registerPassback 실행
         slots.forEach(id => {
           window.gnshbrequest.registerPassback(id)
         })
 
-        // ③ rerun 실행
+        // ② rerun 실행
         window.gnshbrequest.rerun()
 
         console.log('[Geniee] Initialization completed.')
+        initialized = true
         resolve()
       } catch (error) {
         console.error('[Geniee] Initialization failed:', error)
@@ -75,8 +77,10 @@ const initializeGenieeSlots = (slots: string[]): Promise<void> => {
     } else {
       window.gnshbrequest.cmd.push(performInit)
 
-      // 백업: 5초 타임아웃
+      // 백업: 5초 타임아웃 (wrapper가 로드되지 않았을 경우에만)
       setTimeout(() => {
+        if (initialized) return // 이미 초기화됨
+
         if (typeof window.gnshbrequest.registerPassback === 'function') {
           console.log('[Geniee] Retrying initialization...')
           performInit()
@@ -95,7 +99,7 @@ export const useGenieeAdClient = () => {
   const [isInitialized, setIsInitialized] = useState(false)
   const initStartedRef = useRef(false)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window === 'undefined') return
     if (initStartedRef.current) return
 
@@ -117,8 +121,11 @@ export const useGenieeAdClient = () => {
         console.error('[Geniee] Failed to initialize:', error)
         setIsInitialized(false)
       })
+  }, [])
 
+  useEffect(() => {
     return () => {
+      if (typeof window === 'undefined') return
       window.gnshbrequest = window.gnshbrequest || { cmd: [] }
       window.gnshbrequest.cmd.push(() => {
         window.gnshbrequest.removeOverlay()
@@ -188,55 +195,26 @@ export const useRenderGenieeAd = (slotId: string, isInitialized: boolean) => {
 }
 
 /**
- * 특정 광고 슬롯을 재로드하는 함수
- * 사용자 액션 후 광고를 새로고침할 때 사용
+ * 특정 광고 슬롯을 재로드하는 함수 (Geniee 공식)
+ * 페이지 이동 등으로 광고를 새로고침할 때 사용
  */
 export const reloadAd = (slotId: string) => {
-  if (typeof window === 'undefined') {
-    console.warn('[Geniee] Cannot reload ad on server side')
+  if (typeof window === 'undefined' || !window.gnshbrequest) {
+    console.warn('[Geniee] gnshbrequest is not available')
     return
   }
 
-  window.gnshbrequest = window.gnshbrequest || { cmd: [] }
   window.gnshbrequest.cmd.push(() => {
-    console.log(`[Geniee] Reloading ad: ${slotId}`)
+    console.log(
+      `[Geniee] Reloading ad for ${slotId}: registerPassback -> rerun -> removeOverlay -> applyPassback`,
+    )
 
-    // 슬롯 재등록
     window.gnshbrequest.registerPassback(slotId)
     window.gnshbrequest.rerun()
+    window.gnshbrequest.removeOverlay()
 
-    // 재렌더링
-    const selector = `[data-cptid='${slotId}']`
-    window.gnshbrequest.applyPassback(slotId, selector)
-  })
-}
-
-/**
- * 모든 광고 슬롯을 재로드하는 함수
- */
-export const reloadAllAds = () => {
-  if (typeof window === 'undefined') {
-    console.warn('[Geniee] Cannot reload ads on server side')
-    return
-  }
-
-  const allSlots = Object.values(ads)
-  console.log('[Geniee] Reloading all ads:', allSlots)
-
-  window.gnshbrequest = window.gnshbrequest || { cmd: [] }
-  window.gnshbrequest.cmd.push(() => {
-    // 모든 슬롯 재등록
-    allSlots.forEach(slotId => {
-      window.gnshbrequest.registerPassback(slotId)
-    })
-
-    window.gnshbrequest.rerun()
-
-    // 모든 슬롯 재렌더링
-    allSlots.forEach(slotId => {
-      const selector = `[data-cptid='${slotId}']`
-      window.gnshbrequest.applyPassback(slotId, selector)
-    })
+    const passbackQuery = `[data-cptid='${slotId}']`
+    window.gnshbrequest.applyPassback(slotId, passbackQuery)
   })
 }
 
