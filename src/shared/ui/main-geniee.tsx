@@ -53,8 +53,7 @@ const MainGenieeSlot = () => {
   )
 }
 
-const AdStyle =
-  'my-24 h-[37.5rem] w-40 overflow-hidden rounded-sm pc:ml-5 pc:block'
+const AdStyle = 'my-24 h-[37.5rem] w-40 pc:ml-5 pc:block'
 
 const MainGeniee = () => {
   const adBlockDetected = useDetectAdBlock()
