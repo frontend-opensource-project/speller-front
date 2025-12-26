@@ -24,8 +24,7 @@ import {
 import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-error-type'
 
 interface ErrorInfoSectionProps<T>
-  extends React.RefAttributes<T>,
-    React.HTMLAttributes<T> {
+  extends React.RefAttributes<T>, React.HTMLAttributes<T> {
   errorInfo: ErrorInfo
 }
 
