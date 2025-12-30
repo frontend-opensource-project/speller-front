@@ -46,7 +46,7 @@ const Header = () => {
             문의하기
           </Link>
           <Link
-            href='/urimal/urimal_new/'
+            href='https://urimal.nara-speller.co.kr/urimal_new/'
             className={classes.linkButton}
             target='_blank'
           >
