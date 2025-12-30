@@ -5,7 +5,6 @@ import localFont from 'next/font/local'
 
 import { Toaster } from '@/shared/ui/toaster'
 import { GoogleAnalyticsScript } from '@/shared/lib/google-analytics-script'
-import { GenieeProvider } from '@/shared/ui/geniee-provider'
 
 const pretendard = localFont({
   src: './font/pretendard-variable.woff2',
@@ -21,35 +20,11 @@ const App = ({
 }>) => {
   return (
     <html lang='ko' className={`${pretendard.variable}`}>
-      <head>
-        {/* Geniee Wrapper Head Tag */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.gnshbrequest = window.gnshbrequest || { cmd: [] };
-              window.gnshbrequest.cmd.push(function () {
-                window.gnshbrequest.preventFirstRun();
-                window.gnshbrequest.forceInternalRequest();
-              });
-            `,
-          }}
-        />
-        <script
-          async
-          src='https://securepubads.g.doubleclick.net/tag/js/gpt.js'
-        />
-        <script
-          async
-          src='https://cpt.geniee.jp/hb/v1/223680/3011/wrapper.min.js'
-        />
-        {/* /Geniee Wrapper Head Tag */}
-      </head>
+      <head></head>
       <body className={`${pretendard.className} antialiased`}>
-        <GenieeProvider>
-          {children}
-          <Toaster />
-          <GoogleAnalyticsScript />
-        </GenieeProvider>
+        {children}
+        <Toaster />
+        <GoogleAnalyticsScript />
       </body>
     </html>
   )
