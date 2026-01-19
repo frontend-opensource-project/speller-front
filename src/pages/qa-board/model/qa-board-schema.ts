@@ -42,20 +42,22 @@ export const qaBoardListResponseSchema = z.object({
   totalPages: z.number(),
 })
 
+export const qaBoardAnswerSchema = z.object({
+  id: z.number(),
+  content: z.string(),
+  author: z.string(),
+  createdAt: z.string(),
+  step: z.number(),
+  reLevel: z.number(),
+  ref: z.number(), // 참조하는 글 번호
+})
+
 export const qaBoardDetailSchema = qaBoardItemSchema.extend({
-  answer: z
-    .object({
-      id: z.number(),
-      content: z.string(),
-      author: z.string(),
-      createdAt: z.string(),
-    })
-    .nullable()
-    .optional(),
+  answers: z.array(qaBoardAnswerSchema).default([]),
 })
 
 export const qaBoardWriteSchema = z.object({
-  title: z.string().min(5, '제목은 최소 5자 이상이어야 합니다.'),
+  title: z.string().min(3, '제목은 최소 3자 이상이어야 합니다.'),
   content: z.string().min(10, '내용은 최소 10자 이상이어야 합니다.'),
   author: z.string().min(2, '작성자 이름은 최소 2자 이상이어야 합니다.'),
   email: z
@@ -70,5 +72,6 @@ export type QaBoardStatus = z.infer<typeof qaBoardStatusSchema>
 export type Board2Record = z.infer<typeof board2Schema>
 export type QaBoardItem = z.infer<typeof qaBoardItemSchema>
 export type QaBoardListResponse = z.infer<typeof qaBoardListResponseSchema>
+export type QaBoardAnswer = z.infer<typeof qaBoardAnswerSchema>
 export type QaBoardDetail = z.infer<typeof qaBoardDetailSchema>
 export type QaBoardWriteInput = z.infer<typeof qaBoardWriteSchema>

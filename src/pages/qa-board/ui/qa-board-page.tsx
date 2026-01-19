@@ -3,20 +3,29 @@ import { PlusCircle } from 'lucide-react'
 import { QaBoardApi } from '../api/qa-board-service'
 import { QaBoardItem } from './qa-board-item'
 import { QaBoardPagination } from './qa-board-pagination'
+import { QaBoardSearch } from './qa-board-search'
 import { Button } from '@/shared/ui/button'
 import { ContentLayout } from '@/shared/ui/content-layout'
+import type { QaBoardSearchType } from '../model/qa-board-interface'
 
 interface QaBoardPageProps {
   searchParams?: {
     page?: string
+    searchType?: string
+    searchQuery?: string
   }
 }
 
 export async function QaBoardPage({ searchParams }: QaBoardPageProps) {
   const currentPage = Number(searchParams?.page) || 1
   const pageSize = 10
+  const searchType = searchParams?.searchType as QaBoardSearchType | undefined
+  const searchQuery = searchParams?.searchQuery
 
-  const data = await QaBoardApi.getList(currentPage, pageSize)
+  const data = await QaBoardApi.getList(currentPage, pageSize, {
+    searchType,
+    searchQuery,
+  })
 
   return (
     <ContentLayout>
@@ -66,6 +75,9 @@ export async function QaBoardPage({ searchParams }: QaBoardPageProps) {
               </p>
             </div>
           </div>
+
+          {/* 검색 */}
+          <QaBoardSearch />
         </div>
 
         {/* 컨텐츠 섹션 */}
@@ -74,12 +86,25 @@ export async function QaBoardPage({ searchParams }: QaBoardPageProps) {
           {data.items.length === 0 ? (
             <div className='bg-slate-50 flex min-h-[400px] items-center justify-center rounded-lg border border-slate-200'>
               <div className='text-center'>
-                <p className='text-lg text-slate-500'>
-                  아직 등록된 질문이 없습니다.
-                </p>
-                <p className='mt-2 text-sm text-slate-400'>
-                  첫 번째 질문을 등록해보세요!
-                </p>
+                {searchQuery ? (
+                  <>
+                    <p className='text-lg text-slate-500'>
+                      검색 결과가 없습니다.
+                    </p>
+                    <p className='mt-2 text-sm text-slate-400'>
+                      다른 검색어로 다시 시도해보세요.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className='text-lg text-slate-500'>
+                      아직 등록된 질문이 없습니다.
+                    </p>
+                    <p className='mt-2 text-sm text-slate-400'>
+                      첫 번째 질문을 등록해보세요!
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           ) : (

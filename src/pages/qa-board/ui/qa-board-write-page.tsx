@@ -1,25 +1,76 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { createQaBoardAction } from '../api/qa-board-actions'
-import type { QaBoardWriteActionState } from '../api/qa-board-actions'
+import { qaBoardWriteSchema } from '../model/qa-board-schema'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Label } from '@/shared/ui/label'
 import { ContentLayout } from '@/shared/ui/content-layout'
 import { cn } from '@/shared/lib/tailwind-merge'
+import { useRecaptcha } from '@/shared/lib/recaptcha/use-recaptcha'
 
-const initialState: QaBoardWriteActionState = {
-  success: false,
+interface FormErrors {
+  title?: string
+  content?: string
+  author?: string
+  email?: string
+  password?: string
 }
 
 export function QaBoardWritePage() {
-  const [state, formAction, isPending] = useActionState(
-    createQaBoardAction,
-    initialState,
-  )
+  const [errors, setErrors] = useState<FormErrors>({})
+  const [serverError, setServerError] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
+  const { execute: executeRecaptcha } = useRecaptcha()
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setErrors({})
+    setServerError(null)
+
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    const rawData = {
+      title: formData.get('title') as string,
+      content: formData.get('content') as string,
+      author: formData.get('author') as string,
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+    }
+
+    // 클라이언트 사이드 Zod 검증
+    const validation = qaBoardWriteSchema.safeParse(rawData)
+
+    if (!validation.success) {
+      const fieldErrors = validation.error.flatten().fieldErrors
+      setErrors({
+        title: fieldErrors.title?.[0],
+        content: fieldErrors.content?.[0],
+        author: fieldErrors.author?.[0],
+        email: fieldErrors.email?.[0],
+        password: fieldErrors.password?.[0],
+      })
+      return
+    }
+
+    // 검증 통과 시 reCAPTCHA 실행 후 서버 액션 호출
+    startTransition(async () => {
+      try {
+        const recaptchaToken = await executeRecaptcha('qa_board_create')
+        formData.append('recaptchaToken', recaptchaToken)
+
+        const result = await createQaBoardAction({ success: false }, formData)
+        if (!result.success && result.error) {
+          setServerError(result.error)
+        }
+      } catch {
+        setServerError('보안 검증에 실패했습니다. 페이지를 새로고침 해주세요.')
+      }
+    })
+  }
 
   return (
     <ContentLayout>
@@ -39,14 +90,14 @@ export function QaBoardWritePage() {
         {/* 폼 */}
         <div className='flex flex-col'>
           <form
-            action={formAction}
+            onSubmit={handleSubmit}
             className='rounded-lg border border-slate-200 bg-white p-5 tab:p-6'
           >
             <div className='flex flex-col gap-6'>
               {/* 전체 에러 메시지 */}
-              {state.error && (
-                <div className='border-red-200 bg-red-50 text-red-600 rounded-lg border p-4 text-sm'>
-                  {state.error}
+              {serverError && (
+                <div className='border-red-400 bg-red-50 text-red-700 rounded-lg border-2 p-4 text-sm font-semibold'>
+                  {serverError}
                 </div>
               )}
 
@@ -61,11 +112,11 @@ export function QaBoardWritePage() {
                   type='text'
                   placeholder='이름을 입력하세요'
                   disabled={isPending}
-                  required
+                  className={errors.author ? 'border-red-500' : ''}
                 />
-                {state.errors?.author && (
-                  <p className='text-red-600 text-sm'>
-                    {state.errors.author[0]}
+                {errors.author && (
+                  <p className='text-red-600 text-sm font-semibold'>
+                    {errors.author}
                   </p>
                 )}
               </div>
@@ -79,10 +130,11 @@ export function QaBoardWritePage() {
                   type='email'
                   placeholder='이메일을 입력하세요'
                   disabled={isPending}
+                  className={errors.email ? 'border-red-500' : ''}
                 />
-                {state.errors?.email && (
-                  <p className='text-red-600 text-sm'>
-                    {state.errors.email[0]}
+                {errors.email && (
+                  <p className='text-red-600 text-sm font-semibold'>
+                    {errors.email}
                   </p>
                 )}
               </div>
@@ -98,11 +150,11 @@ export function QaBoardWritePage() {
                   type='password'
                   placeholder='최소 4자 이상'
                   disabled={isPending}
-                  required
+                  className={errors.password ? 'border-red-500' : ''}
                 />
-                {state.errors?.password && (
-                  <p className='text-red-600 text-sm'>
-                    {state.errors.password[0]}
+                {errors.password && (
+                  <p className='text-red-600 text-sm font-semibold'>
+                    {errors.password}
                   </p>
                 )}
                 <p className='text-xs text-slate-500'>
@@ -119,13 +171,13 @@ export function QaBoardWritePage() {
                   id='title'
                   name='title'
                   type='text'
-                  placeholder='질문 제목을 입력하세요 (최소 5자)'
+                  placeholder='질문 제목을 입력하세요 (최소 3자)'
                   disabled={isPending}
-                  required
+                  className={errors.title ? 'border-red-500' : ''}
                 />
-                {state.errors?.title && (
-                  <p className='text-red-600 text-sm'>
-                    {state.errors.title[0]}
+                {errors.title && (
+                  <p className='text-red-600 text-sm font-semibold'>
+                    {errors.title}
                   </p>
                 )}
               </div>
@@ -141,15 +193,15 @@ export function QaBoardWritePage() {
                   placeholder='질문 내용을 자세히 입력하세요 (최소 10자)'
                   rows={10}
                   disabled={isPending}
-                  required
                   className={cn(
-                    'flex min-h-[200px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-base ring-offset-white placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+                    'flex min-h-[200px] w-full rounded-md border bg-white px-3 py-2 text-base ring-offset-white placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
                     'resize-none',
+                    errors.content ? 'border-red-500' : 'border-slate-200',
                   )}
                 />
-                {state.errors?.content && (
-                  <p className='text-red-600 text-sm'>
-                    {state.errors.content[0]}
+                {errors.content && (
+                  <p className='text-red-600 text-sm font-semibold'>
+                    {errors.content}
                   </p>
                 )}
               </div>

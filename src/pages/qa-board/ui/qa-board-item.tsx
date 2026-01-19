@@ -7,13 +7,19 @@ interface QaBoardItemProps {
   item: QaBoardItem
 }
 
+/**
+ * 한국식 날짜/시간 문자열에서 날짜만 추출
+ * "2026-01-17 오전 8:49:12" → "2026-01-17"
+ */
+function extractDateOnly(dateTimeStr: string): string {
+  if (!dateTimeStr) return ''
+  // 공백 이전의 날짜 부분만 추출
+  return dateTimeStr.split(' ')[0] || dateTimeStr
+}
+
 export function QaBoardItem({ item }: QaBoardItemProps) {
   const isAnswered = item.status === 'answered'
-  const date = new Date(item.createdAt).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
+  const date = extractDateOnly(item.createdAt)
 
   return (
     <Link
