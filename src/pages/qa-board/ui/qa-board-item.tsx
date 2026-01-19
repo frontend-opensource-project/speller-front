@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { MessageCircle, Eye } from 'lucide-react'
 import type { QaBoardItem } from '../model/qa-board-schema'
 import { cn } from '@/shared/lib/tailwind-merge'
+import { maskName } from '@/shared/lib/mask-name'
 
 interface QaBoardItemProps {
   item: QaBoardItem
@@ -46,7 +47,7 @@ export function QaBoardItem({ item }: QaBoardItemProps) {
 
         {/* 메타 정보 */}
         <div className='flex flex-wrap items-center gap-2 text-sm text-slate-500 tab:gap-3'>
-          <span>{item.author}</span>
+          <span>{maskName(item.author)}</span>
           <span className='text-slate-300'>|</span>
           <span>{date}</span>
           <span className='text-slate-300'>|</span>

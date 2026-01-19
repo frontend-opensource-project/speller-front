@@ -15,6 +15,7 @@ import { Input } from '@/shared/ui/input'
 import { Label } from '@/shared/ui/label'
 import { ContentLayout } from '@/shared/ui/content-layout'
 import { cn } from '@/shared/lib/tailwind-merge'
+import { maskName } from '@/shared/lib/mask-name'
 
 interface QaBoardDetailClientProps {
   data: QaBoardDetail
@@ -232,7 +233,9 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
 
       {/* 답변 메타 정보 */}
       <div className='mb-4 flex items-center gap-2 text-sm text-slate-500'>
-        <span className='font-medium text-primary'>{answer.author}</span>
+        <span className='font-medium text-primary'>
+          {maskName(answer.author)}
+        </span>
         <span className='text-slate-300'>|</span>
         <span>{answer.createdAt}</span>
       </div>
@@ -288,7 +291,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
 
               {/* 메타 정보 */}
               <div className='flex flex-wrap items-center gap-2 text-sm text-slate-500 tab:gap-3'>
-                <span className='font-medium'>{data.author}</span>
+                <span className='font-medium'>{maskName(data.author)}</span>
                 <span className='text-slate-300'>|</span>
                 <span>{date}</span>
                 <span className='text-slate-300'>|</span>
@@ -377,7 +380,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
                       placeholder='답변 내용을 입력하세요 (최소 10자)'
                       rows={6}
                       disabled={isPending}
-                      className='w-full resize-none rounded-md border border-slate-200 bg-white px-3 py-2 text-base placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
+                      className='w-full resize-none rounded-md border border-slate-200 bg-slate-100 px-3 py-2 text-base placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
                     />
                   </div>
                   <div className='flex flex-col gap-2'>
@@ -451,7 +454,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
                       placeholder='내용을 입력하세요 (최소 10자)'
                       rows={6}
                       disabled={isPending}
-                      className='w-full resize-none rounded-md border border-slate-200 bg-white px-3 py-2 text-base placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
+                      className='w-full resize-none rounded-md border border-slate-200 bg-slate-100 px-3 py-2 text-base placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
                     />
                   </div>
                   <div className='flex justify-end gap-2'>

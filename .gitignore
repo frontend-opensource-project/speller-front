@@ -51,3 +51,4 @@ next-env.d.ts
 certificates
 
 CLAUDE.md
+/.claude/

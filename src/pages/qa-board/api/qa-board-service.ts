@@ -35,12 +35,37 @@ function formatKoreanDateTime(): string {
 /**
  * DB에서 읽어온 content 디코딩
  * 1. HTML Entity 디코딩 (&lt; → <)
+ *    - 이중 인코딩된 경우도 처리 (&amp;#8203; → &#8203; → 실제 문자)
  * 2. <br> 태그를 줄바꿈으로 변환
  */
 function decodeContent(content: string): string {
   if (!content) return ''
-  // HTML Entity 디코딩 후 <br> 태그를 줄바꿈으로 변환
-  return he.decode(content).replace(/<br\s*\/?>/gi, '\n')
+  // 이중 인코딩 처리: 더 이상 변화가 없을 때까지 디코딩 반복 (최대 3회)
+  let decoded = content
+  for (let i = 0; i < 3; i++) {
+    const next = he.decode(decoded)
+    if (next === decoded) break
+    decoded = next
+  }
+  // <br> 태그를 줄바꿈으로 변환
+  return decoded.replace(/<br\s*\/?>/gi, '\n')
+}
+
+/**
+ * DB에서 읽어온 텍스트 필드 디코딩 (title 등)
+ * HTML Entity 디코딩만 수행 (<br> 변환 없음)
+ * 이중 인코딩된 경우도 처리
+ */
+function decodeText(text: string): string {
+  if (!text) return ''
+  // 이중 인코딩 처리: 더 이상 변화가 없을 때까지 디코딩 반복 (최대 3회)
+  let decoded = text
+  for (let i = 0; i < 3; i++) {
+    const next = he.decode(decoded)
+    if (next === decoded) break
+    decoded = next
+  }
+  return decoded
 }
 
 /**
@@ -138,7 +163,7 @@ class QaBoardApiService implements QaBoardService {
       items: items.map(item => ({
         id: item.numm,
         displayId: item.fldinx,
-        title: item.title,
+        title: decodeText(item.title),
         content: decodeContent(item.content), // HTML Entity 디코딩 + <br> → 줄바꿈
         author: item.name,
         email: item.mail,
@@ -220,7 +245,7 @@ class QaBoardApiService implements QaBoardService {
     return {
       id: item.numm,
       displayId: item.fldinx,
-      title: item.title,
+      title: decodeText(item.title),
       content: decodeContent(item.content),
       author: item.name,
       email: item.mail,

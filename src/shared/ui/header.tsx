@@ -42,9 +42,9 @@ const Header = () => {
           <Link href='/guide' className={classes.linkButton}>
             사용법
           </Link>
-          {/*<Link href='/qa-board' className={classes.linkButton}>
+          <Link href='/qa-board' className={classes.linkButton}>
             묻고 답하기
-          </Link>*/}
+          </Link>
           <Link href='/feedback' className={classes.linkButton}>
             문의하기
           </Link>

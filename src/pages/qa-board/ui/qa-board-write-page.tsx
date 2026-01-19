@@ -194,7 +194,7 @@ export function QaBoardWritePage() {
                   rows={10}
                   disabled={isPending}
                   className={cn(
-                    'flex min-h-[200px] w-full rounded-md border bg-white px-3 py-2 text-base ring-offset-white placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+                    'flex min-h-[200px] w-full rounded-md border bg-slate-100 px-3 py-2 text-base ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
                     'resize-none',
                     errors.content ? 'border-red-500' : 'border-slate-200',
                   )}
