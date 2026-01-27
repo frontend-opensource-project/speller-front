@@ -10,7 +10,7 @@ export const AboutPage = () => {
             rel='noopener noreferrer'
             className='font-semibold text-primary hover:underline'
           >
-            바른 한글 재단장에 기여하신 분들
+            바른한글 재단장에 기여하신 분들
           </a>
         </div>
 

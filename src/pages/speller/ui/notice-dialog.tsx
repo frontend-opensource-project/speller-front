@@ -62,7 +62,7 @@ export function NoticeDialog() {
         <DialogTitle className='sr-only'>{notice.title}</DialogTitle>
         <Image
           src='/favicon.svg'
-          alt='바른 한글 로고'
+          alt='바른한글 로고'
           width={34}
           height={34}
           className='size-[1.5rem] tab:size-[1.75rem] pc:size-[2.125rem]'

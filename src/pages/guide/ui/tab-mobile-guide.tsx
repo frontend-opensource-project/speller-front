@@ -14,7 +14,7 @@ export const TabMobileGuide = () => {
       </div>
       <div className='px-4 pc:container pc-lg:container pc:mx-auto pc:px-[4.5rem]'>
         <h2 className='pb-[1.875rem] pt-[4.375rem] text-center text-xl font-bold text-slate-400 tab:text-3xl'>
-          바른 한글 사용법
+          바른한글 사용법
         </h2>
         <div className='space-y-5'>
           <Image
