@@ -68,7 +68,6 @@ export const qaBoardWriteSchema = z.object({
   password: z.string().min(4, '비밀번호는 최소 4자 이상이어야 합니다.'),
 })
 
-export type QaBoardStatus = z.infer<typeof qaBoardStatusSchema>
 export type Board2Record = z.infer<typeof board2Schema>
 export type QaBoardItem = z.infer<typeof qaBoardItemSchema>
 export type QaBoardListResponse = z.infer<typeof qaBoardListResponseSchema>

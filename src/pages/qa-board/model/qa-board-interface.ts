@@ -37,9 +37,3 @@ export interface QaBoardService {
   ): Promise<void>
   delete(id: number, password: string): Promise<void>
 }
-
-export interface QaBoardListParams {
-  page?: number
-  pageSize?: number
-  search?: string
-}
