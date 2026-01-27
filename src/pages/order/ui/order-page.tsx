@@ -12,7 +12,7 @@ export const OrderPage = () => {
       <div className='flex w-full flex-col'>
         <div className='flex items-center justify-between'>
           <h1 className='my-3 text-3xl font-bold pc:mb-5 pc:mt-[3.6rem] pc:text-[3.125rem] pc:leading-[3.75rem]'>
-            바른 한글 검사기 구매 안내
+            바른한글 검사기 구매 안내
           </h1>
           <Button
             variant='ghost'
@@ -34,7 +34,7 @@ export const OrderPage = () => {
         </div>
         <div className='mb-2 flex flex-col justify-between gap-2 pc:mb-[2.5rem] pc:flex-row'>
           <p className='text-base text-slate-400 pc:text-[1.375rem]'>
-            바른 한글 검사기는 온라인 API와 오프라인 API 2가지 형태로 서비스를
+            바른한글 검사기는 온라인 API와 오프라인 API 2가지 형태로 서비스를
             제공하고 있습니다.
             <br /> 금액이나 관련 문의는 하단의 구매 문의 부분을 참조하여주세요.
           </p>

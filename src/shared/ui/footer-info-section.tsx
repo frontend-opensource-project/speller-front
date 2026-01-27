@@ -11,7 +11,7 @@ const FooterInfoSection = () => {
         target='_blank'
         className='pb-1 text-xs text-primary hover:text-primary hover:underline pc:pb-2'
       >
-        바른 한글 재단장에 기여하신 분들
+        바른한글 재단장에 기여하신 분들
       </a>
       {/* 고객센터 섹션 */}
       <div className='flex gap-2 text-slate-600'>
