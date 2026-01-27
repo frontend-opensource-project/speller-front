@@ -36,6 +36,9 @@ const Header = () => {
           </Link>
         </div>
         <div className='hidden items-center gap-4 pc:flex'>
+          <Link href='/speller' className={classes.linkButton}>
+            처음으로
+          </Link>
           <Link href='/about' className={classes.linkButton}>
             소개
           </Link>
