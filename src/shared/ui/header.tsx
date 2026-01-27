@@ -42,6 +42,9 @@ const Header = () => {
           <Link href='/guide' className={classes.linkButton}>
             사용법
           </Link>
+          <Link href='/qa-board' className={classes.linkButton}>
+            묻고 답하기
+          </Link>
           <Link href='/feedback' className={classes.linkButton}>
             문의하기
           </Link>
@@ -88,6 +91,14 @@ const Header = () => {
                     className={`${classes.popoverIcon} bg-icon-info group-hover:bg-icon-info-white`}
                   />
                   사용법
+                </Link>
+              </li>
+              <li className='group'>
+                <Link href='/qa-board' className={classes.popoverButton}>
+                  <i
+                    className={`${classes.popoverIcon} bg-icon-question group-hover:bg-icon-question-white`}
+                  />
+                  묻고 답하기
                 </Link>
               </li>
               <li className='group'>
