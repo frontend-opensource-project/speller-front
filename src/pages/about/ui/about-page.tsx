@@ -15,7 +15,7 @@ export const AboutPage = () => {
         </div>
 
         {/* 저작권 및 소개 */}
-        <div className='flex flex-col gap-2 text-center text-slate-500'>
+        <div className='flex flex-col gap-2 text-center text-slate-500 dark:text-dark-text'>
           {/* PC/모바일 반응형 소개 */}
           <p>
             &apos;바른한글&apos;은 &apos;한국어 맞춤법/문법 검사기&apos;의 새
@@ -31,7 +31,7 @@ export const AboutPage = () => {
         </div>
 
         {/* 카피라이트 */}
-        <div className='border-t border-slate-200 pt-2 text-center text-slate-400'>
+        <div className='border-t border-slate-200 pt-2 text-center text-slate-400 dark:border-dark-border dark:text-dark-subtle'>
           Copyrightⓒ2001 AI Lab &amp; Narainfotech. All Rights Reserved
         </div>
       </div>

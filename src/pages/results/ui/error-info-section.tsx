@@ -78,7 +78,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
           <ReportForm errorType={correctedErrorType}>
             <Button
               variant='ghost'
-              className='h-auto p-0 text-slate-500 hover:bg-transparent pc:gap-2'
+              className='h-auto p-0 text-slate-500 hover:bg-transparent dark:text-dark-subtle pc:gap-2'
               onClick={() => {
                 updateErrInfoIndex(errorIdx)
                 sendCorrectionFeedbackOpenedEvent({
@@ -100,7 +100,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
             <div className='flex items-center justify-between text-[0]'>
               <Button
                 variant='ghost'
-                className='h-auto p-0 text-base font-normal text-slate-500 hover:bg-transparent tab:gap-4 tab:text-lg'
+                className='h-auto p-0 text-base font-normal text-slate-500 hover:bg-transparent dark:text-dark-subtle tab:gap-4 tab:text-lg'
                 onClick={() => updateErrInfoIndex(errorIdx)}
               >
                 <EditIcon className='!size-6 tab:!size-8' />
@@ -108,7 +108,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
               </Button>
             </div>
           </CustomTextEditor>
-          <div className='mt-2 flex max-h-[5.625rem] flex-col overflow-y-auto rounded-lg border border-slate-200 bg-slate-100 p-2 tab:mt-3 tab:max-h-[6rem] pc:max-h-[6.5rem]'>
+          <div className='mt-2 flex max-h-[5.625rem] flex-col overflow-y-auto rounded-lg border border-slate-200 bg-slate-100 p-2 dark:border-dark-border dark:bg-dark-elevated tab:mt-3 tab:max-h-[6rem] pc:max-h-[6.5rem]'>
             {candidateWords.map(({ id, word }) => (
               <div key={id} className='flex items-center gap-[0.43rem]'>
                 <Button
@@ -129,7 +129,7 @@ const ErrorInfoSection = <T extends HTMLDivElement>({
                   <Button
                     size='icon'
                     variant='outline'
-                    className='size-[1.125rem] rounded-full border-0 bg-white text-slate-400 shadow-sm hover:bg-white pc:size-5'
+                    className='size-[1.125rem] rounded-full border-0 bg-white text-slate-400 shadow-sm hover:bg-white dark:bg-dark-elevated dark:text-dark-subtle dark:hover:bg-dark-elevated pc:size-5'
                     onClick={() => handleRevert()}
                   >
                     <XIcon className='!w-3 pc:!w-3.5' />

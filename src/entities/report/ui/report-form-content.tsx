@@ -25,14 +25,14 @@ export const ReportFormContent = ({
 
   return (
     <>
-      <p className='break-keep text-[0.95rem] text-slate-500 tab:text-lg pc:mb-[1.3rem] pc:mt-[0.85rem] pc:w-[18rem] pc:text-sm pc:leading-normal'>
+      <p className='break-keep text-[0.95rem] text-slate-500 dark:text-dark-text tab:text-lg pc:mb-[1.3rem] pc:mt-[0.85rem] pc:w-[18rem] pc:text-sm pc:leading-normal'>
         대치어가 맞지 않거나, 다른 의견이 있다면 문의하기를 이용해주세요.
       </p>
       <BasicTextarea
         placeholder='내용을 작성해주세요.'
         value={comment}
         onChange={handleChange}
-        className='min-h-[141px] resize-none rounded-[0.375rem] border-slate-200 bg-slate-100 p-4 text-[0.85rem] leading-4 tracking-[-0.02rem] text-slate-600 placeholder:text-slate-300 tab:min-h-[166px] tab:text-base pc:min-h-[9.96rem] pc:p-[0.8rem] pc:text-[1.2rem] pc:text-base pc:leading-[1.2rem]'
+        className='min-h-[141px] resize-none rounded-[0.375rem] border-slate-200 bg-slate-100 p-4 text-[0.85rem] leading-4 tracking-[-0.02rem] text-slate-600 placeholder:text-slate-300 dark:border-dark-border dark:bg-dark-elevated dark:text-dark-text placeholder:dark:text-dark-border tab:min-h-[166px] tab:text-base pc:min-h-[9.96rem] pc:p-[0.8rem] pc:text-[1.2rem] pc:text-base pc:leading-[1.2rem]'
       />
       <Button
         disabled={!comment}

@@ -35,7 +35,12 @@ const ErrorTrackingSection = () => {
         <div>
           {errInfo.map((info, idx) => (
             <Fragment key={info.errorIdx}>
-              <hr className={cn('border-slate-200', idx === 0 && 'hidden')} />
+              <hr
+                className={cn(
+                  'border-slate-200 dark:border-dark-border',
+                  idx === 0 && 'hidden',
+                )}
+              />
               <ErrorInfoSection
                 errorInfo={info}
                 ref={el => {

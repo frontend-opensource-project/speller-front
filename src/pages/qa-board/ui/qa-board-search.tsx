@@ -76,7 +76,7 @@ export function QaBoardSearch() {
         <select
           value={searchType}
           onChange={e => setSearchType(e.target.value as QaBoardSearchType)}
-          className='h-10 w-20 shrink-0 rounded-md border border-slate-300 bg-white px-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary'
+          className='h-10 w-20 shrink-0 rounded-md border border-slate-300 bg-white px-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-dark-border dark:bg-dark-surface'
         >
           {SEARCH_TYPE_OPTIONS.map(option => (
             <option key={option.value} value={option.value}>
@@ -94,7 +94,7 @@ export function QaBoardSearch() {
               if (error) setError(null)
             }}
             placeholder='검색어를 입력하세요'
-            className='h-10 flex-1 rounded-md border border-slate-300 px-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary'
+            className='h-10 flex-1 rounded-md border border-slate-300 px-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-dark-border'
           />
 
           <Button

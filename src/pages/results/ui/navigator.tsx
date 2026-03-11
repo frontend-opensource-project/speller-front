@@ -140,13 +140,15 @@ const Navigator = () => {
       >
         <i className='inline-flex size-6 bg-icon-circle-arrow bg-contain bg-center bg-no-repeat pc:size-[1.875rem]' />
       </button>
-      <span className='flex items-center gap-1 text-base font-medium text-slate-400 pc:text-xl'>
+      <span className='flex items-center gap-1 text-base font-medium text-slate-400 dark:text-dark-subtle pc:text-xl'>
         {isFetching ? (
           <Spinner />
         ) : (
           <>
-            <span className='text-slate-600'>{currentPage}</span>/
-            <span>{response.totalPageCnt}</span>
+            <span className='text-slate-600 dark:text-dark-text'>
+              {currentPage}
+            </span>
+            /<span>{response.totalPageCnt}</span>
           </>
         )}
       </span>

@@ -83,6 +83,14 @@ export default {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        dark: {
+          surface: '#363636',
+          base: '#2B2B2B',
+          elevated: '#424242',
+          border: '#575757',
+          subtle: '#878787',
+          text: '#A3A3A3',
+        },
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',

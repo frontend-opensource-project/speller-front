@@ -10,7 +10,7 @@ const SubmittedControl = () => {
     <div className='flex justify-center gap-3 pb-16 tab:pb-[10.25rem] pc:justify-start pc:gap-4 pc:pb-[4.375rem] pc:pt-7'>
       <Button
         variant='outline'
-        className={`${BUTTON_BASE_STYLE} border-2 border-blue-500 bg-white text-blue-500`}
+        className={`${BUTTON_BASE_STYLE} border-2 border-blue-500 bg-white text-blue-500 dark:bg-dark-surface`}
         onClick={() => router.push('/feedback')}
       >
         다시 제출

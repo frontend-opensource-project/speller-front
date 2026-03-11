@@ -55,7 +55,7 @@ const SpellingCorrectionText = memo(() => {
               <button
                 className={cn(
                   'select-none',
-                  'absolute left-0 top-0 h-6 whitespace-nowrap text-[1rem] font-bold leading-[170%] tracking-[-0.02rem] text-slate-600 opacity-100 transition-all duration-300',
+                  'absolute left-0 top-0 h-6 whitespace-nowrap text-[1rem] font-bold leading-[170%] tracking-[-0.02rem] text-slate-600 opacity-100 transition-all duration-300 dark:text-dark-text',
                   isResolved && '-z-10 opacity-0',
                 )}
                 onClick={() => {
@@ -79,7 +79,7 @@ const SpellingCorrectionText = memo(() => {
                 className={cn(
                   'text-[1.125rem] font-bold leading-[160%] tracking-[-0.0225rem] underline decoration-[2px] underline-offset-[25%] tab:leading-[170%] tab:tracking-[-0.03375rem] pc:text-[1.25rem] pc:tracking-[-0.025rem]',
                   `${getTextMethodColor(position.correctMethod)}`,
-                  isResolved && 'text-slate-600',
+                  isResolved && 'text-slate-600 dark:text-dark-text',
                 )}
               >
                 {processText(position.crtStr ?? position.orgStr, key)}

@@ -118,7 +118,7 @@ const ResultsPage = () => {
           ref={contentRef}
         >
           {/* 교정 문서*/}
-          <div className='content-visibility-auto flex min-h-[30.5rem] flex-col rounded-lg bg-white p-4 contain-strict tab:rounded-[1rem] tab:p-5 pc:w-1/2 pc:rounded-br-none pc:rounded-tr-none pc:p-6'>
+          <div className='content-visibility-auto flex min-h-[30.5rem] flex-col rounded-lg bg-white p-4 contain-strict dark:bg-dark-surface tab:rounded-[1rem] tab:p-5 pc:w-1/2 pc:rounded-br-none pc:rounded-tr-none pc:p-6'>
             <CorrectionContent />
             {/* 글자수 & 돌아가기, 복사하기 버튼 */}
             <ResultsControl />
@@ -127,7 +127,7 @@ const ResultsPage = () => {
           {/* 맞춤법/문법 오류 */}
           <div
             className={cn(
-              'content-visibility-auto flex min-h-[30.5rem] flex-col rounded-lg border border-blue-500 bg-white p-4 contain-strict tab:rounded-[1rem] tab:p-5 pc:w-1/2 pc:rounded-bl-none pc:rounded-tl-none pc:border-none pc:p-6',
+              'content-visibility-auto flex min-h-[30.5rem] flex-col rounded-lg border border-blue-500 bg-white p-4 contain-strict dark:bg-dark-surface tab:rounded-[1rem] tab:p-5 pc:w-1/2 pc:rounded-bl-none pc:rounded-tl-none pc:border-none pc:p-6',
               '@container',
             )}
           >

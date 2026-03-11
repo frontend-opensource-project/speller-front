@@ -11,7 +11,7 @@ const StrongCheckMessage = () => {
   return (
     <div
       className={cn(
-        'flex w-full items-center justify-end text-base font-medium leading-[150%] tracking-[-0.02rem] text-slate-300 pc:text-xl pc:tracking-[-0.025rem]',
+        'flex w-full items-center justify-end text-base font-medium leading-[150%] tracking-[-0.02rem] text-slate-300 dark:text-dark-border pc:text-xl pc:tracking-[-0.025rem]',
         totalPageCnt > 1 && 'absolute right-0 w-auto',
       )}
     >

@@ -45,12 +45,12 @@ const FooterGenieeSlot = ({
     return (
       <div
         className={cn(
-          'flex h-full min-h-[6.25rem] w-full items-center justify-center overflow-hidden rounded-sm bg-slate-100 px-4 pb-9 tab:px-[3.75rem] pc:justify-end pc:bg-slate-200 pc:px-0 pc:pb-0',
+          'flex h-full min-h-[6.25rem] w-full items-center justify-center overflow-hidden rounded-sm bg-slate-100 px-4 pb-9 dark:bg-dark-elevated tab:px-[3.75rem] pc:justify-end pc:bg-slate-200 pc:px-0 pc:pb-0 dark:pc:bg-dark-base',
         )}
       >
         <div
           className={cn(
-            'flex min-h-[6.25rem] w-full max-w-[29rem] items-center justify-center self-center overflow-hidden rounded-sm bg-slate-300 tab:max-w-[38rem] pc-lg:max-w-[45.5rem]',
+            'flex min-h-[6.25rem] w-full max-w-[29rem] items-center justify-center self-center overflow-hidden rounded-sm bg-slate-300 dark:bg-dark-border tab:max-w-[38rem] pc-lg:max-w-[45.5rem]',
           )}
         />
       </div>
@@ -60,7 +60,7 @@ const FooterGenieeSlot = ({
   return (
     <div
       className={cn(
-        'relative min-h-[6.5rem] overflow-hidden rounded-sm bg-slate-100 pc:min-h-[6.25rem] pc:w-full pc:min-w-[31.25rem] pc:bg-slate-200',
+        'relative min-h-[6.5rem] overflow-hidden rounded-sm bg-slate-100 dark:bg-dark-elevated pc:min-h-[6.25rem] pc:w-full pc:min-w-[31.25rem] pc:bg-slate-200 dark:pc:bg-dark-base',
       )}
     >
       {/* 오버레이 광고는 바로 표시 */}
