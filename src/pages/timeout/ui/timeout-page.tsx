@@ -39,8 +39,8 @@ const TimeoutPage = () => {
             className='hidden w-full bg-background pc:block'
           />
         </div>
-        <div className='rounded-bl-[1rem] rounded-br-[1rem] bg-white pt-7 text-center pc:h-[40.25rem] pc:flex-1 pc:content-center pc:rounded-bl-none pc:rounded-tr-[1rem] pc:pc:pl-[3.125rem] pc:text-left'>
-          <h2 className='text-2xl font-semibold tracking-[-0.03rem] text-slate-600 tab:text-[2rem] tab:leading-[3rem] tab:tracking-[-0.04rem] pc:text-5xl pc:tracking-[-0.06rem]'>
+        <div className='rounded-bl-[1rem] rounded-br-[1rem] bg-white pt-7 text-center dark:bg-dark-surface pc:h-[40.25rem] pc:flex-1 pc:content-center pc:rounded-bl-none pc:rounded-tr-[1rem] pc:pc:pl-[3.125rem] pc:text-left'>
+          <h2 className='text-2xl font-semibold tracking-[-0.03rem] text-slate-600 dark:text-dark-text tab:text-[2rem] tab:leading-[3rem] tab:tracking-[-0.04rem] pc:text-5xl pc:tracking-[-0.06rem]'>
             검사가 중단되었습니다.
           </h2>
           <p className='mb-4 mt-2 text-primary tab:mb-5 tab:mt-3 pc:mb-7 pc:mt-6'>
@@ -55,7 +55,7 @@ const TimeoutPage = () => {
           <div className='flex justify-center gap-3 pb-10 pt-7 pc:justify-start'>
             <Button
               variant='outline'
-              className='h-14 w-32 border-2 border-[#3046EC] bg-white text-lg text-[#3046EC] hover:text-[#3046EC] pc:h-16 pc:w-[9.5rem] pc:text-[1.375rem]'
+              className='h-14 w-32 border-2 border-[#3046EC] bg-white text-lg text-[#3046EC] hover:text-[#3046EC] dark:bg-dark-surface pc:h-16 pc:w-[9.5rem] pc:text-[1.375rem]'
               onClick={() => router.back()}
             >
               이전 페이지

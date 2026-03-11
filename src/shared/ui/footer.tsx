@@ -9,7 +9,7 @@ const Footer = () => {
       <FooterGeniee includeDevice={['mobile', 'tablet']} />
       <footer
         className={cn(
-          'max-h-[14.5rem] bg-slate-200 tab:max-h-[17.4375rem] tab:min-h-[11.875rem] pc:mb-0 pc:max-h-[9.5rem] pc:min-h-[9.5rem]',
+          'max-h-[14.5rem] bg-slate-200 dark:bg-dark-base tab:max-h-[17.4375rem] tab:min-h-[11.875rem] pc:mb-0 pc:max-h-[9.5rem] pc:min-h-[9.5rem]',
         )}
       >
         <div

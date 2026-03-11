@@ -55,7 +55,7 @@ export const CustomTextEditor = ({ children }: CustomTextEditorProps) => {
         <DialogTrigger asChild className='pc:hidden'>
           {children}
         </DialogTrigger>
-        <DialogContent className='max-w-[19.17rem] rounded-2xl bg-white p-[1.125rem] pt-[0.9375rem] tab:max-w-[22.5625rem]'>
+        <DialogContent className='max-w-[19.17rem] rounded-2xl bg-white p-[1.125rem] pt-[0.9375rem] dark:bg-dark-surface tab:max-w-[22.5625rem]'>
           <DialogHeader>
             <DialogTitle>
               <VisuallyHidden>대치어 직접 수정하기</VisuallyHidden>
@@ -71,7 +71,7 @@ export const CustomTextEditor = ({ children }: CustomTextEditorProps) => {
 
 const CustomTextEditorTitle = () => {
   return (
-    <h4 className='flex items-center gap-3 text-[1.75rem] font-bold text-slate-600 pc:gap-[0.62rem] pc:text-[1.65rem]'>
+    <h4 className='flex items-center gap-3 text-[1.75rem] font-bold text-slate-600 dark:text-dark-text pc:gap-[0.62rem] pc:text-[1.65rem]'>
       <EditIcon className='!size-[1.48rem] tab:!size-7 pc:!size-[1.4rem]' />
       <span className='text-[1.48rem] tab:text-[1.75rem] pc:text-[1.375rem]'>
         대치어 직접 수정하기

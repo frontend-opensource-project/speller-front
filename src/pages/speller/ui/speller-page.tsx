@@ -153,7 +153,7 @@ const SpellerPage = () => {
             <VersionInfo />
             <SpellerSetting />
           </div>
-          <div className='flex h-full w-full flex-col rounded-lg bg-white p-4 tab:rounded-[1rem] tab:p-5 pc:p-6'>
+          <div className='flex h-full w-full flex-col rounded-lg bg-white p-4 dark:bg-dark-surface tab:rounded-[1rem] tab:p-5 pc:p-6'>
             <SpellerTextInput />
             {/* 글자수 & 검사하기 버튼 */}
             <SpellerControl />

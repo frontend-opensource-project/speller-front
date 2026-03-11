@@ -34,10 +34,10 @@ export async function QaBoardPage({ searchParams }: QaBoardPageProps) {
         <div className='flex flex-col gap-4'>
           <div className='flex flex-col gap-4 tab:flex-row tab:items-center tab:justify-between'>
             <div>
-              <h1 className='text-slate-900 text-2xl font-bold tab:text-3xl'>
+              <h1 className='text-slate-900 text-2xl font-bold dark:text-white tab:text-3xl'>
                 묻고 답하기
               </h1>
-              <p className='mt-2 text-sm text-slate-600 tab:text-base'>
+              <p className='mt-2 text-sm text-slate-600 dark:text-dark-text tab:text-base'>
                 우리말 공부 중 모르는 부분을 질문해주세요
               </p>
             </div>
@@ -50,8 +50,8 @@ export async function QaBoardPage({ searchParams }: QaBoardPageProps) {
           </div>
 
           {/* 안내문 */}
-          <div className='bg-blue-50 rounded-lg border border-blue-200 p-4 tab:p-5'>
-            <div className='text-blue-900 flex flex-col gap-2 text-sm leading-relaxed tab:text-base'>
+          <div className='bg-blue-50 rounded-lg border border-blue-200 p-4 dark:border-blue-500/30 dark:bg-blue-500/10 tab:p-5'>
+            <div className='text-blue-900 flex flex-col gap-2 text-sm leading-relaxed dark:text-blue-300 tab:text-base'>
               <p>
                 <strong className='font-semibold'>
                   &apos;묻고 답하기&apos;에 글을 올리실 때는 실명을 써 주시기
@@ -84,23 +84,23 @@ export async function QaBoardPage({ searchParams }: QaBoardPageProps) {
         <div className='flex flex-col gap-4'>
           {/* 질문 목록 */}
           {data.items.length === 0 ? (
-            <div className='bg-slate-50 flex min-h-[400px] items-center justify-center rounded-lg border border-slate-200'>
+            <div className='bg-slate-50 flex min-h-[400px] items-center justify-center rounded-lg border border-slate-200 dark:border-dark-border dark:bg-dark-elevated'>
               <div className='text-center'>
                 {searchQuery ? (
                   <>
-                    <p className='text-lg text-slate-500'>
+                    <p className='text-lg text-slate-500 dark:text-dark-text'>
                       검색 결과가 없습니다.
                     </p>
-                    <p className='mt-2 text-sm text-slate-400'>
+                    <p className='mt-2 text-sm text-slate-400 dark:text-dark-subtle'>
                       다른 검색어로 다시 시도해보세요.
                     </p>
                   </>
                 ) : (
                   <>
-                    <p className='text-lg text-slate-500'>
+                    <p className='text-lg text-slate-500 dark:text-dark-text'>
                       아직 등록된 질문이 없습니다.
                     </p>
-                    <p className='mt-2 text-sm text-slate-400'>
+                    <p className='mt-2 text-sm text-slate-400 dark:text-dark-subtle'>
                       첫 번째 질문을 등록해보세요!
                     </p>
                   </>

@@ -39,7 +39,7 @@ const MainGenieeSlot = () => {
   if (!shouldRender) return null
 
   if (isDev) {
-    return <div className={cn(AdStyle, 'bg-slate-300')} />
+    return <div className={cn(AdStyle, 'bg-slate-300 dark:bg-dark-border')} />
   }
 
   return (

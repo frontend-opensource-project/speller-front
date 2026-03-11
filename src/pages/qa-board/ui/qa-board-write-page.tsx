@@ -82,7 +82,7 @@ export function QaBoardWritePage() {
               <ArrowLeft className='h-5 w-5' />
             </Button>
           </Link>
-          <h1 className='text-slate-900 text-xl font-bold tab:text-2xl'>
+          <h1 className='text-slate-900 text-xl font-bold dark:text-white tab:text-2xl'>
             질문 등록
           </h1>
         </div>
@@ -91,12 +91,12 @@ export function QaBoardWritePage() {
         <div className='flex flex-col'>
           <form
             onSubmit={handleSubmit}
-            className='rounded-lg border border-slate-200 bg-white p-5 tab:p-6'
+            className='rounded-lg border border-slate-200 bg-white p-5 dark:border-dark-border dark:bg-dark-surface tab:p-6'
           >
             <div className='flex flex-col gap-6'>
               {/* 전체 에러 메시지 */}
               {serverError && (
-                <div className='border-red-400 bg-red-50 text-red-700 rounded-lg border-2 p-4 text-sm font-semibold'>
+                <div className='border-red-400 bg-red-50 dark:bg-red-500/10 text-red-700 rounded-lg border-2 p-4 text-sm font-semibold'>
                   {serverError}
                 </div>
               )}
@@ -157,7 +157,7 @@ export function QaBoardWritePage() {
                     {errors.password}
                   </p>
                 )}
-                <p className='text-xs text-slate-500'>
+                <p className='text-xs text-slate-500 dark:text-dark-text'>
                   글 수정/삭제 시 필요합니다
                 </p>
               </div>
@@ -194,9 +194,11 @@ export function QaBoardWritePage() {
                   rows={10}
                   disabled={isPending}
                   className={cn(
-                    'flex min-h-[200px] w-full rounded-md border bg-slate-100 px-3 py-2 text-base ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+                    'flex min-h-[200px] w-full rounded-md border bg-slate-100 px-3 py-2 text-base ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-elevated dark:placeholder:text-dark-text',
                     'resize-none',
-                    errors.content ? 'border-red-500' : 'border-slate-200',
+                    errors.content
+                      ? 'border-red-500'
+                      : 'border-slate-200 dark:border-dark-border',
                   )}
                 />
                 {errors.content && (
@@ -207,7 +209,7 @@ export function QaBoardWritePage() {
               </div>
 
               {/* 안내 메시지 */}
-              <div className='bg-slate-50 rounded-lg p-4 text-sm text-slate-600'>
+              <div className='bg-slate-50 rounded-lg p-4 text-sm text-slate-600 dark:bg-dark-elevated dark:text-dark-text'>
                 <p className='font-medium'>작성 시 유의사항</p>
                 <ul className='ml-4 mt-2 list-disc space-y-1'>
                   <li>구체적이고 명확한 질문을 작성해주세요.</li>

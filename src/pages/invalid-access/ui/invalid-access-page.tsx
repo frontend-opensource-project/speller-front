@@ -2,7 +2,7 @@ export const InvalidAccessPage = () => {
   return (
     <div className='flex w-full flex-col items-center px-4 py-10 text-base leading-[140%] tracking-[-0.02rem] tab:text-lg tab:tracking-[-0.0225rem] pc:py-16 pc:text-[1.375rem] pc:leading-[170%] pc:tracking-[-0.0275rem]'>
       <div className='flex w-full flex-col gap-8 pc:gap-10'>
-        <div className='flex flex-col gap-2 text-center text-slate-500'>
+        <div className='flex flex-col gap-2 text-center text-slate-500 dark:text-dark-text'>
           {/* 비정상 접근 안내 */}
           <p>
             <b>[비정상적인 접근 안내]</b>
@@ -39,7 +39,7 @@ export const InvalidAccessPage = () => {
           <p>이 검사기는 개인이나 학생만 무료로 사용할 수 있습니다.</p>
         </div>
         {/* 카피라이트 */}
-        <div className='border-t border-slate-200 pt-2 text-center text-slate-400'>
+        <div className='border-t border-slate-200 pt-2 text-center text-slate-400 dark:border-dark-border dark:text-dark-subtle'>
           Copyrightⓒ2001 AI Lab &amp; Narainfotech. All Rights Reserved
         </div>
       </div>

@@ -11,7 +11,7 @@ const SpellerSetting = () => {
     <div className='flex items-center justify-end gap-2 pc:gap-4'>
       <Label
         htmlFor='airplane-mode'
-        className='self-center text-base font-medium leading-[1.40625rem] tracking-[-0.01875rem] text-slate-600 pc:text-xl pc:leading-[2rem] pc:tracking-[-0.025rem]'
+        className='self-center text-base font-medium leading-[1.40625rem] tracking-[-0.01875rem] text-slate-600 dark:text-dark-text pc:text-xl pc:leading-[2rem] pc:tracking-[-0.025rem]'
       >
         강한 검사
       </Label>

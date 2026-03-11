@@ -38,14 +38,14 @@ const FeedbackForm = () => {
       <div className='mt-2 flex flex-col gap-3 pc:mt-[1.125rem] pc:grid pc:grid-cols-[9.25rem_1fr] pc:gap-0'>
         <FormLabel htmlFor='description' label='문의 내용' />
         <div
-          className='flex h-full max-h-[13.75rem] min-h-56 w-full flex-col rounded-lg bg-white px-5 py-4 pc:max-h-[21.25rem] pc:min-h-[21.25rem]'
+          className='flex h-full max-h-[13.75rem] min-h-56 w-full flex-col rounded-lg bg-white px-5 py-4 dark:bg-dark-surface pc:max-h-[21.25rem] pc:min-h-[21.25rem]'
           id='description'
         >
           <Textarea
             name='feedback-text'
             onChange={text => setContent(text)}
             placeholder='내용을 입력해 주세요.'
-            className='text-slate-600 pc:text-xl pc:leading-[160%] pc:tracking-[-0.025rem]'
+            className='text-slate-600 dark:text-dark-text pc:text-xl pc:leading-[160%] pc:tracking-[-0.025rem]'
           />
           <TextCounter count={content.length} className='self-start' />
         </div>
@@ -70,7 +70,7 @@ const FormLabel = ({ label, htmlFor }: { label: string; htmlFor: string }) => {
   return (
     <Label
       htmlFor={htmlFor}
-      className='text-lg font-semibold leading-[138%] tracking-[-0.0225rem] text-slate-600 after:ml-0.5 after:text-blue-500 after:content-["*"] pc:text-2xl pc:tracking-[-0.03rem]'
+      className='text-lg font-semibold leading-[138%] tracking-[-0.0225rem] text-slate-600 after:ml-0.5 after:text-blue-500 after:content-["*"] dark:text-dark-text pc:text-2xl pc:tracking-[-0.03rem]'
     >
       {label}
     </Label>

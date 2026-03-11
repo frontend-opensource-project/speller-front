@@ -227,16 +227,16 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
       </div>
 
       {/* 답변 내용 */}
-      <div className='text-slate-700 mb-4 whitespace-pre-wrap rounded-lg bg-white p-4 text-base leading-relaxed tab:text-lg'>
+      <div className='text-slate-700 mb-4 whitespace-pre-wrap rounded-lg bg-white p-4 text-base leading-relaxed dark:bg-dark-surface tab:text-lg'>
         {answer.content}
       </div>
 
       {/* 답변 메타 정보 */}
-      <div className='mb-4 flex items-center gap-2 text-sm text-slate-500'>
+      <div className='mb-4 flex items-center gap-2 text-sm text-slate-500 dark:text-dark-text'>
         <span className='font-medium text-primary'>
           {maskName(answer.author)}
         </span>
-        <span className='text-slate-300'>|</span>
+        <span className='text-slate-300 dark:text-dark-border'>|</span>
         <span>{answer.createdAt}</span>
       </div>
 
@@ -262,7 +262,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
               <ArrowLeft className='h-5 w-5' />
             </Button>
           </Link>
-          <h1 className='text-slate-900 text-xl font-bold tab:text-2xl'>
+          <h1 className='text-slate-900 text-xl font-bold dark:text-white tab:text-2xl'>
             묻고 답하기
           </h1>
         </div>
@@ -270,11 +270,11 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
         {/* 컨텐츠 */}
         <div className='flex flex-col gap-6'>
           {/* 질문 카드 */}
-          <div className='rounded-lg border border-slate-200 bg-white p-5 tab:p-6'>
+          <div className='rounded-lg border border-slate-200 bg-white p-5 dark:border-dark-border dark:bg-dark-surface tab:p-6'>
             {/* 제목 영역 */}
-            <div className='flex flex-col gap-3 border-b border-slate-200 pb-4'>
+            <div className='flex flex-col gap-3 border-b border-slate-200 pb-4 dark:border-dark-border'>
               <div className='flex items-start justify-between gap-3'>
-                <h2 className='text-slate-900 flex-1 text-xl font-bold tab:text-2xl'>
+                <h2 className='text-slate-900 flex-1 text-xl font-bold dark:text-white tab:text-2xl'>
                   {data.title}
                 </h2>
                 <span
@@ -282,7 +282,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
                     'shrink-0 rounded-full px-3 py-1 text-xs font-medium',
                     isAnswered
                       ? 'bg-primary/10 text-primary'
-                      : 'bg-slate-100 text-slate-600',
+                      : 'bg-slate-100 text-slate-600 dark:bg-dark-elevated dark:text-dark-text',
                   )}
                 >
                   {isAnswered ? '답변완료' : '답변대기'}
@@ -290,11 +290,11 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
               </div>
 
               {/* 메타 정보 */}
-              <div className='flex flex-wrap items-center gap-2 text-sm text-slate-500 tab:gap-3'>
+              <div className='flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-dark-text tab:gap-3'>
                 <span className='font-medium'>{maskName(data.author)}</span>
-                <span className='text-slate-300'>|</span>
+                <span className='text-slate-300 dark:text-dark-border'>|</span>
                 <span>{date}</span>
-                <span className='text-slate-300'>|</span>
+                <span className='text-slate-300 dark:text-dark-border'>|</span>
                 <div className='flex items-center gap-1'>
                   <Eye className='h-4 w-4' />
                   <span>{data.views.toLocaleString()}</span>
@@ -308,7 +308,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
             </div>
 
             {/* 질문에 대한 버튼 그룹 */}
-            <div className='mt-6 border-t border-slate-200 pt-4'>
+            <div className='mt-6 border-t border-slate-200 pt-4 dark:border-dark-border'>
               <ActionButtons target={{ type: 'question', id: data.id }} />
             </div>
           </div>
@@ -321,12 +321,12 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
               ))}
             </div>
           ) : (
-            <div className='bg-slate-50 rounded-lg border border-slate-200 p-8 text-center'>
-              <MessageCircle className='mx-auto h-12 w-12 text-slate-300' />
-              <p className='mt-3 text-slate-500'>
+            <div className='bg-slate-50 rounded-lg border border-slate-200 p-8 text-center dark:border-dark-border dark:bg-dark-elevated'>
+              <MessageCircle className='mx-auto h-12 w-12 text-slate-300 dark:text-dark-border' />
+              <p className='mt-3 text-slate-500 dark:text-dark-text'>
                 아직 답변이 등록되지 않았습니다.
               </p>
-              <p className='mt-1 text-sm text-slate-400'>
+              <p className='mt-1 text-sm text-slate-400 dark:text-dark-subtle'>
                 빠른 시일 내에 답변 드리겠습니다.
               </p>
             </div>
@@ -346,7 +346,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
       {/* 모달 오버레이 */}
       {modalType && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
-          <div className='w-full max-w-lg rounded-lg bg-white p-6 shadow-xl'>
+          <div className='w-full max-w-lg rounded-lg bg-white p-6 shadow-xl dark:bg-dark-surface'>
             {/* 답하기 모달 */}
             {modalType === 'reply' && (
               <>
@@ -356,7 +356,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
                     : '답변 작성'}
                 </h3>
                 {error && (
-                  <div className='border-red-400 bg-red-50 text-red-700 mb-4 rounded-lg border-2 p-3 text-sm font-semibold'>
+                  <div className='border-red-400 bg-red-50 dark:bg-red-500/10 text-red-700 mb-4 rounded-lg border-2 p-3 text-sm font-semibold'>
                     {error}
                   </div>
                 )}
@@ -380,7 +380,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
                       placeholder='답변 내용을 입력하세요 (최소 10자)'
                       rows={6}
                       disabled={isPending}
-                      className='w-full resize-none rounded-md border border-slate-200 bg-slate-100 px-3 py-2 text-base placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
+                      className='w-full resize-none rounded-md border border-slate-200 bg-slate-100 px-3 py-2 text-base placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-dark-border dark:bg-dark-elevated dark:placeholder:text-dark-text'
                     />
                   </div>
                   <div className='flex flex-col gap-2'>
@@ -417,7 +417,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
                   {modalTarget?.type === 'question' ? '질문 수정' : '답변 수정'}
                 </h3>
                 {error && (
-                  <div className='border-red-400 bg-red-50 text-red-700 mb-4 rounded-lg border-2 p-3 text-sm font-semibold'>
+                  <div className='border-red-400 bg-red-50 dark:bg-red-500/10 text-red-700 mb-4 rounded-lg border-2 p-3 text-sm font-semibold'>
                     {error}
                   </div>
                 )}
@@ -454,7 +454,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
                       placeholder='내용을 입력하세요 (최소 10자)'
                       rows={6}
                       disabled={isPending}
-                      className='w-full resize-none rounded-md border border-slate-200 bg-slate-100 px-3 py-2 text-base placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
+                      className='w-full resize-none rounded-md border border-slate-200 bg-slate-100 px-3 py-2 text-base placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-dark-border dark:bg-dark-elevated dark:placeholder:text-dark-text'
                     />
                   </div>
                   <div className='flex justify-end gap-2'>
@@ -480,11 +480,11 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
                   {modalTarget?.type === 'question' ? '질문 삭제' : '답변 삭제'}
                 </h3>
                 {error && (
-                  <div className='border-red-400 bg-red-50 text-red-700 mb-4 rounded-lg border-2 p-3 text-sm font-semibold'>
+                  <div className='border-red-400 bg-red-50 dark:bg-red-500/10 text-red-700 mb-4 rounded-lg border-2 p-3 text-sm font-semibold'>
                     {error}
                   </div>
                 )}
-                <p className='mb-4 text-slate-600'>
+                <p className='mb-4 text-slate-600 dark:text-dark-text'>
                   정말로 이 {modalTarget?.type === 'question' ? '질문' : '답변'}
                   을 삭제하시겠습니까?
                   <br />
@@ -517,7 +517,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
                         'transition-colors',
                         password.length >= 4
                           ? 'bg-primary text-white hover:bg-primary/90'
-                          : 'bg-slate-200 text-slate-400',
+                          : 'bg-slate-200 text-slate-400 dark:bg-dark-base dark:text-dark-subtle',
                       )}
                     >
                       {isPending ? '삭제 중...' : '삭제하기'}

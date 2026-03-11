@@ -20,7 +20,7 @@ const CorrectionContent = () => {
           교정 문서
         </h2>
         <div className='flex items-center gap-2'>
-          <span className='text-base text-slate-600 pc:text-xl'>
+          <span className='text-base text-slate-600 dark:text-dark-text pc:text-xl'>
             자동스크롤
           </span>
           <Switch

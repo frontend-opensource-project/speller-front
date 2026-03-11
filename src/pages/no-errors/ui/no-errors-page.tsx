@@ -39,8 +39,8 @@ const NoErrorsPage = () => {
             className='hidden w-full bg-background pc:block'
           />
         </div>
-        <div className='rounded-b-lg bg-white pt-7 text-center tab:rounded-b-[1rem] pc:h-[40.25rem] pc:flex-1 pc:content-center pc:rounded-bl-none pc:rounded-tr-[1rem] pc:pc:pl-[3.125rem] pc:text-left'>
-          <h2 className='text-2xl font-semibold tracking-[-0.03rem] text-slate-600 tab:text-[2rem] tab:leading-[3rem] tab:tracking-[-0.04rem] pc:text-5xl pc:tracking-[-0.06rem]'>
+        <div className='rounded-b-lg bg-white pt-7 text-center dark:bg-dark-surface tab:rounded-b-[1rem] pc:h-[40.25rem] pc:flex-1 pc:content-center pc:rounded-bl-none pc:rounded-tr-[1rem] pc:pc:pl-[3.125rem] pc:text-left'>
+          <h2 className='text-2xl font-semibold tracking-[-0.03rem] text-slate-600 dark:text-dark-text tab:text-[2rem] tab:leading-[3rem] tab:tracking-[-0.04rem] pc:text-5xl pc:tracking-[-0.06rem]'>
             맞춤법/문법 오류가 없습니다.
           </h2>
           <div className='pt-2 text-base tracking-[-0.02rem] tab:mt-3 tab:text-[1rem] tab:tracking-[-0.025rem] pc:mt-6 pc:text-2xl pc:tracking-[-0.03rem]'>
@@ -50,7 +50,7 @@ const NoErrorsPage = () => {
           <div className='flex justify-center gap-3 pb-10 pt-7 pc:justify-start'>
             <Button
               variant='outline'
-              className='h-14 w-32 border-2 border-[#3046EC] bg-white text-lg text-[#3046EC] hover:text-[#3046EC] pc:h-16 pc:w-[9.5rem] pc:text-[1.375rem]'
+              className='h-14 w-32 border-2 border-[#3046EC] bg-white text-lg text-[#3046EC] hover:text-[#3046EC] dark:bg-dark-surface pc:h-16 pc:w-[9.5rem] pc:text-[1.375rem]'
               onClick={() => router.back()}
             >
               이전 페이지

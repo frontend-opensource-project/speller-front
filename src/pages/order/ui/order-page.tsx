@@ -33,7 +33,7 @@ export const OrderPage = () => {
           </Button>
         </div>
         <div className='mb-2 flex flex-col justify-between gap-2 pc:mb-[2.5rem] pc:flex-row'>
-          <p className='text-base text-slate-400 pc:text-[1.375rem]'>
+          <p className='text-base text-slate-400 dark:text-dark-subtle pc:text-[1.375rem]'>
             바른한글 검사기는 온라인 API와 오프라인 API 2가지 형태로 서비스를
             제공하고 있습니다.
             <br /> 금액이나 관련 문의는 하단의 구매 문의 부분을 참조하여주세요.
@@ -41,9 +41,9 @@ export const OrderPage = () => {
           <a
             href='https://gdurl.com/fAjM'
             download
-            className='inline-flex h-[2.75rem] w-fit items-center gap-2 rounded-full border border-[#ECEDF4] bg-[#FAFAFC] p-2 pr-3 text-slate-400 transition hover:bg-slate-300 hover:text-white'
+            className='inline-flex h-[2.75rem] w-fit items-center gap-2 rounded-full border border-[#ECEDF4] bg-[#FAFAFC] p-2 pr-3 text-slate-400 transition hover:bg-slate-300 hover:text-white dark:border-dark-border dark:bg-dark-elevated dark:text-dark-subtle dark:hover:bg-dark-border'
           >
-            <span className='flex size-[2rem] items-center justify-center rounded-full bg-slate-600'>
+            <span className='flex size-[2rem] items-center justify-center rounded-full bg-slate-600 dark:bg-dark-elevated'>
               <svg
                 width='16'
                 height='16'
@@ -103,11 +103,11 @@ export const OrderPage = () => {
             />
           </SectionPanel>
         </div>
-        <div className='mb-[1.5rem] mt-[0.8rem] flex h-[6.75rem] flex-col items-center justify-center rounded-[0.625rem] bg-slate-600 text-center text-white'>
+        <div className='mb-[1.5rem] mt-[0.8rem] flex h-[6.75rem] flex-col items-center justify-center rounded-[0.625rem] bg-slate-600 text-center text-white dark:bg-dark-elevated'>
           <h3 className='text-xl font-semibold leading-[2.4rem] pc:text-2xl'>
             구매 문의
           </h3>
-          <p className='text-slate-300'>
+          <p className='text-slate-300 dark:text-dark-border'>
             {CONTACT_INFO.email.label}({CONTACT_INFO.email.value})
             <br />
             {CONTACT_INFO.tel.label}({CONTACT_INFO.tel.value})

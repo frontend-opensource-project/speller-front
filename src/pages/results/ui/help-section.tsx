@@ -61,8 +61,8 @@ const HelpSection = ({ help, correctMethod }: HelpSectionProps) => {
       <Button
         variant={null}
         className={cn(
-          'invisible absolute bottom-0 right-0 h-6 gap-1 rounded-none bg-white p-0 text-sm font-normal text-slate-600 underline before:absolute before:bottom-0 before:right-full before:h-full before:w-full before:bg-gradient-to-r before:from-transparent before:to-white before:content-[""] tab:h-7 tab:text-base pc:h-auto',
-          isExpanded && 'text-slate-400',
+          'invisible absolute bottom-0 right-0 h-6 gap-1 rounded-none bg-white p-0 text-sm font-normal text-slate-600 underline before:absolute before:bottom-0 before:right-full before:h-full before:w-full before:bg-gradient-to-r before:from-transparent before:to-white before:content-[""] dark:bg-dark-surface dark:text-dark-text dark:before:to-dark-surface tab:h-7 tab:text-base pc:h-auto',
+          isExpanded && 'text-slate-400 dark:text-dark-subtle',
           showButton && 'visible',
         )}
         onClick={() => {

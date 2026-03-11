@@ -130,7 +130,7 @@ const ActionButton = ({
     variant='ghost'
     aria-label={ariaLabel}
     onClick={onClick}
-    className='size-fit rounded-lg p-1 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-4 focus-visible:ring-offset-white tab:p-2'
+    className='size-fit rounded-lg p-1 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-4 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-surface tab:p-2'
   >
     <div className='flex flex-col items-center justify-center'>
       <div className='relative size-[1.5rem]'>
@@ -142,7 +142,7 @@ const ActionButton = ({
           aria-hidden='true'
         />
       </div>
-      <p className='text-[1rem] font-medium leading-[1.6rem] text-slate-400'>
+      <p className='text-[1rem] font-medium leading-[1.6rem] text-slate-400 dark:text-dark-subtle'>
         {label}
       </p>
     </div>
