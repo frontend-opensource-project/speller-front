@@ -216,7 +216,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
   // 답변 카드 컴포넌트
   const AnswerCard = ({ answer }: { answer: QaBoardAnswer }) => (
     <div
-      className='rounded-lg border-2 border-primary/20 bg-primary/5 p-5 tab:p-6'
+      className='rounded-lg border-2 border-primary/20 bg-primary/5 p-5 dark:border-primary/30 dark:bg-primary/15 tab:p-6'
       style={{ marginLeft: `${Math.min((answer.reLevel - 1) * 20, 60)}px` }}
     >
       <div className='mb-4 flex items-center gap-2'>
@@ -281,7 +281,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
                   className={cn(
                     'shrink-0 rounded-full px-3 py-1 text-xs font-medium',
                     isAnswered
-                      ? 'bg-primary/10 text-primary'
+                      ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300'
                       : 'bg-slate-100 text-slate-600 dark:bg-dark-elevated dark:text-dark-text',
                   )}
                 >

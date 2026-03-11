@@ -31,13 +31,14 @@ export function QaBoardItem({ item }: QaBoardItemProps) {
         {/* 제목과 상태 */}
         <div className='flex items-start justify-between gap-3'>
           <h3 className='text-slate-900 flex-1 text-base font-semibold dark:text-white tab:text-lg'>
-            <span className='text-primary'>[Q]</span> {item.title}
+            <span className='text-primary dark:text-blue-300'>[Q]</span>{' '}
+            {item.title}
           </h3>
           <span
             className={cn(
               'shrink-0 rounded-full px-3 py-1 text-xs font-medium',
               isAnswered
-                ? 'bg-primary/10 text-primary'
+                ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300'
                 : 'bg-slate-100 text-slate-600 dark:bg-dark-elevated dark:text-dark-text',
             )}
           >
@@ -58,7 +59,7 @@ export function QaBoardItem({ item }: QaBoardItemProps) {
           {item.answerCount > 0 && (
             <>
               <span className='text-slate-300 dark:text-dark-border'>|</span>
-              <div className='flex items-center gap-1 text-primary'>
+              <div className='flex items-center gap-1 text-primary dark:text-blue-300'>
                 <MessageCircle className='h-4 w-4' />
                 <span>{item.answerCount}</span>
               </div>

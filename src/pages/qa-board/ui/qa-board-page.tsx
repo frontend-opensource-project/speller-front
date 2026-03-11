@@ -50,8 +50,8 @@ export async function QaBoardPage({ searchParams }: QaBoardPageProps) {
           </div>
 
           {/* 안내문 */}
-          <div className='bg-blue-50 rounded-lg border border-blue-200 p-4 dark:border-blue-500/30 dark:bg-blue-500/10 tab:p-5'>
-            <div className='text-blue-900 flex flex-col gap-2 text-sm leading-relaxed dark:text-blue-300 tab:text-base'>
+          <div className='bg-blue-50 rounded-lg border border-blue-200 p-4 dark:border-blue-400/40 dark:bg-blue-500/20 tab:p-5'>
+            <div className='text-blue-900 flex flex-col gap-2 text-sm leading-relaxed dark:text-blue-200 tab:text-base'>
               <p>
                 <strong className='font-semibold'>
                   &apos;묻고 답하기&apos;에 글을 올리실 때는 실명을 써 주시기
