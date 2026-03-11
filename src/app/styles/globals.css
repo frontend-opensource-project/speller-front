@@ -85,7 +85,7 @@ body {
   .dark .os-theme-custom {
     --os-handle-bg: #575757;
     --os-handle-bg-hover: #878787;
-    --os-handle-bg-active: #A3A3A3;
+    --os-handle-bg-active: #a3a3a3;
   }
 
   * {

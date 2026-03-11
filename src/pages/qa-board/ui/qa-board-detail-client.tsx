@@ -216,12 +216,12 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
   // 답변 카드 컴포넌트
   const AnswerCard = ({ answer }: { answer: QaBoardAnswer }) => (
     <div
-      className='rounded-lg border-2 border-primary/20 bg-primary/5 p-5 dark:border-primary/30 dark:bg-primary/15 tab:p-6'
+      className='rounded-lg border-2 border-primary/20 bg-primary/5 p-5 dark:border-primary/40 dark:bg-primary/20 tab:p-6'
       style={{ marginLeft: `${Math.min((answer.reLevel - 1) * 20, 60)}px` }}
     >
       <div className='mb-4 flex items-center gap-2'>
-        <MessageCircle className='h-5 w-5 text-primary' />
-        <h3 className='text-lg font-bold text-primary'>
+        <MessageCircle className='h-5 w-5 text-primary dark:text-blue-300' />
+        <h3 className='text-lg font-bold text-primary dark:text-blue-300'>
           {answer.reLevel > 1 ? `답변 (Re: ${answer.reLevel - 1})` : '답변'}
         </h3>
       </div>
@@ -233,7 +233,7 @@ export function QaBoardDetailClient({ data }: QaBoardDetailClientProps) {
 
       {/* 답변 메타 정보 */}
       <div className='mb-4 flex items-center gap-2 text-sm text-slate-500 dark:text-dark-text'>
-        <span className='font-medium text-primary'>
+        <span className='font-medium text-primary dark:text-blue-300'>
           {maskName(answer.author)}
         </span>
         <span className='text-slate-300 dark:text-dark-border'>|</span>

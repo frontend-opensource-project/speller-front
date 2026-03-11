@@ -67,7 +67,7 @@ export async function QaBoardPage({ searchParams }: QaBoardPageProps) {
                 그 외에 검사기 기능 자체에 대한 문의는{' '}
                 <Link
                   href='/feedback'
-                  className='font-semibold text-primary underline hover:text-primary/80'
+                  className='font-semibold text-primary underline hover:text-primary/80 dark:text-blue-300 dark:hover:text-blue-200'
                 >
                   &apos;문의하기&apos;
                 </Link>
