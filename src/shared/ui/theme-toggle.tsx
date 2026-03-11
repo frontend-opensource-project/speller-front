@@ -34,14 +34,14 @@ const ThemeToggle = () => {
     <Button
       variant='ghost'
       size='icon'
-      className='size-8 tab:size-9'
+      className='size-8 bg-[#ebebeb] hover:bg-[#dcdcdc] dark:bg-[#525252] dark:hover:bg-[#606060] tab:size-9'
       onClick={toggleTheme}
       aria-label={
         resolvedTheme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'
       }
     >
       {resolvedTheme === 'dark' ? (
-        <Sun className='size-4 tab:size-5' />
+        <Sun className='text-amber-300 size-5 tab:size-6' strokeWidth={2.5} />
       ) : (
         <Moon className='size-4 tab:size-5' />
       )}
