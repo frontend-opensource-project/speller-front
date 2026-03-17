@@ -47,6 +47,11 @@ export default {
       green: {
         100: '#009666',
       },
+      yellow: {
+        400: '#f6e05e',
+        500: '#ecc94b',
+        600: '#d69e2e',
+      },
     },
     extend: {
       colors: {

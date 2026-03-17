@@ -8,6 +8,8 @@ export const getTextMethodColor = (method: CorrectMethod) => {
       return 'text-green-100'
     case CorrectMethodEnum.enum.분석실패:
       return 'text-blue-400'
+    case CorrectMethodEnum.enum.흔한실수:
+      return 'text-yellow-600'
     default:
       return 'text-blue-400'
   }
@@ -21,6 +23,8 @@ export const getBgMethodColor = (method: CorrectMethod) => {
       return 'bg-green-100'
     case CorrectMethodEnum.enum.분석실패:
       return 'bg-blue-400'
+    case CorrectMethodEnum.enum.흔한실수:
+      return 'bg-yellow-600'
     default:
       return 'bg-blue-400'
   }

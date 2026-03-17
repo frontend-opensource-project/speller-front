@@ -26,7 +26,13 @@ export const METHOD = ['button', 'keyboard', 'drag', 'hover'] as const
 // spacing: 띄어쓰기 오류
 // typo: 오탈자 오류
 // context: 문맥상 오류
-const CORRECTED_ERROR_TYPE = ['grammar', 'context', 'fail'] as const
+// common_mistake: 흔한 실수 오류
+const CORRECTED_ERROR_TYPE = [
+  'grammar',
+  'context',
+  'fail',
+  'common_mistake',
+] as const
 export type CorrectedErrorType = (typeof CORRECTED_ERROR_TYPE)[number]
 
 // suggested: 1순위 대치어
