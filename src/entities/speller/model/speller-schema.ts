@@ -4,6 +4,7 @@ export enum CorrectMethod {
   어법 = 1,
   문맥 = 2,
   분석실패 = 3,
+  흔한실수 = 4,
 }
 
 export const CorrectMethodEnum = z.nativeEnum(CorrectMethod)

@@ -73,6 +73,13 @@ const ErrorTrackingSection = () => {
         </span>
         <span className='flex items-center gap-2 tab:text-lg pc:gap-1 pc:@[23.125rem]:gap-2'>
           <BulletBadge
+            method={CorrectMethodEnum.enum.흔한실수}
+            className='tab:size-3'
+          />
+          흔한 실수
+        </span>
+        <span className='flex items-center gap-2 tab:text-lg pc:gap-1 pc:@[23.125rem]:gap-2'>
+          <BulletBadge
             method={CorrectMethodEnum.enum.분석실패}
             className='tab:size-3'
           />
