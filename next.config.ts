@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
   // 1. 동적 basePath 설정
   basePath: basePath,
   assetPrefix: basePath,
+  // 1-1. 클라이언트에서 공용 자산(fetch 등) 경로에 basePath를 붙일 수 있도록 노출
+  //      (next/link·next/image 와 달리 fetch 는 basePath 를 자동으로 붙이지 않음)
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
   // 2. Trailing Slash 리다이렉트 루프 방지
   trailingSlash: true,
   images: {
