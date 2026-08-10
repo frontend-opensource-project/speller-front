@@ -10,9 +10,14 @@ import {
   DialogClose,
 } from '@/shared/ui/dialog'
 import { Checkbox } from '@/shared/ui/checkbox'
+import { Markdown } from '@/shared/ui/markdown'
 import { Notice } from '../model/notice.interface'
 
 const KEY_PREFIX = 'speller-dialog'
+
+// basePath 환경에서도 공용 자산을 올바르게 요청하기 위한 접두어
+// (fetch 는 next/link 와 달리 basePath 를 자동으로 붙이지 않음)
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || ''
 
 export function NoticeDialog() {
   const [notice, setNotice] = useState<Notice | null>(null)
@@ -20,9 +25,12 @@ export function NoticeDialog() {
   const [isChecked, setIsChecked] = useState(false)
 
   useEffect(() => {
-    fetch('/notice/notice.json')
+    fetch(`${BASE_PATH}/notice/notice.json`)
       .then(res => res.json())
       .then(data => setNotice(data))
+      .catch(() => {
+        // 공지 로드 실패 시 팝업을 표시하지 않는다
+      })
   }, [])
 
   useEffect(() => {
@@ -72,12 +80,10 @@ export function NoticeDialog() {
             {notice.title}
           </h2>
         </div>
-        <div className='max-h-[45vh] space-y-2 overflow-y-auto text-base tab:max-h-[55vh] tab:text-lg pc:max-h-[60vh] pc:text-xl'>
-          {Array.isArray(notice.contents)
-            ? notice.contents.map((line: string, idx: number) => (
-                <p key={idx}>{line}</p>
-              ))
-            : null}
+        <div className='max-h-[45vh] overflow-y-auto tab:max-h-[55vh] pc:max-h-[60vh]'>
+          <Markdown className='pc:text-xl' newTab>
+            {notice.contents}
+          </Markdown>
         </div>
         <DialogFooter className='-mx-4 -mb-[1.125rem] rounded-b-xl bg-slate-200 p-4 tab:-mx-[1.125rem] tab:-mb-[1.375rem] tab:rounded-b-2xl pc:-mx-[1.5rem] pc:-mb-[1.625rem] pc:rounded-b-[1.25rem] pc:p-[1.125rem]'>
           <div className='flex items-center justify-between'>
