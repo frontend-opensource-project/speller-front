@@ -2,6 +2,13 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
+/**
+ * 전면광고(인터스티셜) 슬롯 ID
+ * ID 기반으로 동작하지만, 기존 배너와 달리 registerPassback / rerun 대상이 아니며
+ * 첫 접속 시 applyPassback만 1회 호출합니다.
+ */
+export const INTERSTITIAL_ID = '1661649_nara-speller.co.kr_interstitial'
+
 // Geniee SSP 광고 ID 상수 (guide에서 제공된 ads.ts 패턴 따름)
 export const ads = {
   overlay: '1597526_nara-speller.co.kr_overlay',
@@ -216,6 +223,48 @@ export const reloadAd = (slotId: string) => {
     const passbackQuery = `[data-cptid='${slotId}']`
     window.gnshbrequest.applyPassback(slotId, passbackQuery)
   })
+}
+
+/**
+ * ✅ 전면광고(인터스티셜) 렌더링 훅
+ *
+ * Geniee 제공 스니펫과 동일한 동작을 React 라이프사이클에 맞춰 옮긴 것:
+ * ① wrapper.min.js 는 app/index.tsx <head> 에서 이미 로드되므로 중복 로드 분기는 생략
+ * ② data-cptid 컨테이너를 document.body 최상단에 직접 생성 (전면광고이므로 레이아웃 영향 없는 위치)
+ * ③ gnshbrequest.cmd 큐에 applyPassback push
+ *
+ * 첫 접속 시 1회만 송출하는 포맷이므로 라우팅 변경에 따른 재호출은 하지 않습니다.
+ * (사용자별 24시간 1회 제한은 광고 플랫폼에서 처리)
+ */
+export const useRenderGenieeInterstitial = (isInitialized: boolean) => {
+  const processedRef = useRef(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (!isInitialized) return
+    if (processedRef.current) return // 세션 내 1회만 호출
+
+    processedRef.current = true
+
+    // ② 전면광고 컨테이너 생성
+    const container = document.createElement('div')
+    container.setAttribute('data-cptid', INTERSTITIAL_ID)
+    document.body.appendChild(container)
+
+    // ③ applyPassback 예약
+    window.gnshbrequest = window.gnshbrequest || { cmd: [] }
+    window.gnshbrequest.cmd.push(() => {
+      console.log('[Geniee] Executing applyPassback for interstitial.')
+      window.gnshbrequest.applyPassback(
+        INTERSTITIAL_ID,
+        `[data-cptid='${INTERSTITIAL_ID}']`,
+      )
+    })
+
+    return () => {
+      container.remove()
+    }
+  }, [isInitialized])
 }
 
 /**

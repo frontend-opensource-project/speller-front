@@ -6,6 +6,7 @@ import localFont from 'next/font/local'
 import { Toaster } from '@/shared/ui/toaster'
 import { GoogleAnalyticsScript } from '@/shared/lib/google-analytics-script'
 import { GenieeProvider } from '@/shared/ui/geniee-provider'
+import { InterstitialGeniee } from '@/shared/ui/interstitial-geniee'
 import { ThemeProvider } from '@/shared/ui/theme-provider'
 
 const pretendard = localFont({
@@ -53,6 +54,7 @@ const App = ({
         <ThemeProvider>
           <GenieeProvider>
             {children}
+            <InterstitialGeniee />
             <Toaster />
             <GoogleAnalyticsScript />
           </GenieeProvider>
