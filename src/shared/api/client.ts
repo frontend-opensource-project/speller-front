@@ -42,7 +42,7 @@ export class Client {
     config?: AxiosRequestConfig,
   ): Promise<R> {
     const response = await this.#axiosInstance.get<T, R>(url, config)
-    return response
+    return response as R
   }
 
   async post<T = unknown, R = AxiosResponse<T>, D = unknown>(
@@ -51,6 +51,6 @@ export class Client {
     config?: AxiosRequestConfig<D>,
   ): Promise<R> {
     const response = await this.#axiosInstance.post<T, R, D>(url, data, config)
-    return response
+    return response as R
   }
 }

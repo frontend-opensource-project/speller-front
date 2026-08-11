@@ -4,6 +4,9 @@ const basePath = process.env.NEXT_BASE_PATH || ''
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
+  // 0. 워크스페이스 루트를 이 프로젝트로 고정
+  //    (상위 디렉토리의 엉뚱한 lockfile로 인한 루트 오추론/경고 방지)
+  outputFileTracingRoot: __dirname,
   // 1. 동적 basePath 설정
   basePath: basePath,
   assetPrefix: basePath,
