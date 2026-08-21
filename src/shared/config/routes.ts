@@ -84,10 +84,15 @@ export const ROUTES = {
   adsTest: { path: '/ads-test', index: false },
 } as const satisfies Record<string, SiteRoute>
 
-/** 동적 경로의 부모 (사이트맵은 `app/sitemap.ts` 에서 개별 URL 을 만들어 붙인다) */
+/**
+ * 동적 경로의 부모.
+ *
+ * @description
+ * 공지 상세만 색인 대상이며, 사이트맵은 `app/sitemap.ts` 에서 개별 URL 을 만들어 붙인다.
+ * 묻고 답하기 상세(`/qa-board/[id]`)는 글마다 메타데이터가 같아 noindex 이므로 여기 없다.
+ */
 export const DYNAMIC_ROUTE_PREFIX = {
   notice: '/notice',
-  qaBoardDetail: '/qa-board',
 } as const
 
 /**

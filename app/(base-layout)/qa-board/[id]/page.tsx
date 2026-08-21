@@ -1,12 +1,21 @@
 import type { Metadata } from 'next'
-import {
-  DYNAMIC_ROUTE_PREFIX,
-  ROUTES,
-  SITE_SHORT_NAME,
-  dynamicSeoMetadata,
-} from '@/shared/config'
-import { BreadcrumbJsonLd } from '@/shared/ui/json-ld'
 import { QaBoardDetailPage } from '@/pages/qa-board'
+
+/**
+ * 이용자 지원 창구라 검색 색인 대상이 아니다.
+ *
+ * @description
+ * 글마다 title·description·h1 이 모두 같아서, 색인되면 검색 결과에서 서로는 물론
+ * 다른 페이지와도 구분되지 않는다. 사이트맵에도 넣지 않는다.
+ * 색인이 필요해지면 먼저 글 제목을 title 에 반영해야 한다.
+ */
+export const metadata: Metadata = {
+  title: '묻고 답하기',
+  robots: {
+    index: false,
+    follow: true,
+  },
+}
 
 interface PageProps {
   params: Promise<{
@@ -14,35 +23,7 @@ interface PageProps {
   }>
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const { id } = await params
-
-  return {
-    title: '묻고 답하기',
-    ...dynamicSeoMetadata({
-      path: `${DYNAMIC_ROUTE_PREFIX.qaBoardDetail}/${id}`,
-    }),
-  }
-}
-
 export default async function Page({ params }: PageProps) {
   const resolvedParams = await params
-
-  return (
-    <>
-      <BreadcrumbJsonLd
-        items={[
-          { name: SITE_SHORT_NAME, path: ROUTES.speller.path },
-          { name: '묻고 답하기', path: ROUTES.qaBoard.path },
-          {
-            name: `${resolvedParams.id}번 글`,
-            path: `${DYNAMIC_ROUTE_PREFIX.qaBoardDetail}/${resolvedParams.id}`,
-          },
-        ]}
-      />
-      <QaBoardDetailPage params={resolvedParams} />
-    </>
-  )
+  return <QaBoardDetailPage params={resolvedParams} />
 }
