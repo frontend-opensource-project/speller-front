@@ -148,6 +148,8 @@ const SpellerPage = () => {
     <>
       <form action={handleSpellCheck} className='flex-1'>
         <ContentLayout className='min-h-[35.75rem] pb-4 pc:pb-5'>
+          {/* 화면에는 로고가 제목 역할을 하므로, 문서 구조상의 제목만 따로 둔다 */}
+          <h1 className='sr-only'>바른한글 - 한국어 맞춤법·문법 검사기</h1>
           {/* 강한 검사 및 버전*/}
           <div className='mb-2 mt-[0.94rem] flex min-h-[1.625rem] items-center justify-between tab:mt-[1.75rem] pc:mb-[0.78rem] pc:mt-[1.97rem] pc:min-h-8'>
             <VersionInfo />

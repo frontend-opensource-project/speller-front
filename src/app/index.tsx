@@ -8,6 +8,7 @@ import { GoogleAnalyticsScript } from '@/shared/lib/google-analytics-script'
 import { GenieeProvider } from '@/shared/ui/geniee-provider'
 import { InterstitialGeniee } from '@/shared/ui/interstitial-geniee'
 import { ThemeProvider } from '@/shared/ui/theme-provider'
+import { WebSiteJsonLd } from '@/shared/ui/json-ld'
 
 const pretendard = localFont({
   src: './font/pretendard-variable.woff2',
@@ -28,6 +29,7 @@ const App = ({
       suppressHydrationWarning
     >
       <head>
+        <WebSiteJsonLd />
         {/* Geniee Wrapper Head Tag */}
         <script
           dangerouslySetInnerHTML={{

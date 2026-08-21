@@ -3,7 +3,7 @@ const AccessDeniedMessage = () => (
     <div className='text-lg tab:text-xl pc:text-2xl'>
       <div className='text-center font-bold'>
         <h1>ACCESS DENIED</h1>
-        <h1>현재 접속이 제한된 IP 주소입니다.</h1>
+        <p>현재 접속이 제한된 IP 주소입니다.</p>
       </div>
       <br />
       <p>바른한글은 상용 프로그램입니다.</p>
