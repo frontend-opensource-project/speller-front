@@ -24,22 +24,22 @@ const Header = () => {
       <header className='flex flex-1 items-center justify-between p-[1rem_1.5rem] pc-lg:container tab:p-[1.25rem_3.75rem] pc:w-full pc:p-[1rem_1.875rem] pc-lg:p-[1.25rem_2rem]'>
         <div className='flex items-center gap-5'>
           <Link href='/speller'>
-            <h1 className='text-xl font-bold tab:text-2xl'>
+            <div className='text-xl font-bold tab:text-2xl'>
               <div className='relative h-[1.375rem] w-[5.625rem] tab:h-[1.6875rem] tab:w-[7.1875rem] pc:h-[1.6875rem] pc:w-[7.5rem]'>
                 <Image
                   src='/logo.svg'
-                  alt='바른한글 로고 (구 한국어 맞춤법/문법 검사기, 부산대 맞춤법/문법 검사기, 부산대학교, ㈜나라인포테크, 우리말 배움터 스펠러, Korean speller, spelling checker)'
+                  alt='바른한글 로고'
                   fill
                   className='object-contain dark:hidden'
                 />
                 <Image
                   src='/logo-dark.svg'
-                  alt='바른한글 로고 (구 한국어 맞춤법/문법 검사기, 부산대 맞춤법/문법 검사기, 부산대학교, ㈜나라인포테크, 우리말 배움터 스펠러, Korean speller, spelling checker)'
+                  alt='바른한글 로고'
                   fill
                   className='hidden object-contain dark:block'
                 />
               </div>
-            </h1>
+            </div>
           </Link>
         </div>
         <div className='hidden items-center gap-4 pc:flex'>

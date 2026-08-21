@@ -23,7 +23,6 @@
 /ecosystem.config.js
 /public/ads.txt
 /public/robots.txt
-/public/sitemap.xml
 
 # misc
 .DS_Store

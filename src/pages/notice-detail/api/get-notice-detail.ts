@@ -1,5 +1,5 @@
 import 'server-only'
-import { readFile } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import {
   noticeDetailSchema,
@@ -29,5 +29,27 @@ export async function getNoticeDetail(
     return parsed.success ? parsed.data : null
   } catch {
     return null
+  }
+}
+
+/**
+ * public/notice/details/ 의 모든 공지 상세를 날짜 최신순으로 반환한다.
+ * 사이트맵 생성처럼 전체 목록이 필요한 곳에서 쓴다.
+ */
+export async function getNoticeDetails(): Promise<NoticeDetail[]> {
+  try {
+    const dir = path.join(process.cwd(), 'public', 'notice', 'details')
+    const files = await readdir(dir)
+    const ids = files
+      .filter(file => file.endsWith('.json'))
+      .map(file => file.replace(/\.json$/, ''))
+
+    const details = await Promise.all(ids.map(getNoticeDetail))
+
+    return details
+      .filter((detail): detail is NoticeDetail => detail !== null)
+      .sort((a, b) => b.date.localeCompare(a.date))
+  } catch {
+    return []
   }
 }

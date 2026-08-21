@@ -17,6 +17,25 @@ const nextConfig: NextConfig = {
   },
   // 2. Trailing Slash 리다이렉트 루프 방지
   trailingSlash: true,
+  // 3. 스테이징 배포본(basePath 가 붙는 환경)은 검색 색인에서 제외한다.
+  //    운영과 같은 도메인을 쓰기 때문에, 막지 않으면 중복 콘텐츠가 된다.
+  //    robots.txt 로 크롤링을 막으면 이 헤더를 읽지 못해 URL 만 색인에 남을 수 있으므로,
+  //    크롤링은 열어 두고 헤더로 색인만 막는다.
+  async headers() {
+    if (!basePath) return []
+
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, nofollow',
+          },
+        ],
+      },
+    ]
+  },
   images: {
     // 👇 basePath 값이 있으면(true) 최적화를 끄고, 없으면(false) 켭니다.
     unoptimized: !!basePath,
