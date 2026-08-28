@@ -82,6 +82,8 @@ export const ROUTES = {
   timeout: { path: '/timeout', index: false },
   invalidAccess: { path: '/invalid-access', index: false },
   adsTest: { path: '/ads-test', index: false },
+  /** Cloudflare 속도 제한에 걸린 방문자에게 보여 주는 안내 페이지 */
+  rateLimit: { path: '/rate-limit', index: false },
 } as const satisfies Record<string, SiteRoute>
 
 /**
