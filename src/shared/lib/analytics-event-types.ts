@@ -14,6 +14,8 @@ export const GA_ACTIONS = {
   CORRECTION_FEEDBACK_SUBMITTED: 'correction_feedback_submitted',
   PREVIOUS_VERSION_CLICKED: 'previous_version_clicked',
   BUTTON_CLICKED: 'button_clicked',
+  APP_INSTALL_CLICKED: 'app_install_clicked',
+  APP_INSTALL_PROMPT_RESULT: 'app_install_prompt_result',
 } as const
 
 export const GA_EVENT_TYPE = {
@@ -59,6 +61,18 @@ export const BUTTON_TYPE = [
   'all_copy',
 ] as const
 export type ButtonType = (typeof BUTTON_TYPE)[number]
+
+/**
+ * 설치 버튼을 누른 환경.
+ * prompt: 브라우저 설치 창, ios: 홈 화면 추가 안내, macos_safari: Dock 추가 안내, in_app: 외부 브라우저 안내
+ */
+export const INSTALL_PLATFORM = [
+  'prompt',
+  'ios',
+  'macos_safari',
+  'in_app',
+] as const
+export type InstallPlatform = (typeof INSTALL_PLATFORM)[number]
 
 export const CheckTriggeredSchema = z.object({
   original_text_length: z.number(),
@@ -147,6 +161,14 @@ export const ButtonClickedSchema = z.object({
   button_type: z.enum(BUTTON_TYPE),
 })
 
+export const AppInstallClickedSchema = z.object({
+  platform: z.enum(INSTALL_PLATFORM),
+})
+
+export const AppInstallPromptResultSchema = z.object({
+  outcome: z.enum(['accepted', 'dismissed']),
+})
+
 export type CheckTriggeredParams = z.infer<typeof CheckTriggeredSchema>
 export type CheckCompletedParams = z.infer<typeof CheckCompletedSchema>
 export type CheckResultNoErrorParams = z.infer<typeof CheckResultNoErrorSchema>
@@ -174,6 +196,10 @@ export type PreviousVersionClickedParams = z.infer<
   typeof PreviousVersionClickedSchema
 >
 export type ButtonClickedParams = z.infer<typeof ButtonClickedSchema>
+export type AppInstallClickedParams = z.infer<typeof AppInstallClickedSchema>
+export type AppInstallPromptResultParams = z.infer<
+  typeof AppInstallPromptResultSchema
+>
 
 type GAEventMap = {
   checkTriggered: z.infer<typeof CheckTriggeredSchema>
@@ -189,6 +215,8 @@ type GAEventMap = {
   correctionFeedbackSubmitted: z.infer<typeof CorrectionFeedbackSubmittedSchema>
   previousVersionClicked: z.infer<typeof PreviousVersionClickedSchema>
   buttonClicked: z.infer<typeof ButtonClickedSchema>
+  appInstallClicked: z.infer<typeof AppInstallClickedSchema>
+  appInstallPromptResult: z.infer<typeof AppInstallPromptResultSchema>
 }
 
 export type GAEventTrackerMap = {
