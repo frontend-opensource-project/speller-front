@@ -6,6 +6,7 @@ import { Button } from './button'
 import { Popover, PopoverContent, PopoverTrigger } from './popover'
 import { sendPreviousVersionClickedEvent } from '../lib/send-ga-event'
 import { ThemeToggle } from './theme-toggle'
+import { InstallAppButton } from './install-app-button'
 
 const Header = () => {
   const handlePreviousVersionClick = (
@@ -22,7 +23,7 @@ const Header = () => {
   return (
     <div className='flex items-center justify-center bg-white dark:bg-dark-surface'>
       <header className='flex flex-1 items-center justify-between p-[1rem_1.5rem] pc-lg:container tab:p-[1.25rem_3.75rem] pc:w-full pc:p-[1rem_1.875rem] pc-lg:p-[1.25rem_2rem]'>
-        <div className='flex items-center gap-5'>
+        <div className='flex items-center gap-3 tab:gap-4 pc:gap-5'>
           <Link href='/speller'>
             <div className='text-xl font-bold tab:text-2xl'>
               <div className='relative h-[1.375rem] w-[5.625rem] tab:h-[1.6875rem] tab:w-[7.1875rem] pc:h-[1.6875rem] pc:w-[7.5rem]'>
@@ -41,6 +42,7 @@ const Header = () => {
               </div>
             </div>
           </Link>
+          <InstallAppButton />
         </div>
         <div className='hidden items-center gap-4 pc:flex'>
           <Link href='/speller' className={classes.linkButton}>

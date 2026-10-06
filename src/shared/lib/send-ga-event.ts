@@ -21,6 +21,9 @@ import {
   PreviousVersionClickedParams,
   ButtonClickedParams,
   ButtonType,
+  AppInstallClickedParams,
+  AppInstallPromptResultParams,
+  InstallPlatform,
 } from './analytics-event-types'
 
 type Event = (typeof GA_EVENT_TYPE)[keyof typeof GA_EVENT_TYPE]
@@ -99,6 +102,14 @@ const GAEvents: GAEventTrackerMap = {
   buttonClicked: createTracker<ButtonClickedParams>(
     GA_EVENT_TYPE.EVENT,
     GA_ACTIONS.BUTTON_CLICKED,
+  ),
+  appInstallClicked: createTracker<AppInstallClickedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.APP_INSTALL_CLICKED,
+  ),
+  appInstallPromptResult: createTracker<AppInstallPromptResultParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.APP_INSTALL_PROMPT_RESULT,
   ),
 }
 
@@ -414,4 +425,22 @@ export const sendButtonClickedEvent = ({
     method: 'button',
     button_type: buttonType,
   })
+}
+
+/**
+ * 헤더의 앱 설치 버튼 클릭 시 GA 이벤트를 전송합니다.
+ * @param platform 버튼을 누른 환경
+ */
+export const sendAppInstallClickedEvent = (platform: InstallPlatform) => {
+  GAEvents.appInstallClicked({ platform })
+}
+
+/**
+ * 브라우저 설치 창에서 사용자가 고른 결과를 GA 이벤트로 전송합니다.
+ * @param outcome 설치(accepted) 또는 취소(dismissed)
+ */
+export const sendAppInstallPromptResultEvent = (
+  outcome: AppInstallPromptResultParams['outcome'],
+) => {
+  GAEvents.appInstallPromptResult({ outcome })
 }

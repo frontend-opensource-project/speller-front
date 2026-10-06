@@ -22,9 +22,22 @@ const nextConfig: NextConfig = {
   //    robots.txt 로 크롤링을 막으면 이 헤더를 읽지 못해 URL 만 색인에 남을 수 있으므로,
   //    크롤링은 열어 두고 헤더로 색인만 막는다.
   async headers() {
-    if (!basePath) return []
+    // 4. 서비스 워커 스크립트는 캐시하지 않는다.
+    //    CDN·브라우저 캐시에 옛 버전이 남으면 새 워커 배포가 늦게 반영된다.
+    const serviceWorkerHeaders = {
+      source: '/sw.js',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'no-cache, no-store, must-revalidate',
+        },
+      ],
+    }
+
+    if (!basePath) return [serviceWorkerHeaders]
 
     return [
+      serviceWorkerHeaders,
       {
         source: '/:path*',
         headers: [

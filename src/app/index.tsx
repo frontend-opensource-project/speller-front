@@ -5,10 +5,12 @@ import localFont from 'next/font/local'
 
 import { Toaster } from '@/shared/ui/toaster'
 import { GoogleAnalyticsScript } from '@/shared/lib/google-analytics-script'
+import { ServiceWorkerRegistration } from '@/shared/lib/service-worker-registration'
 import { GenieeProvider } from '@/shared/ui/geniee-provider'
 import { InterstitialGeniee } from '@/shared/ui/interstitial-geniee'
 import { ThemeProvider } from '@/shared/ui/theme-provider'
 import { WebSiteJsonLd } from '@/shared/ui/json-ld'
+import { INSTALL_PROMPT_CAPTURE_SCRIPT } from '@/shared/lib/install-prompt-script'
 
 const pretendard = localFont({
   src: './font/pretendard-variable.woff2',
@@ -30,6 +32,10 @@ const App = ({
     >
       <head>
         <WebSiteJsonLd />
+        {/* 앱 설치 이벤트는 hydration 전에 올 수 있어 가장 먼저 붙잡아 둔다 */}
+        <script
+          dangerouslySetInnerHTML={{ __html: INSTALL_PROMPT_CAPTURE_SCRIPT }}
+        />
         {/* Geniee Wrapper Head Tag */}
         <script
           dangerouslySetInnerHTML={{
@@ -59,6 +65,7 @@ const App = ({
             <InterstitialGeniee />
             <Toaster />
             <GoogleAnalyticsScript />
+            <ServiceWorkerRegistration />
           </GenieeProvider>
         </ThemeProvider>
       </body>

@@ -1,0 +1,139 @@
+<!doctype html>
+<!--
+  서비스 워커(sw.js)가 미리 받아 두었다가, 네트워크 오류로 페이지를 열지 못할 때 대신 보여 주는 안내 화면.
+  오프라인에서 열리므로 Next 의 JS/CSS 청크나 폰트에 기대지 않고 이 파일 하나로 완결되어야 한다.
+-->
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>인터넷에 연결되어 있지 않습니다 - 바른한글</title>
+    <script>
+      // next-themes 가 저장한 테마 선택을 따른다. (없거나 'system' 이면 기기 설정)
+      try {
+        var theme = localStorage.getItem('theme')
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.dataset.theme = theme
+        }
+      } catch (e) {}
+    </script>
+    <style>
+      :root {
+        --bg: #f3f4f9;
+        --surface: #ffffff;
+        --title: #475569;
+        --body: #64748b;
+        --primary: #3046ec;
+        --primary-soft: rgba(48, 70, 236, 0.1);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --bg: #2b2b2b;
+          --surface: #363636;
+          --title: #a3a3a3;
+          --body: #878787;
+        }
+      }
+      :root[data-theme='dark'] {
+        --bg: #2b2b2b;
+        --surface: #363636;
+        --title: #a3a3a3;
+        --body: #878787;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px;
+        background: var(--bg);
+        font-family:
+          'Pretendard Variable',
+          Pretendard,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Apple SD Gothic Neo',
+          'Noto Sans KR',
+          'Malgun Gothic',
+          sans-serif;
+        word-break: keep-all;
+        -webkit-font-smoothing: antialiased;
+      }
+      main {
+        width: 100%;
+        max-width: 32rem;
+        padding: 40px 24px 32px;
+        border-radius: 16px;
+        background: var(--surface);
+        text-align: center;
+      }
+      .logo {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 24px;
+      }
+      h1 {
+        margin: 0;
+        color: var(--title);
+        font-size: 1.5rem;
+        font-weight: 600;
+        line-height: 1.4;
+        letter-spacing: -0.03rem;
+      }
+      p {
+        margin: 12px 0 0;
+        color: var(--body);
+        line-height: 1.7;
+      }
+      button {
+        margin-top: 28px;
+        padding: 12px 28px;
+        border: 0;
+        border-radius: 999px;
+        background: var(--primary);
+        color: #fff;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 3px solid var(--primary-soft);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg
+        class="logo"
+        viewBox="0 0 34 34"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <rect width="34" height="34" rx="5.03704" fill="#292933" />
+        <path
+          d="M13.3516 27.4629H8.53906V6.53906H13.3516V27.4629ZM21.6006 16.9336C22.4421 16.9337 23.2091 17.4169 23.5732 18.1748L27.9707 27.3291H23.2578C23.1968 27.3291 23.1404 27.2943 23.1143 27.2402L18.1621 16.9355V16.9336H21.6006ZM18.1689 16.9326H14.7217C14.0877 16.9324 13.673 16.2725 13.9463 15.7012L18.3477 6.53906H23.1602L18.1689 16.9326Z"
+          fill="white"
+        />
+      </svg>
+      <h1>인터넷에 연결되어 있지 않습니다.</h1>
+      <p>
+        바른한글의 맞춤법 검사는 서버에서 이루어지기 때문에 인터넷 연결이
+        필요합니다. 연결 상태를 확인한 뒤 다시 시도해 주세요.
+      </p>
+      <button type="button" onclick="location.reload()">다시 시도</button>
+    </main>
+    <script>
+      // 연결이 돌아오면 원래 열려던 페이지를 다시 불러온다.
+      window.addEventListener('online', function () {
+        location.reload()
+      })
+    </script>
+  </body>
+</html>
