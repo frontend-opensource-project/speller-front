@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
   },
   // 2. Trailing Slash 리다이렉트 루프 방지
   trailingSlash: true,
+  // 2-1. 메타데이터 스트리밍을 끄고 모든 요청에서 메타데이터를 <head> 에 넣는다.
+  //      스트리밍하면 <head> 를 보낼 때 메타데이터가 준비되지 않은 경우 <link rel="manifest"> 등이
+  //      <body> 로 따로 전송되는데, Chrome·Edge 는 <head> 밖의 manifest 를 무시해 앱 설치가 막힌다.
+  htmlLimitedBots: /.*/,
   // 3. 스테이징 배포본(basePath 가 붙는 환경)은 검색 색인에서 제외한다.
   //    운영과 같은 도메인을 쓰기 때문에, 막지 않으면 중복 콘텐츠가 된다.
   //    robots.txt 로 크롤링을 막으면 이 헤더를 읽지 못해 URL 만 색인에 남을 수 있으므로,
