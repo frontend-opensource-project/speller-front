@@ -70,7 +70,7 @@ const InstallAppButton = () => {
     <>
       <Button
         variant='ghost'
-        className='size-8 bg-[#ebebeb] p-0 hover:bg-[#dcdcdc] dark:bg-[#525252] dark:hover:bg-[#606060] tab:size-9 pc:h-9 pc:w-auto pc:gap-1.5 pc:rounded-full pc:px-3.5 pc:font-semibold pc:text-slate-600 pc:dark:text-dark-text'
+        className='size-8 bg-primary/10 p-0 text-primary ring-1 ring-inset ring-primary/25 hover:bg-primary/15 hover:text-primary dark:bg-primary/20 dark:text-blue-100 dark:ring-blue-300/40 dark:hover:bg-primary/30 dark:hover:text-blue-100 tab:size-9 pc:h-9 pc:w-auto pc:gap-1.5 pc:rounded-full pc:px-3.5 pc:font-semibold'
         onClick={handleClick}
         aria-label='앱 설치'
       >
