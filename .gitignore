@@ -27,7 +27,6 @@
 # misc
 .DS_Store
 *.pem
-/.nvmrc
 
 # debug
 npm-debug.log*

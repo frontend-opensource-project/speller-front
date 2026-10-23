@@ -12,9 +12,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-NODE_VERSION=$(node -v)
-NPM_VERSION=$(npm -v)
-
 if [[ "$ENVIRONMENT" == "production" ]]; then
   BRANCH="main"
   APP_PORT="4000"
@@ -54,7 +51,6 @@ log() {
 
 log "${ENVIRONMENT^} deployment started: ${TIMESTAMP}"
 log "Using configuration: Branch=${BRANCH}, Port=${APP_PORT}, PM2=${PM2_NAME}"
-log "Node version: ${NODE_VERSION}, NPM version: ${NPM_VERSION}"
 
 # Change to project directory
 log "Changing to project directory: ${BASE_DIR}"
@@ -74,6 +70,21 @@ log_cmd "git reset --hard origin/${BRANCH}"
 
 log "Cleaning untracked files and directories"
 log_cmd "git clean -fdx --exclude=.env.*"
+
+# Switch to the Node version pinned in .nvmrc
+# (nvm use must run in this shell, so it is not wrapped with log_cmd)
+PM2_VERSION=$(pm2 -v 2>/dev/null | tail -1)
+log "Switching to Node $(cat .nvmrc) from .nvmrc"
+log_cmd "nvm install"
+nvm use > /dev/null
+
+# pm2 is a global package, so each Node version needs its own install
+if ! command -v pm2 > /dev/null; then
+  log "Installing pm2@${PM2_VERSION:-latest} for Node $(node -v)"
+  log_cmd "npm install -g pm2@${PM2_VERSION:-latest}"
+fi
+
+log "Node version: $(node -v), NPM version: $(npm -v)"
 
 # Check environment variables
 if [ ! -f ${ENV_FILE} ]; then
@@ -95,15 +106,40 @@ log_cmd "npm run build"
 
 # Start or restart with PM2
 log "Starting/restarting application with PM2"
-if pm2 list | grep -q "${PM2_NAME}"; then
+# npm path the existing process was registered with (empty if not registered).
+# pm2 restart keeps this path, so the Node version only changes by re-registering.
+PM2_EXEC_PATH=$(pm2 jlist 2>/dev/null | node -e '
+  let s = ""
+  process.stdin.on("data", d => (s += d)).on("end", () => {
+    try {
+      const app = JSON.parse(s.slice(s.indexOf("["))).find(p => p.name === process.argv[1])
+      console.log(app ? app.pm2_env.pm_exec_path : "")
+    } catch {
+      console.log("")
+    }
+  })' "${PM2_NAME}")
+
+if [[ -z "${PM2_EXEC_PATH}" ]]; then
+  log "Starting new PM2 process"
+  log_cmd "pm2 start npm --name '${PM2_NAME}' -- run start -- -p ${APP_PORT}"
+elif [[ "${PM2_EXEC_PATH}" != "$(command -v npm)" ]]; then
+  log "Node version changed (${PM2_EXEC_PATH} -> $(command -v npm)), re-registering PM2 process"
+  log_cmd "pm2 delete ${PM2_NAME}"
+  log_cmd "pm2 start npm --name '${PM2_NAME}' -- run start -- -p ${APP_PORT}"
+else
   log "Restarting existing PM2 process"
   log_cmd "pm2 restart ${PM2_NAME} --update-env" || {
     log "WARNING: PM2 restart failed, attempting to start new process"
     log_cmd "pm2 start npm --name '${PM2_NAME}' -- run start -- -p ${APP_PORT}"
   }
-else
-  log "Starting new PM2 process"
-  log_cmd "pm2 start npm --name '${PM2_NAME}' -- run start -- -p ${APP_PORT}"
+fi
+log_cmd "pm2 save"
+
+# The PM2 daemon keeps running on the Node it was started with.
+# pm2 update restarts every app on the server, so it is left as a manual step.
+PM2_DAEMON_NODE=$(readlink "/proc/$(cat "$HOME/.pm2/pm2.pid" 2>/dev/null)/exe" 2>/dev/null || true)
+if [[ -n "${PM2_DAEMON_NODE}" && "${PM2_DAEMON_NODE}" != "$(command -v node)" ]]; then
+  log "WARNING: PM2 daemon runs on ${PM2_DAEMON_NODE}. Run 'pm2 update' to move it to $(command -v node)"
 fi
 
 log "${ENVIRONMENT^} deployment completed: $(date +"%Y-%m-%d %H:%M:%S")"
