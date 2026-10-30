@@ -4,6 +4,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { CheckResponse, CorrectInfo } from './speller-schema'
 import { applyCorrections } from '../lib/apply-corrections'
+import { normalizeLineBreaks } from '../lib/normalize-line-breaks'
 
 type Response = CheckResponse & {
   requestedWithStrictMode: boolean // 강한 검사 모드 여부
@@ -51,7 +52,8 @@ const spellerSlice = createSlice({
   initialState,
   reducers: {
     setOriginalText: (state, action: PayloadAction<string>) => {
-      state.originalText = action.payload
+      // 검사 요청에 보내는 텍스트와 같은 형태로 저장해야 페이지 위치 계산이 맞는다
+      state.originalText = normalizeLineBreaks(action.payload)
     },
     setResponse: (state, action: PayloadAction<Response>) => {
       state.displayText = action.payload.str

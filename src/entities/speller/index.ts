@@ -1,4 +1,12 @@
 export { SpellerApi } from './api/speller-service'
+export {
+  checkText,
+  CHECK_ERROR_MESSAGE,
+  type CheckError,
+  type CheckErrorKind,
+  type CheckTextResult,
+} from './api/check-text'
+export { normalizeLineBreaks } from './lib/normalize-line-breaks'
 export { getTextMethodColor, getBgMethodColor } from './lib/get-method-color'
 export { parseCandidateWords } from './lib/parse-candidate-words'
 export type {

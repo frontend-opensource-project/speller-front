@@ -1,10 +1,16 @@
 'use client'
 
-import { z } from 'zod'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 import { useKeyCombination } from '@frontend-opensource/use-react-hooks'
-import { useSpeller, SpellerSetting, CheckPayload } from '@/entities/speller'
+import {
+  useSpeller,
+  SpellerSetting,
+  CheckPayload,
+  checkText,
+  CHECK_ERROR_MESSAGE,
+  type CheckTextResult,
+} from '@/entities/speller'
 import { ContentLayout } from '@/shared/ui/content-layout'
 import {
   sendCheckCompletedEvent,
@@ -12,16 +18,18 @@ import {
   sendCheckResultResponseErrorEvent,
   sendCheckResultResponseUnknownEvent,
 } from '@/shared/lib/send-ga-event'
-import { spellCheckAction } from '../api/spell-check-action'
-import { TIMEOUT_ERROR_CODE } from '../model/error-code'
-import { spellCheckSchema } from '../model/spell-check-schema'
+import { toast } from '@/shared/lib/use-toast'
 import { SpellerTextInput } from './speller-text-input'
 import { ResultsSkeleton } from './results-skeleton'
 import { SpellerControl } from './speller-control'
 import { VersionInfo } from './version-info'
-
-export type SpellCheckResponse = z.infer<typeof spellCheckSchema>
 import { NoticeDialog } from './notice-dialog'
+
+interface CheckState {
+  result: CheckTextResult
+  isStrictCheck: boolean
+  textLength: number
+}
 
 const SpellerPage = () => {
   const router = useRouter()
@@ -34,11 +42,7 @@ const SpellerPage = () => {
     initDisplayTextMap,
   } = useSpeller()
   const [isPending, startTransition] = useTransition()
-  const [serverState, setServerState] = useState<SpellCheckResponse>({
-    data: null,
-    error: null,
-    elapsedTimeMs: 0,
-  })
+  const [checkState, setCheckState] = useState<CheckState | null>(null)
   const [isRedirectingToResult, setIsRedirectingToResult] = useState(false)
 
   const handleSpellCheck = () => {
@@ -47,8 +51,12 @@ const SpellerPage = () => {
       isStrictCheck,
     }
     startTransition(async () => {
-      const response = await spellCheckAction(payload)
-      setServerState(response)
+      const result = await checkText(payload)
+      setCheckState({
+        result,
+        isStrictCheck: payload.isStrictCheck ?? false,
+        textLength: payload.text.length,
+      })
     })
   }
 
@@ -71,23 +79,23 @@ const SpellerPage = () => {
   })
 
   useEffect(() => {
-    if (serverState.data) {
-      const { data, elapsedTimeMs } = serverState
+    if (!checkState) return
+    const { result, isStrictCheck, textLength } = checkState
+
+    if (result.data) {
+      const { data, elapsedTimeMs } = result
       const payload = {
         textLength: data.str.length,
-        isStrictCheck: data.requestedWithStrictMode,
-        elapsedTimeMs: elapsedTimeMs,
+        isStrictCheck,
+        elapsedTimeMs,
       }
+      const response = { ...data, requestedWithStrictMode: isStrictCheck }
 
       setIsRedirectingToResult(true)
-      updateResponse(data)
+      updateResponse(response)
       initResponseMap()
       initDisplayTextMap()
-      updateResponseMap({
-        ...data,
-        requestedWithStrictMode: payload.isStrictCheck,
-        pageIdx: 1,
-      })
+      updateResponseMap({ ...response, pageIdx: 1 })
       sendCheckCompletedEvent(payload)
       if (data.errInfo.length === 0) {
         sendCheckResultNoErrorEvent(payload)
@@ -96,45 +104,33 @@ const SpellerPage = () => {
       return router.push('/results')
     }
 
-    if (serverState.error) {
-      setIsRedirectingToResult(false)
-      if (serverState.error.type === 'server') {
-        const {
-          error: {
-            errorCode,
-            errorMessage,
-            requestPayload: { isStrictCheck, textLength },
-          },
-          elapsedTimeMs,
-        } = serverState
-        const errorStage =
-          errorCode === TIMEOUT_ERROR_CODE ? 'timeout' : 'request'
+    const { error, elapsedTimeMs } = result
+    const errorMessage = error.errorMessage.slice(0, 100)
 
-        sendCheckResultResponseErrorEvent({
-          errorStage,
-          errorCode,
-          errorMessage,
-          isStrictCheck,
-          textLength,
-          elapsedTimeMs,
-        })
-
-        if (errorCode === TIMEOUT_ERROR_CODE) {
-          return router.push('/timeout')
-        } else {
-          throw new Error(errorMessage)
-        }
-      } else {
-        sendCheckResultResponseUnknownEvent({
-          errorStage: 'unknown',
-          errorCode: 9999,
-          errorMessage: serverState.error.errorMessage,
-          elapsedTimeMs: serverState.elapsedTimeMs,
-        })
-        throw new Error(serverState.error.errorMessage)
-      }
+    if (error.kind === 'schema') {
+      sendCheckResultResponseUnknownEvent({
+        errorStage: 'unknown',
+        errorCode: error.httpStatus ?? 9999,
+        errorMessage,
+        elapsedTimeMs,
+      })
+    } else {
+      sendCheckResultResponseErrorEvent({
+        errorStage: error.kind === 'timeout' ? 'timeout' : 'request',
+        errorCode: error.errorCode ?? error.httpStatus ?? 9999,
+        errorMessage,
+        isStrictCheck,
+        textLength,
+        elapsedTimeMs,
+      })
     }
-  }, [serverState])
+
+    if (error.kind === 'timeout') return router.push('/timeout')
+    if (error.kind === 'rate') return router.push('/rate-limit')
+
+    // 그 밖의 오류는 입력한 글을 그대로 두고 안내만 한다
+    toast({ description: CHECK_ERROR_MESSAGE[error.kind] })
+  }, [checkState])
 
   useEffect(() => {
     router.prefetch('/results')

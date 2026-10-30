@@ -1,4 +1,4 @@
-import { AxiosResponse } from 'axios'
+import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import {
   CheckPayload,
   CheckResponse,
@@ -22,7 +22,10 @@ export interface VersionResponse {
 }
 
 export interface SpellerService {
-  check: (payload: CheckPayload) => Promise<AxiosResponse<CheckResponse>>
+  check: (
+    payload: CheckPayload,
+    config?: AxiosRequestConfig<CheckPayload>,
+  ) => Promise<AxiosResponse<CheckResponse>>
   logUserReplace: (payload: UserReplacePayload) => void
   logClickReplace: (payload: ClickReplacePayload) => void
   notChange: (payload: NotChangePayload) => void

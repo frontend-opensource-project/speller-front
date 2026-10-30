@@ -2,10 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { CheckPayload, useSpeller, useSpellerRefs } from '@/entities/speller'
+import {
+  CheckPayload,
+  checkText,
+  CHECK_ERROR_MESSAGE,
+  type SpellerState,
+  useSpeller,
+  useSpellerRefs,
+} from '@/entities/speller'
 import { Spinner } from '@/shared/ui/spinner'
 import { toast } from '@/shared/lib/use-toast'
-import { spellCheckAction } from '../api/spell-check-action'
 
 const Navigator = () => {
   const router = useRouter()
@@ -32,88 +38,86 @@ const Navigator = () => {
     return `${pathname}?${params.toString()}`
   }
 
+  // 성공하면 결과를 responseMap에 저장한다. 실패해도 예외를 던지지 않는다
   const fetchSpellCheck = async (payload: Required<CheckPayload>) => {
-    const response = await spellCheckAction(payload)
-    updateResponseMap({
-      ...response,
+    const { data, error } = await checkText(payload)
+    if (error) return { data: null, error }
+
+    const response = {
+      ...data,
       requestedWithStrictMode: payload.isStrictCheck,
-      pageIdx: payload.pageIdx,
-    })
-    return response
+    }
+    updateResponseMap({ ...response, pageIdx: payload.pageIdx })
+    return { data: response, error: null }
   }
 
   const handlePagination = async (page: number) => {
-    let data = null
-    try {
-      if (isFetching) return
-      if (responseMap[page]) {
-        data = responseMap[page]
-      } else {
-        setIsFetching(true)
-        const res = await fetchSpellCheck({
-          text: response.remaningText,
-          isStrictCheck: response.requestedWithStrictMode,
-          pageIdx: page,
-        })
-        data = {
-          ...res,
-          requestedWithStrictMode: response.requestedWithStrictMode,
-        }
-      }
+    if (isFetching) return
 
-      // 현재 페이지의 대치어 적용 정보 업데이트
-      updateResponseMap({
-        ...response,
-        errInfo: Object.values(correctInfo),
-        pageIdx: currentPage,
+    let data: SpellerState['response'] | undefined = responseMap[page]
+    if (!data) {
+      setIsFetching(true)
+      const result = await fetchSpellCheck({
+        text: response.remaningText,
+        isStrictCheck: response.requestedWithStrictMode,
+        pageIdx: page,
       })
-
-      // 페이지 이동 시 섹션 스크롤 초기화
-      if (correctScrollContainerRef?.current) {
-        correctScrollContainerRef.current.scrollTo({ top: 0 })
-      }
-      if (errorScrollContainerRef?.current) {
-        errorScrollContainerRef.current.scrollTo({ top: 0 })
-      }
-
-      updateResponse(data)
-      router.push(createPageURL(page))
       setIsFetching(false)
-    } catch (error) {
-      throw new Error(error as string)
+
+      // 실패하면 현재 페이지에 머무르고, 화살표를 다시 눌러 재시도할 수 있다
+      if (result.error) {
+        toast({ description: CHECK_ERROR_MESSAGE[result.error.kind] })
+        return
+      }
+      data = result.data
     }
+
+    // 현재 페이지의 대치어 적용 정보 업데이트
+    updateResponseMap({
+      ...response,
+      errInfo: Object.values(correctInfo),
+      pageIdx: currentPage,
+    })
+
+    // 페이지 이동 시 섹션 스크롤 초기화
+    if (correctScrollContainerRef?.current) {
+      correctScrollContainerRef.current.scrollTo({ top: 0 })
+    }
+    if (errorScrollContainerRef?.current) {
+      errorScrollContainerRef.current.scrollTo({ top: 0 })
+    }
+
+    updateResponse(data)
+    router.push(createPageURL(page))
   }
 
   useEffect(() => {
     if (currentPageRef.current === currentPage) return
     ;(async () => {
-      try {
-        const isEmptyResponseMap = !responseMap?.[currentPage]
-        const isFetchedNextPage = !!responseMap?.[currentPage + 1]
-        const isNotNextPage = !responseMap?.[currentPage]?.remaningText
+      const isEmptyResponseMap = !responseMap?.[currentPage]
+      const isFetchedNextPage = !!responseMap?.[currentPage + 1]
+      const isNotNextPage = !responseMap?.[currentPage]?.remaningText
 
-        // responseMap에 데이터가 없을 경우(맞춤법 검사 완료 이후)
-        if (isEmptyResponseMap) {
-          updateResponseMap({ ...response, pageIdx: currentPage })
-          return
-        }
-
-        // 사전 페치가 이미 완료되었거나 다음 페이지가 없을 경우
-        if (isFetchedNextPage || isNotNextPage) {
-          currentPageRef.current = currentPage
-          return
-        }
-
-        await fetchSpellCheck({
-          text: responseMap[currentPage].remaningText,
-          isStrictCheck: responseMap[currentPage].requestedWithStrictMode,
-          pageIdx: currentPage + 1,
-        })
-        currentPageRef.current = currentPage
-      } catch (error) {
-        console.error(error)
-        setIsFetching(false)
+      // responseMap에 데이터가 없을 경우(맞춤법 검사 완료 이후)
+      if (isEmptyResponseMap) {
+        updateResponseMap({ ...response, pageIdx: currentPage })
+        return
       }
+
+      // 사전 페치가 이미 완료되었거나 다음 페이지가 없을 경우
+      if (isFetchedNextPage || isNotNextPage) {
+        currentPageRef.current = currentPage
+        return
+      }
+
+      // 미리 받기 실패는 알리지 않는다. 다음 페이지로 이동할 때 다시 요청한다
+      const { error } = await fetchSpellCheck({
+        text: responseMap[currentPage].remaningText,
+        isStrictCheck: responseMap[currentPage].requestedWithStrictMode,
+        pageIdx: currentPage + 1,
+      })
+      if (error) console.error(error)
+      currentPageRef.current = currentPage
     })()
   }, [response, responseMap, currentPage])
 
