@@ -36,6 +36,12 @@ export const checkResponseSchema = z.object({
   remaningText: z.string(), // 다음 페이지에서 검사해야 할 나머지 텍스트
 })
 
+// 서버 오류 응답 본문 (HTTP 4xx/5xx)
+export const serverErrorBodySchema = z.object({
+  errorMessage: z.string().nullish(), // Spring Exception.getMessage() 값 (메시지 없는 예외는 null)
+  errorCode: z.number(), // HTTP 상태 또는 AWS 연결 응답 코드 (20초 제한 초과 시 504)
+})
+
 export const clickReplacePayloadSchema = z.object({
   errorWord: z.string(), // 오류 문자열
   replaceWord: z.string(), // 사용자가 선택한 대치어
@@ -48,3 +54,4 @@ export type CorrectInfo = z.infer<typeof correctInfoSchema>
 export type CheckPayload = z.infer<typeof checkPayloadSchema>
 export type CheckResponse = z.infer<typeof checkResponseSchema>
 export type ClickReplacePayload = z.infer<typeof clickReplacePayloadSchema>
+export type ServerErrorBody = z.infer<typeof serverErrorBodySchema>

@@ -1,4 +1,4 @@
-import { AxiosResponse } from 'axios'
+import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 import { Client } from '@/shared/api'
 import { ENDPOINT } from '@/shared/config'
@@ -21,8 +21,11 @@ class SpellerApiService implements SpellerService {
     this.#client = Client.Instance
   }
 
-  async check(payload: CheckPayload): Promise<AxiosResponse<CheckResponse>> {
-    return this.#client.post(ENDPOINT.CHECK, payload)
+  async check(
+    payload: CheckPayload,
+    config?: AxiosRequestConfig<CheckPayload>,
+  ): Promise<AxiosResponse<CheckResponse>> {
+    return this.#client.post(ENDPOINT.CHECK, payload, config)
   }
 
   async logUserReplace(payload: UserReplacePayload) {
