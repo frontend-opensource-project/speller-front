@@ -10,6 +10,7 @@ import {
 } from '../model/speller-schema'
 import { normalizeLineBreaks } from '../lib/normalize-line-breaks'
 import { toUtf16ErrInfo } from '../lib/server-offset'
+import { isEmojiOnlyError } from '../lib/emoji-only-error'
 
 // 서버 시간 제한은 AWS 20초 하나뿐이다. 서버의 504 응답이 먼저 도착하도록 여유를 둔다.
 export const CHECK_TIMEOUT_MS = 25_000
@@ -147,7 +148,18 @@ export const checkText = async (
     console.warn('오류 위치가 원문과 맞지 않아 제외함', invalid)
   }
 
-  return { data: { ...parsed.data, errInfo }, error: null, elapsedTimeMs }
+  // 이모지만 빠진 오류는 보여 주지 않는다.
+  // 기존 결과 화면은 errorIdx를 배열 위치로 쓰므로, 걸러 낸 뒤 번호를 다시 매긴다
+  const { str } = parsed.data
+  const shown = errInfo
+    .filter(info => !isEmojiOnlyError(str.slice(info.start, info.end), info))
+    .map((info, errorIdx) => ({ ...info, errorIdx }))
+
+  return {
+    data: { ...parsed.data, errInfo: shown },
+    error: null,
+    elapsedTimeMs,
+  }
 }
 
 // 화면에 보여줄 안내 문구. 서버의 errorMessage는 보여주지 않는다.
