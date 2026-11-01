@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useReducer, useRef } from 'react'
+import { useEffect, useMemo, useReducer, useRef } from 'react'
 import { useStore } from 'react-redux'
 import type { ViewportPages } from '../lib/order-pages'
 import { CheckQueue } from './check-queue'
@@ -36,15 +36,23 @@ const useCheckQueue = ({ viewport, isScrolling }: UseCheckQueueParams) => {
     queue.setScrolling(isScrolling)
   }, [queue, isScrolling])
 
+  // 구간 컴포넌트를 memo로 두므로 함수는 매번 새로 만들지 않는다
+  const actions = useMemo(
+    () => ({
+      requestAll: () => queue.requestAll(),
+      prioritize: (pageIdx: number) => queue.prioritize(pageIdx),
+      retry: (pageIdx: number) => queue.retry(pageIdx),
+      resume: () => queue.resume(),
+    }),
+    [queue],
+  )
+
   return {
     paused: queue.paused,
     inFlightCount: queue.inFlightCount,
     allRequested: queue.allRequested,
     consecutiveTimeouts: queue.consecutiveTimeouts,
-    requestAll: () => queue.requestAll(),
-    prioritize: (pageIdx: number) => queue.prioritize(pageIdx),
-    retry: (pageIdx: number) => queue.retry(pageIdx),
-    resume: () => queue.resume(),
+    ...actions,
   }
 }
 

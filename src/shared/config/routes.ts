@@ -78,6 +78,7 @@ export const ROUTES = {
   qaBoardWrite: { path: '/qa-board/write', index: false },
   feedbackSubmitted: { path: '/feedback/submitted', index: false },
   results: { path: '/results', index: false },
+  longResults: { path: '/results/long', index: false },
   noErrors: { path: '/no-errors', index: false },
   timeout: { path: '/timeout', index: false },
   invalidAccess: { path: '/invalid-access', index: false },

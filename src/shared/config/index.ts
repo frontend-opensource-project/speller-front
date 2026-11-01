@@ -16,3 +16,4 @@ export {
   dynamicSeoMetadata,
   type SiteRoute,
 } from './routes'
+export { LONG_MODE_ENABLED } from './feature'
