@@ -7,6 +7,8 @@ export {
   type CheckTextResult,
 } from './api/check-text'
 export { normalizeLineBreaks } from './lib/normalize-line-breaks'
+export { splitPages, PAGE_THRESHOLD, type PageRange } from './lib/split-pages'
+export { toUtf16ErrInfo } from './lib/server-offset'
 export { getTextMethodColor, getBgMethodColor } from './lib/get-method-color'
 export { parseCandidateWords } from './lib/parse-candidate-words'
 export type {
