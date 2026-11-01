@@ -9,6 +9,7 @@ import {
   ServerErrorBody,
 } from '../model/speller-schema'
 import { normalizeLineBreaks } from '../lib/normalize-line-breaks'
+import { toUtf16ErrInfo } from '../lib/server-offset'
 
 // 서버 시간 제한은 AWS 20초 하나뿐이다. 서버의 504 응답이 먼저 도착하도록 여유를 둔다.
 export const CHECK_TIMEOUT_MS = 25_000
@@ -137,7 +138,16 @@ export const checkText = async (
     }
   }
 
-  return { data: parsed.data, error: null, elapsedTimeMs }
+  // 서버 좌표(코드 포인트, 서식 문자 제외)를 화면에서 쓰는 UTF-16 좌표로 바꾼다
+  const { errInfo, invalid } = toUtf16ErrInfo(
+    parsed.data.str,
+    parsed.data.errInfo,
+  )
+  if (invalid.length > 0) {
+    console.warn('오류 위치가 원문과 맞지 않아 제외함', invalid)
+  }
+
+  return { data: { ...parsed.data, errInfo }, error: null, elapsedTimeMs }
 }
 
 // 화면에 보여줄 안내 문구. 서버의 errorMessage는 보여주지 않는다.
