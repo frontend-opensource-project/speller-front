@@ -1,4 +1,4 @@
-import { ErrorInfo } from '@/entities/speller'
+import type { ErrorInfo } from '../model/speller-schema'
 
 export function extractContext(
   str: string,

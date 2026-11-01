@@ -35,7 +35,7 @@ const SpellerControl = ({ longMode }: SpellerControlProps) => {
               'flex items-center gap-3 rounded-lg px-3 py-2 transition-colors',
               isLongText &&
                 !longMode.enabled &&
-                'bg-blue-50 ring-2 ring-blue-500 dark:bg-blue-500/10',
+                'bg-blue-100/30 ring-2 ring-blue-500 dark:bg-blue-500/20',
             )}
           >
             {isLongText && (

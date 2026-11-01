@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useRef, useEffect } from 'react'
 import {
   useDebounce,
@@ -8,7 +10,7 @@ import { Button } from '@/shared/ui/button'
 import { cn } from '@/shared/lib/tailwind-merge'
 import ArrowBottomIcon from '@/shared/ui/icon/icon-arrow-bottom.svg'
 import { DESKTOP, TABLET } from '../../../../tailwind.config'
-import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-error-type'
+import { getCorrectedErrorType } from '../lib/get-corrected-error-type'
 import {
   sendErrorDetailClosedEvent,
   sendErrorDetailOpenedEvent,

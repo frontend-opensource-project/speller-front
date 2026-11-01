@@ -47,31 +47,30 @@ const renderErrors = ({
     const isCorrected = info.crtStr !== undefined
     const firstCandidate = parseCandidateWords(info.candWord)[0]?.word ?? ''
 
+    // 무시한 오류도 눌러서 무시를 취소할 수 있도록 버튼으로 둔다
     parts.push(
-      isIgnored ? (
-        <span key={info.errorIdx}>{text.slice(info.start, info.end)}</span>
-      ) : (
-        <button
-          key={info.errorIdx}
-          type='button'
-          data-error-idx={info.errorIdx}
-          title={firstCandidate ? `→ ${firstCandidate}` : undefined}
-          onClick={() => onSelectError(pageIdx, info.errorIdx)}
-          className={cn(
-            'inline whitespace-pre-wrap rounded-sm font-bold',
-            isCorrected
-              ? 'text-slate-600 dark:text-dark-text'
+      <button
+        key={info.errorIdx}
+        type='button'
+        data-error-idx={info.errorIdx}
+        title={!isIgnored && firstCandidate ? `→ ${firstCandidate}` : undefined}
+        onClick={() => onSelectError(pageIdx, info.errorIdx)}
+        className={cn(
+          'inline whitespace-pre-wrap rounded-sm text-left',
+          isIgnored
+            ? 'hover:bg-slate-100 dark:hover:bg-dark-elevated'
+            : isCorrected
+              ? 'font-bold text-slate-600 dark:text-dark-text'
               : cn(
-                  'underline decoration-[2px] underline-offset-[25%]',
+                  'font-bold underline decoration-[2px] underline-offset-[25%]',
                   getTextMethodColor(info.correctMethod),
                 ),
-            selectedErrorIdx === info.errorIdx &&
-              'bg-blue-100 dark:bg-blue-500/20',
-          )}
-        >
-          {isCorrected ? info.crtStr : text.slice(info.start, info.end)}
-        </button>
-      ),
+          selectedErrorIdx === info.errorIdx &&
+            'bg-blue-100/60 dark:bg-blue-500/30',
+        )}
+      >
+        {isCorrected ? info.crtStr : text.slice(info.start, info.end)}
+      </button>,
     )
     last = info.end
   })
@@ -91,7 +90,7 @@ const PageStatus = ({
     return (
       <div
         role='alert'
-        className='bg-red-50 dark:bg-red-500/10 mb-2 flex items-center gap-3 rounded-md px-3 py-2 text-base text-slate-600 dark:text-dark-text'
+        className='mb-2 flex items-center gap-3 rounded-md bg-red-100/10 px-3 py-2 text-base text-slate-600 dark:bg-red-100/20 dark:text-dark-text'
       >
         <span className='whitespace-pre-line'>
           이 부분을 검사하지 못했습니다.{' '}
@@ -125,7 +124,8 @@ const LongPageSection = memo((props: LongPageSectionProps) => {
     <section
       data-page-idx={pageIdx}
       aria-busy={page.status === 'loading' || page.status === 'queued'}
-      className='py-1'
+      // 화면 밖 구간은 그리지 않는다. 높이는 처음에 대략값, 한 번 그린 뒤에는 실제 값을 기억한다
+      className='py-1 [contain-intrinsic-size:auto_20rem] [content-visibility:auto]'
     >
       <PageStatus page={page} onRetry={() => onRetry(pageIdx)} />
       <p
