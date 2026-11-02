@@ -11,7 +11,7 @@ const Kbd = ({
   <kbd
     aria-hidden
     className={cn(
-      'ml-1.5 inline-flex min-w-5 items-center justify-center rounded border border-current px-1 font-sans text-xs font-normal leading-4 opacity-60',
+      'inline-flex shrink-0 items-center justify-center rounded border border-slate-300 px-[5px] font-sans text-[11px] font-medium leading-[1.5] text-slate-400 dark:border-dark-border dark:text-dark-subtle',
       className,
     )}
   >
