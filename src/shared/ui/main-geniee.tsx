@@ -12,7 +12,7 @@ import { useGenieeContext } from './geniee-provider'
 
 const isDev = process.env.NODE_ENV === 'development'
 
-const MainGenieeSlot = () => {
+const MainGenieeSlot = ({ compact }: { compact: boolean }) => {
   const isClient = useClient()
   const breakpoint = useBreakpoint()
   const { isInitialized } = useGenieeContext()
@@ -39,7 +39,15 @@ const MainGenieeSlot = () => {
   if (!shouldRender) return null
 
   if (isDev) {
-    return <div className={cn(AdStyle, 'bg-slate-300 dark:bg-dark-border')} />
+    return (
+      <div
+        className={cn(
+          AdStyle,
+          compact && CompactStyle,
+          'bg-slate-300 dark:bg-dark-border',
+        )}
+      />
+    )
   }
 
   return (
@@ -47,22 +55,24 @@ const MainGenieeSlot = () => {
       <GenieeAdSlot
         adId={GENIEE_IDS.BANNER_ID_160x600}
         isInitialized={isInitialized}
-        className={AdStyle}
+        className={cn(AdStyle, compact && CompactStyle)}
       />
     </div>
   )
 }
 
 const AdStyle = 'my-24 h-[37.5rem] w-40 pc:ml-5 pc:block'
+// 한 화면에 맞추는 페이지에서는 위아래 여백을 줄인다
+const CompactStyle = 'my-6'
 
-const MainGeniee = () => {
+const MainGeniee = ({ compact = false }: { compact?: boolean }) => {
   const adBlockDetected = useDetectAdBlock()
 
   if (adBlockDetected) {
     return null
   }
 
-  return <MainGenieeSlot />
+  return <MainGenieeSlot compact={compact} />
 }
 
 export { MainGeniee }

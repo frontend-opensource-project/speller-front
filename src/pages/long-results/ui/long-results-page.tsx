@@ -221,7 +221,7 @@ const LongResultsPage = () => {
     pages.some(page => page.status === 'idle' || page.status === 'queued')
 
   return (
-    <ContentLayout className='pb-4 pc:pb-5'>
+    <ContentLayout className='min-h-0 grid-rows-[auto_minmax(0,1fr)] pb-4 pc:pb-5'>
       <LongToolbar
         progress={progress}
         remainingErrors={remainingErrors}
@@ -233,7 +233,7 @@ const LongResultsPage = () => {
         onNewText={handleNewText}
         onBack={() => router.push('/speller')}
       />
-      <div className='flex h-[calc(100dvh-14rem)] min-h-[30rem] gap-3'>
+      <div className='flex min-h-0 gap-3'>
         <div className='flex min-w-0 flex-1 flex-col gap-2'>
           {queue.paused && (
             <div
