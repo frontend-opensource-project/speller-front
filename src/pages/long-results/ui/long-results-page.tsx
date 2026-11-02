@@ -42,6 +42,7 @@ import {
 } from '../lib/error-nav'
 import { useVisiblePages } from '../model/use-visible-pages'
 import { useCheckQueue } from '../model/use-check-queue'
+import { useBannerRefresh } from '../model/use-banner-refresh'
 import {
   useLongCorrections,
   type ErrorRef,
@@ -148,7 +149,12 @@ const LongResultsPage = () => {
   }, [showIntroAd])
 
   const { viewport, isScrolling } = useVisiblePages(containerRef, pages.length)
-  const queue = useCheckQueue({ viewport, isScrolling })
+  const refreshBanner = useBannerRefresh(isScrolling)
+  const queue = useCheckQueue({
+    viewport,
+    isScrolling,
+    onRequestSent: refreshBanner,
+  })
   const baseCorrections = useLongCorrections()
 
   // 모두 수정 · 모두 무시를 한 묶음은 그 뒤에 새로 나온 곳을 따로 표시한다

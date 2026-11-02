@@ -12,16 +12,24 @@ import { CheckQueue } from './check-queue'
 interface UseCheckQueueParams {
   viewport: ViewportPages // 스크롤이 멈춘 순간의 화면 범위 (use-visible-pages)
   isScrolling: boolean
+  onRequestSent?: () => void // 구간 검사 요청을 보냄 (배너 갱신)
 }
 
 /**
  * 긴글 모드 구간 검사 대기열을 화면에 연결한다.
  * 화면 범위가 바뀔 때마다 순서를 다시 짜고, 스크롤 중에는 새 요청을 보류한다.
  */
-const useCheckQueue = ({ viewport, isScrolling }: UseCheckQueueParams) => {
+const useCheckQueue = ({
+  viewport,
+  isScrolling,
+  onRequestSent,
+}: UseCheckQueueParams) => {
   const store = useStore<RootState>()
   const [, rerender] = useReducer((n: number) => n + 1, 0)
   const queueRef = useRef<CheckQueue | null>(null)
+  // 대기열은 한 번만 만드므로 콜백은 최신 것을 ref로 부른다
+  const onRequestSentRef = useRef(onRequestSent)
+  onRequestSentRef.current = onRequestSent
 
   if (!queueRef.current) {
     queueRef.current = new CheckQueue({
@@ -40,6 +48,7 @@ const useCheckQueue = ({ viewport, isScrolling }: UseCheckQueueParams) => {
           pageIdx,
           textLength: store.getState().longCheck.originalText.length,
         }),
+      onRequestSent: () => onRequestSentRef.current?.(),
     })
   }
   const queue = queueRef.current
