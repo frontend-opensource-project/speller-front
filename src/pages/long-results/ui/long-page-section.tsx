@@ -84,7 +84,8 @@ const renderErrors = ({
                   getTextMethodColor(info.correctMethod),
                 ),
           selectedErrorIdx === info.errorIdx &&
-            'bg-blue-100/60 dark:bg-blue-500/30',
+            // 다크 모드는 배경만 밝히면 오류어 글자색이 묻히므로 옅은 배경에 밝은 테두리를 둔다
+            'bg-blue-100/60 box-decoration-clone dark:bg-blue-300/25 dark:ring-2 dark:ring-blue-200',
         )}
       >
         {isCorrected ? info.crtStr : text.slice(info.start, info.end)}
