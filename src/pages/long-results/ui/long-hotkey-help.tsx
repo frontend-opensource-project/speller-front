@@ -32,7 +32,8 @@ const LongHotkeyHelp = ({ open, onOpenChange }: LongHotkeyHelpProps) => (
   <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent className='max-w-md rounded-2xl'>
       <DialogTitle>단축키</DialogTitle>
-      <DialogDescription>
+      {/* 공용 DialogDescription의 text-muted-foreground가 라이트 모드에서 흰색이라 색을 직접 준다 */}
+      <DialogDescription className='text-slate-500 dark:text-dark-subtle'>
         글자를 입력하는 칸 밖에서 쓸 수 있습니다. 한글 입력 중에는 동작하지
         않습니다.
       </DialogDescription>
