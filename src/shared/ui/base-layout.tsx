@@ -30,8 +30,7 @@ const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
     <div
       className={cn(
         'grid min-h-screen grid-rows-[auto_1fr_auto] bg-slate-200 dark:bg-dark-base pc:bg-background',
-        // 오른쪽 광고(160x600)가 잘리지 않는 높이보다 작아지면 그때만 페이지가 스크롤된다
-        isFitScreen && 'h-dvh min-h-[45rem] grid-rows-[auto_minmax(0,1fr)]',
+        isFitScreen && 'h-dvh grid-rows-[auto_minmax(0,1fr)]',
       )}
     >
       <Header />

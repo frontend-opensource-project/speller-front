@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useDetectAdBlock } from 'adblock-detect-react'
 
@@ -12,6 +12,30 @@ import { useGenieeContext } from './geniee-provider'
 
 const isDev = process.env.NODE_ENV === 'development'
 
+// 한 화면에 맞추는 페이지에서 헤더 · 여백까지 더해 광고(600px)가 잘리지 않는 화면 높이
+const COMPACT_MIN_HEIGHT_QUERY = '(min-height: 720px)'
+
+// 화면 높이가 모자라면 광고를 잘라 보여 주지 않고 아예 그리지 않는다
+const useFitsCompactAd = (compact: boolean) => {
+  // 처음부터 실제 높이로 판단해야 낮은 화면에서 광고가 잠깐 그려졌다 사라지지 않는다
+  const [fits, setFits] = useState(
+    () =>
+      typeof window === 'undefined' ||
+      window.matchMedia(COMPACT_MIN_HEIGHT_QUERY).matches,
+  )
+
+  useEffect(() => {
+    if (!compact) return
+    const query = window.matchMedia(COMPACT_MIN_HEIGHT_QUERY)
+    const update = () => setFits(query.matches)
+    update()
+    query.addEventListener('change', update)
+    return () => query.removeEventListener('change', update)
+  }, [compact])
+
+  return !compact || fits
+}
+
 const MainGenieeSlot = ({ compact }: { compact: boolean }) => {
   const isClient = useClient()
   const breakpoint = useBreakpoint()
@@ -20,7 +44,9 @@ const MainGenieeSlot = ({ compact }: { compact: boolean }) => {
   const isFirstMount = useRef(true)
 
   const allowedBreakpoints: Breakpoint[] = ['desktop', 'desktop-large']
-  const shouldRender = isClient && allowedBreakpoints.includes(breakpoint)
+  const fitsHeight = useFitsCompactAd(compact)
+  const shouldRender =
+    isClient && allowedBreakpoints.includes(breakpoint) && fitsHeight
 
   // pathname 변경 시 광고 재로드 (최초 마운트 제외)
   useEffect(() => {
