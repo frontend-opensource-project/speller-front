@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { useKeyCombination } from '@frontend-opensource/use-react-hooks'
 import {
   useSpeller,
@@ -14,7 +14,7 @@ import {
   type CheckTextResult,
 } from '@/entities/speller'
 import { ContentLayout } from '@/shared/ui/content-layout'
-import { LONG_MODE_ENABLED } from '@/shared/config'
+import { LONG_MODE_ENABLED, NORMAL_CHECK_QUERY } from '@/shared/config'
 import { useAppDispatch } from '@/shared/lib/use-redux'
 import { useBreakpoint } from '@/shared/lib/use-break-point'
 import { getBreakpoint } from '@/shared/lib/get-break-point'
@@ -65,20 +65,7 @@ const SpellerPage = () => {
     [canUseLongMode, originalText],
   )
 
-  const handleSpellCheck = () => {
-    // 긴글 모드: 요청 전에 결과 화면으로 이동하고, 구간 검사는 그 화면에서 한다
-    if (
-      LONG_MODE_ENABLED &&
-      longModeEnabled &&
-      isDesktop(getBreakpoint()) &&
-      splitPages(originalText).length >= 2
-    ) {
-      setIsRedirectingToResult(true)
-      dispatch(startLongCheck({ text: originalText, isStrictCheck }))
-      router.push('/results/long')
-      return
-    }
-
+  const runNormalCheck = () => {
     const payload: CheckPayload = {
       text: originalText,
       isStrictCheck,
@@ -92,6 +79,36 @@ const SpellerPage = () => {
       })
     })
   }
+
+  const handleSpellCheck = () => {
+    // 긴글 모드: 요청 전에 결과 화면으로 이동하고, 구간 검사는 그 화면에서 한다
+    if (
+      LONG_MODE_ENABLED &&
+      longModeEnabled &&
+      isDesktop(getBreakpoint()) &&
+      splitPages(originalText).length >= 2
+    ) {
+      setIsRedirectingToResult(true)
+      dispatch(startLongCheck({ text: originalText, isStrictCheck }))
+      router.push('/results/long')
+      return
+    }
+    runNormalCheck()
+  }
+
+  // 긴글 화면에서 '일반 모드에서 검사'로 넘어온 경우: 긴글 모드를 건너뛰고 한 번 검사한다.
+  // 개발 모드에서 effect가 두 번 돌아도 요청은 한 번만 보낸다
+  const normalCheckRequestedRef = useRef(false)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (!params.has(NORMAL_CHECK_QUERY)) return
+    router.replace('/speller')
+    if (normalCheckRequestedRef.current || !originalText) return
+    normalCheckRequestedRef.current = true
+    runNormalCheck()
+    // 들어올 때 한 번만 본다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // 검사하기 단축키 설정
   useKeyCombination({

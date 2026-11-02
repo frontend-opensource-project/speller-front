@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useClipboard } from '@frontend-opensource/use-react-hooks'
+import { useDetectAdBlock } from 'adblock-detect-react'
 import {
   CHECK_ERROR_MESSAGE,
   errorKey,
@@ -16,6 +17,7 @@ import {
 } from '@/entities/speller'
 import { useAppDispatch, useAppSelector } from '@/shared/lib/use-redux'
 import { ContentLayout } from '@/shared/ui/content-layout'
+import { NORMAL_CHECK_QUERY } from '@/shared/config'
 import { Button } from '@/shared/ui/button'
 import { toast } from '@/shared/lib/use-toast'
 import {
@@ -47,6 +49,9 @@ import {
 } from './long-error-overlay'
 import { LongToolbar } from './long-toolbar'
 import { LongHotkeyHelp } from './long-hotkey-help'
+import { LongCheckIntro } from './long-check-intro'
+import { LongInterstitial } from './long-interstitial'
+import { LongAdblockNotice } from './long-adblock-notice'
 
 // 시간 초과가 연달아 이만큼 나면 문단을 나눠 보라고 안내한다
 const TIMEOUT_HINT_COUNT = 3
@@ -54,12 +59,30 @@ const TIMEOUT_HINT_COUNT = 3
 // 첫 진입 때 단축키 안내를 한 번만 보여 준다
 const HOTKEY_HINT_KEY = 'longModeHotkeyHint'
 
+// 진입 안내창 · 전면 광고를 띄운 검사. 새로고침 · 뒤로 가기로 같은 검사에 돌아오면 다시 띄우지 않는다
+const INTRO_SHOWN_KEY = 'longModeIntroCheckId'
+
+const shouldShowIntro = (checkId: number) => {
+  try {
+    return sessionStorage.getItem(INTRO_SHOWN_KEY) !== String(checkId)
+  } catch {
+    return true
+  }
+}
+
 const LongResultsPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const state = useAppSelector(state => state.longCheck)
-  const { originalText, pages, ignored, selected, isStrictCheck, undoStack } =
-    state
+  const {
+    checkId,
+    originalText,
+    pages,
+    ignored,
+    selected,
+    isStrictCheck,
+    undoStack,
+  } = state
   const { handleOriginalTextChange } = useSpeller()
   const { copyText } = useClipboard()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -77,6 +100,28 @@ const LongResultsPage = () => {
   const overlayCommandsRef = useRef<OverlayCommands | null>(null)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
   const [announcement, setAnnouncement] = useState('')
+  // 이 화면은 PersistGate 안에서 브라우저에서만 그려지므로 처음 값을 바로 정한다.
+  // 광고는 한 번 정하면 바꾸지 않는다 (바꾸면 광고 컨테이너가 지워짐)
+  const [showIntroAd] = useState(
+    () => !!originalText && shouldShowIntro(checkId),
+  )
+  const [isIntroOpen, setIsIntroOpen] = useState(showIntroAd)
+  // 광고 차단이면 검사 중 안내창 대신 광고 차단 안내를 띄우고 일반 모드로만 넘어가게 한다.
+  // 새로고침으로 넘어가지 않도록 새 검사가 아니어도 띄운다
+  const adBlockDetected = useDetectAdBlock()
+  const isAdblockNoticeOpen = adBlockDetected
+  const isIntroVisible = isIntroOpen && !adBlockDetected
+  // 진입 안내가 떠 있는 동안 첫 오류 자동 열기 · 단축키 · 단축키 안내를 미룬다
+  const isEntryOverlayOpen = isIntroVisible || isAdblockNoticeOpen
+
+  useEffect(() => {
+    if (!showIntroAd) return
+    try {
+      sessionStorage.setItem(INTRO_SHOWN_KEY, String(checkId))
+    } catch {
+      // 저장하지 못하면 다음에 또 보일 뿐이다
+    }
+  }, [showIntroAd, checkId])
 
   const { viewport, isScrolling } = useVisiblePages(containerRef, pages.length)
   const queue = useCheckQueue({ viewport, isScrolling })
@@ -297,7 +342,9 @@ const LongResultsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedKey])
 
+  // 진입 안내창이 닫힌 뒤에 보여 준다
   useEffect(() => {
+    if (isEntryOverlayOpen) return
     try {
       if (localStorage.getItem(HOTKEY_HINT_KEY)) return
       localStorage.setItem(HOTKEY_HINT_KEY, 'seen')
@@ -308,19 +355,20 @@ const LongResultsPage = () => {
       description:
         '키보드로도 교정할 수 있습니다.\n? 키를 눌러 단축키를 확인해 보세요.',
     })
-  }, [])
+  }, [isEntryOverlayOpen])
 
   // 첫 오류: 앞 구간 검사가 끝나 첫 오류가 정해지면 한 번만 연다
   useEffect(() => {
     if (isScrolling) autoOpenRef.current = false
   }, [isScrolling])
+  // 진입 안내창이 열려 있으면 닫힌 뒤에 연다
   useEffect(() => {
-    if (!autoOpenRef.current) return
+    if (!autoOpenRef.current || isEntryOverlayOpen) return
     const first = findFirstError({ pages, ignored }, hiddenMethods)
     if (first === undefined) return
     autoOpenRef.current = false
     if (first) revealError(first.pageIdx, first.info.errorIdx)
-  }, [pages, ignored, hiddenMethods, revealError])
+  }, [pages, ignored, hiddenMethods, revealError, isEntryOverlayOpen])
 
   const handleToggleMethod = useCallback((method: number) => {
     setHiddenMethods(prev =>
@@ -376,8 +424,14 @@ const LongResultsPage = () => {
       copyAll: handleCopyAll,
       help: () => setIsHelpOpen(true),
     },
-    !!originalText && !isHelpOpen,
+    !!originalText && !isHelpOpen && !isEntryOverlayOpen,
   )
+
+  // 같은 글을 입력 화면에 두고 긴글 모드를 건너뛰어 일반 검사를 한다
+  const handleNormalCheck = () => {
+    handleOriginalTextChange(originalText)
+    router.push(`/speller?${NORMAL_CHECK_QUERY}=1`)
+  }
 
   const handleNewText = () => {
     handleOriginalTextChange('')
@@ -496,6 +550,16 @@ const LongResultsPage = () => {
         />
       )}
       <LongHotkeyHelp open={isHelpOpen} onOpenChange={setIsHelpOpen} />
+      <LongCheckIntro
+        open={isIntroVisible}
+        onClose={() => setIsIntroOpen(false)}
+        progress={progress}
+      />
+      <LongAdblockNotice
+        open={isAdblockNoticeOpen}
+        onNormalCheck={handleNormalCheck}
+      />
+      {showIntroAd && <LongInterstitial />}
       <div aria-live='polite' className='sr-only'>
         {announcement}
       </div>
