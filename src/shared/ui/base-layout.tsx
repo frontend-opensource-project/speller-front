@@ -19,7 +19,9 @@ const FIT_SCREEN_PATHS: string[] = LONG_MODE_ENABLED
 
 const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
   const pathname = usePathname()
-  const isFitScreen = FIT_SCREEN_PATHS.includes(pathname ?? '')
+  // trailingSlash: true라 경로 끝에 '/'가 붙어 온다 (/results/long/)
+  const path = (pathname ?? '').replace(/\/+$/, '')
+  const isFitScreen = FIT_SCREEN_PATHS.includes(path)
 
   // 다른 페이지에서 띄운 하단 오버레이 광고가 남아 있으면 걷어 낸다
   useEffect(() => {
