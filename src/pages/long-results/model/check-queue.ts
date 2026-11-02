@@ -2,6 +2,7 @@ import type { UnknownAction } from '@reduxjs/toolkit'
 import {
   checkText,
   getPageText,
+  type CheckError,
   pageCheckFailed,
   pageCheckSucceeded,
   setPagesStatus,
@@ -20,6 +21,8 @@ interface CheckQueueDeps {
   dispatch: (action: UnknownAction) => void
   check?: typeof checkText
   onChange?: () => void // 멈춤 · 요청 수 등 화면에 보여줄 값이 바뀜
+  onPageFailed?: (pageIdx: number, error: CheckError) => void // 지금 검사의 구간이 실패함 (429 포함)
+  onBoundaryMismatch?: (pageIdx: number) => void // 예측한 구간과 서버 응답이 달라 차례 검사로 바뀜
 }
 
 /**
@@ -27,8 +30,7 @@ interface CheckQueueDeps {
  * 스크롤이 멈출 때마다 아직 보내지 않은 구간의 순서를 다시 짜고, 동시에 2개까지 보낸다.
  */
 class CheckQueue {
-  readonly #deps: Required<Omit<CheckQueueDeps, 'onChange'>> &
-    Pick<CheckQueueDeps, 'onChange'>
+  readonly #deps: CheckQueueDeps & { check: typeof checkText }
   #checkId = -1
   #structure = '' // 구간 수 · 경계 방식. 바뀌면 구간 번호가 달라진다
   #viewport: ViewportPages = EMPTY_VIEWPORT
@@ -206,7 +208,13 @@ class CheckQueue {
 
     // 그사이 새 검사가 시작됐으면 이 응답은 슬라이스가 버린다
     const isCurrent = this.#deps.getState().checkId === ref.checkId
+    // 이 응답으로 구간 예측이 어긋났는지 보려고 반영 전 경계 방식을 기억한다
+    const modeBefore = this.#deps.getState().boundaryMode
     this.#inFlight.delete(key)
+
+    if (result.error && isCurrent) {
+      this.#deps.onPageFailed?.(pageIdx, result.error)
+    }
 
     if (result.error?.kind === 'rate' && isCurrent) {
       // 멈추고, 이 구간은 다시 시작할 때 가장 먼저 보낸다
@@ -237,6 +245,14 @@ class CheckQueue {
     }
     this.#notify()
     if (!isCurrent) return
+
+    if (
+      !result.error &&
+      modeBefore === 'predicted' &&
+      this.#deps.getState().boundaryMode === 'chained'
+    ) {
+      this.#deps.onBoundaryMismatch?.(pageIdx)
+    }
 
     // 대조 실패로 차례 요청이 됐거나, 차례 요청에서 다음 구간이 생겼으면 순서를 다시 짠다
     const after = this.#deps.getState()

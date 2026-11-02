@@ -89,7 +89,13 @@ const SpellerPage = () => {
       splitPages(originalText).length >= 2
     ) {
       setIsRedirectingToResult(true)
-      dispatch(startLongCheck({ text: originalText, isStrictCheck }))
+      dispatch(
+        startLongCheck({
+          text: originalText,
+          isStrictCheck,
+          startedAt: Date.now(),
+        }),
+      )
       router.push('/results/long')
       return
     }

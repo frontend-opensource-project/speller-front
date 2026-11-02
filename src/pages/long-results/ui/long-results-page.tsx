@@ -18,6 +18,13 @@ import {
 import { useAppDispatch, useAppSelector } from '@/shared/lib/use-redux'
 import { ContentLayout } from '@/shared/ui/content-layout'
 import { NORMAL_CHECK_QUERY } from '@/shared/config'
+import {
+  sendBulkCorrectionAppliedEvent,
+  sendLongCheckCheckAllClickedEvent,
+  sendLongCheckCompletedEvent,
+  sendLongModeEnteredEvent,
+} from '@/shared/lib/send-ga-event'
+import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-error-type'
 import { Button } from '@/shared/ui/button'
 import { toast } from '@/shared/lib/use-toast'
 import {
@@ -62,6 +69,9 @@ const HOTKEY_HINT_KEY = 'longModeHotkeyHint'
 // 진입 안내창 · 전면 광고를 띄운 검사. 새로고침 · 뒤로 가기로 같은 검사에 돌아오면 다시 띄우지 않는다
 const INTRO_SHOWN_KEY = 'longModeIntroCheckId'
 
+// 검사 완료 이벤트를 보낸 검사
+const COMPLETED_KEY = 'longModeCompletedCheckId'
+
 const shouldShowIntro = (checkId: number) => {
   try {
     return sessionStorage.getItem(INTRO_SHOWN_KEY) !== String(checkId)
@@ -98,6 +108,8 @@ const LongResultsPage = () => {
   const [advanceFrom, setAdvanceFrom] = useState<ErrorPosition | null>(null)
   const currentPositionRef = useRef<ErrorPosition | null>(null)
   const overlayCommandsRef = useRef<OverlayCommands | null>(null)
+  // 단축키로 부른 동작인지 (분석 이벤트의 method). 단축키 처리 중에만 'keyboard'
+  const inputMethodRef = useRef<'button' | 'keyboard'>('button')
   const [isHelpOpen, setIsHelpOpen] = useState(false)
   const [announcement, setAnnouncement] = useState('')
   // 이 화면은 PersistGate 안에서 브라우저에서만 그려지므로 처음 값을 바로 정한다.
@@ -123,6 +135,18 @@ const LongResultsPage = () => {
     }
   }, [showIntroAd, checkId])
 
+  // 새 검사로 들어왔을 때만 (새로고침으로 돌아온 경우는 제외)
+  useEffect(() => {
+    if (!showIntroAd) return
+    sendLongModeEnteredEvent({
+      textLength: originalText.length,
+      totalPageCnt: pages.length,
+      isStrictCheck,
+    })
+    // 들어올 때 한 번만 보낸다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showIntroAd])
+
   const { viewport, isScrolling } = useVisiblePages(containerRef, pages.length)
   const queue = useCheckQueue({ viewport, isScrolling })
   const baseCorrections = useLongCorrections()
@@ -132,6 +156,19 @@ const LongResultsPage = () => {
     const advance = ({ pageIdx, info }: ErrorRef) =>
       setAdvanceFrom({ pageIdx, start: info.start })
     const advanceFromCurrent = () => setAdvanceFrom(currentPositionRef.current)
+    const sendBulkEvent = (
+      group: ErrorGroup,
+      count: number,
+      bulkAction: 'correct' | 'ignore',
+    ) => {
+      if (count === 0) return
+      sendBulkCorrectionAppliedEvent({
+        count,
+        correctedErrorType: getCorrectedErrorType(group.correctMethod),
+        method: inputMethodRef.current,
+        bulkAction,
+      })
+    }
 
     return {
       ...baseCorrections,
@@ -150,12 +187,14 @@ const LongResultsPage = () => {
       correctGroup: (group: ErrorGroup) => {
         setBulkCounts(prev => ({ ...prev, [group.key]: group.items.length }))
         const count = baseCorrections.correctGroup(group)
+        sendBulkEvent(group, count, 'correct')
         advanceFromCurrent()
         return count
       },
       ignoreGroup: (group: ErrorGroup) => {
         setBulkCounts(prev => ({ ...prev, [group.key]: group.items.length }))
         const count = baseCorrections.ignoreGroup(group)
+        sendBulkEvent(group, count, 'ignore')
         advanceFromCurrent()
         return count
       },
@@ -168,6 +207,26 @@ const LongResultsPage = () => {
   }, [originalText, router])
 
   const progress = getLongProgress(state)
+
+  // 모든 구간 검사를 마치면 검사마다 한 번 보낸다 (실패한 구간이 있으면 다시 시도해 마칠 때까지 기다림)
+  const isAllDone =
+    pages.length > 0 && pages.every(page => page.status === 'done')
+  useEffect(() => {
+    if (!isAllDone) return
+    try {
+      if (sessionStorage.getItem(COMPLETED_KEY) === String(checkId)) return
+      sessionStorage.setItem(COMPLETED_KEY, String(checkId))
+    } catch {
+      // 저장하지 못하면 새로고침 때 한 번 더 보낼 수 있다
+    }
+    sendLongCheckCompletedEvent({
+      totalPageCnt: pages.length,
+      textLength: originalText.length,
+      elapsedTimeMs: state.startedAt ? Date.now() - state.startedAt : 0,
+    })
+    // 마친 순간에만 본다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAllDone, checkId])
   const groups = useMemo(
     () => groupErrors({ pages, ignored }, sort),
     [pages, ignored, sort],
@@ -403,7 +462,13 @@ const LongResultsPage = () => {
       // 정보창이 닫혀 있었다면 그려진 뒤에 입력 칸이 생긴다
       setTimeout(() => overlayCommandsRef.current?.focusCustom())
     } else {
-      overlayCommandsRef.current?.[command]()
+      // 정보창의 동작이 그 자리에서 바로 불리므로 그동안만 'keyboard'로 둔다
+      inputMethodRef.current = 'keyboard'
+      try {
+        overlayCommandsRef.current?.[command]()
+      } finally {
+        inputMethodRef.current = 'button'
+      }
     }
   }
 
@@ -426,6 +491,14 @@ const LongResultsPage = () => {
     },
     !!originalText && !isHelpOpen && !isEntryOverlayOpen,
   )
+
+  const handleRequestAll = () => {
+    sendLongCheckCheckAllClickedEvent(
+      pages.filter(page => page.status === 'idle' || page.status === 'queued')
+        .length,
+    )
+    queue.requestAll()
+  }
 
   // 같은 글을 입력 화면에 두고 긴글 모드를 건너뛰어 일반 검사를 한다
   const handleNormalCheck = () => {
@@ -452,7 +525,7 @@ const LongResultsPage = () => {
         remainingErrors={remainingErrors}
         isStrictCheck={isStrictCheck}
         canRequestAll={canRequestAll}
-        onRequestAll={queue.requestAll}
+        onRequestAll={handleRequestAll}
         onScrollTop={() => containerRef.current?.scrollTo({ top: 0 })}
         onCopyAll={handleCopyAll}
         onNewText={handleNewText}

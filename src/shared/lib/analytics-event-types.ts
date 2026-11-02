@@ -16,6 +16,14 @@ export const GA_ACTIONS = {
   BUTTON_CLICKED: 'button_clicked',
   APP_INSTALL_CLICKED: 'app_install_clicked',
   APP_INSTALL_PROMPT_RESULT: 'app_install_prompt_result',
+  // 긴글 모드 (계획서 §4.2)
+  LONG_MODE_SUGGESTED: 'long_mode_suggested',
+  LONG_MODE_ENTERED: 'long_mode_entered',
+  LONG_CHECK_COMPLETED: 'long_check_completed',
+  LONG_CHECK_FAILED: 'long_check_failed',
+  LONG_CHECK_CHECK_ALL_CLICKED: 'long_check_check_all_clicked',
+  BULK_CORRECTION_APPLIED: 'bulk_correction_applied',
+  LONG_BOUNDARY_MISMATCH: 'long_boundary_mismatch',
 } as const
 
 export const GA_EVENT_TYPE = {
@@ -73,6 +81,21 @@ export const INSTALL_PLATFORM = [
   'in_app',
 ] as const
 export type InstallPlatform = (typeof INSTALL_PLATFORM)[number]
+
+// 긴글 모드 구간 검사 실패 단계 (CheckErrorKind와 같음)
+export const LONG_ERROR_STAGE = [
+  'timeout',
+  'empty',
+  'network',
+  'rate',
+  'server',
+  'schema',
+] as const
+export type LongErrorStage = (typeof LONG_ERROR_STAGE)[number]
+
+// correct: 같은 오류 모두 수정, ignore: 모두 무시
+export const BULK_ACTION = ['correct', 'ignore'] as const
+export type BulkAction = (typeof BULK_ACTION)[number]
 
 export const CheckTriggeredSchema = z.object({
   original_text_length: z.number(),
@@ -169,6 +192,46 @@ export const AppInstallPromptResultSchema = z.object({
   outcome: z.enum(['accepted', 'dismissed']),
 })
 
+export const LongModeSuggestedSchema = z.object({
+  text_length: z.number(),
+  predicted_page_cnt: z.number(),
+})
+
+export const LongModeEnteredSchema = z.object({
+  text_length: z.number(),
+  total_page_cnt: z.number(),
+  is_strict_check: z.boolean(),
+})
+
+export const LongCheckCompletedSchema = z.object({
+  total_page_cnt: z.number(),
+  text_length: z.number(),
+  elapsed_time_ms: z.number(),
+})
+
+export const LongCheckFailedSchema = z.object({
+  page_idx: z.number(),
+  error_stage: z.enum(LONG_ERROR_STAGE),
+  error_code: z.number(),
+  error_message: z.string(),
+})
+
+export const LongCheckCheckAllClickedSchema = z.object({
+  remaining_page_cnt: z.number(),
+})
+
+export const BulkCorrectionAppliedSchema = z.object({
+  count: z.number(),
+  corrected_error_type: z.enum(CORRECTED_ERROR_TYPE),
+  method: z.enum(METHOD),
+  bulk_action: z.enum(BULK_ACTION),
+})
+
+export const LongBoundaryMismatchSchema = z.object({
+  page_idx: z.number(),
+  text_length: z.number(),
+})
+
 export type CheckTriggeredParams = z.infer<typeof CheckTriggeredSchema>
 export type CheckCompletedParams = z.infer<typeof CheckCompletedSchema>
 export type CheckResultNoErrorParams = z.infer<typeof CheckResultNoErrorSchema>
@@ -201,6 +264,20 @@ export type AppInstallPromptResultParams = z.infer<
   typeof AppInstallPromptResultSchema
 >
 
+export type LongModeSuggestedParams = z.infer<typeof LongModeSuggestedSchema>
+export type LongModeEnteredParams = z.infer<typeof LongModeEnteredSchema>
+export type LongCheckCompletedParams = z.infer<typeof LongCheckCompletedSchema>
+export type LongCheckFailedParams = z.infer<typeof LongCheckFailedSchema>
+export type LongCheckCheckAllClickedParams = z.infer<
+  typeof LongCheckCheckAllClickedSchema
+>
+export type BulkCorrectionAppliedParams = z.infer<
+  typeof BulkCorrectionAppliedSchema
+>
+export type LongBoundaryMismatchParams = z.infer<
+  typeof LongBoundaryMismatchSchema
+>
+
 type GAEventMap = {
   checkTriggered: z.infer<typeof CheckTriggeredSchema>
   checkCompleted: z.infer<typeof CheckCompletedSchema>
@@ -217,6 +294,13 @@ type GAEventMap = {
   buttonClicked: z.infer<typeof ButtonClickedSchema>
   appInstallClicked: z.infer<typeof AppInstallClickedSchema>
   appInstallPromptResult: z.infer<typeof AppInstallPromptResultSchema>
+  longModeSuggested: LongModeSuggestedParams
+  longModeEntered: LongModeEnteredParams
+  longCheckCompleted: LongCheckCompletedParams
+  longCheckFailed: LongCheckFailedParams
+  longCheckCheckAllClicked: LongCheckCheckAllClickedParams
+  bulkCorrectionApplied: BulkCorrectionAppliedParams
+  longBoundaryMismatch: LongBoundaryMismatchParams
 }
 
 export type GAEventTrackerMap = {
