@@ -176,7 +176,7 @@ const LongErrorOverlay = ({
         align='start'
         sideOffset={6}
         collisionPadding={16}
-        className='flex max-h-[min(40rem,75vh)] w-[330px] flex-col overflow-y-auto rounded-2xl border-0 bg-white px-[18px] pb-[14px] pt-[18px] text-slate-600 shadow-md dark:bg-dark-surface dark:text-dark-text'
+        className='flex max-h-[min(40rem,75vh)] w-[330px] flex-col overflow-y-auto rounded-2xl border-0 bg-white px-[18px] pb-[14px] pt-[18px] text-slate-600 shadow-md dark:bg-dark-surface dark:text-dark-text [&>*]:shrink-0'
         // 문서의 다른 오류어나 묶음 목록의 행을 누르면 닫지 않고 그 오류로 바뀐다.
         // 닫았다 다시 열면 닫는 요청과 여는 요청의 순서에 따라 정보창이 깜빡이거나 닫힌다
         onPointerDownOutside={e => {
@@ -197,6 +197,8 @@ const LongErrorOverlay = ({
           }
         }}
         aria-label='오류 정보'
+        // 세로 flex라 내용이 길면 overflow-hidden인 도움말이 줄어들어 '자세히 보기'까지 가려진다.
+        // 자식은 줄이지 않고 정보창 자체를 스크롤한다 ([&>*]:shrink-0)
       >
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2 text-[14px] font-medium text-slate-500 dark:text-dark-subtle'>
@@ -371,7 +373,12 @@ const LongErrorOverlay = ({
             <h3 className='text-[15px] font-semibold tracking-[-0.02em]'>
               도움말
             </h3>
-            <HelpSection help={info.help} correctMethod={info.correctMethod} />
+            {/* 오류가 바뀌면 다시 그려 도움말 길이를 새로 재고 펼침을 닫는다 */}
+            <HelpSection
+              key={`${pageIdx}:${info.errorIdx}`}
+              help={info.help}
+              correctMethod={info.correctMethod}
+            />
           </>
         )}
 
