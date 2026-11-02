@@ -9,6 +9,13 @@ export {
 export { normalizeLineBreaks } from './lib/normalize-line-breaks'
 export { splitPages, PAGE_THRESHOLD, type PageRange } from './lib/split-pages'
 export { toUtf16ErrInfo } from './lib/server-offset'
+export { extractContext } from './lib/extract-context'
+export {
+  getPageText,
+  getCorrectedPageText,
+  getCorrectedText,
+  getLongProgress,
+} from './lib/long-check-text'
 export { getTextMethodColor, getBgMethodColor } from './lib/get-method-color'
 export { parseCandidateWords } from './lib/parse-candidate-words'
 export type {
@@ -32,4 +39,23 @@ export {
 } from './model/speller-refs-context'
 export { useSpeller } from './model/use-speller'
 export { spellerReducer, type SpellerState } from './model/speller-slice'
+export {
+  startLongCheck,
+  setPagesStatus,
+  pageCheckSucceeded,
+  pageCheckFailed,
+  applyLongCorrections,
+  ignoreLongErrors,
+  undoLongCheck,
+  selectLongError,
+  resetLongCheck,
+  longCheckReducer,
+  errorKey,
+  type LongCheckState,
+  type LongPage,
+  type LongPageStatus,
+  type PageRef,
+} from './model/long-check-slice'
 export { SpellerSetting } from './ui/speller-setting'
+export { BulletBadge } from './ui/bullet-badge'
+export { HelpSection } from './ui/help-section'

@@ -24,6 +24,15 @@ import {
   AppInstallClickedParams,
   AppInstallPromptResultParams,
   InstallPlatform,
+  LongModeSuggestedParams,
+  LongModeEnteredParams,
+  LongCheckCompletedParams,
+  LongCheckFailedParams,
+  LongCheckCheckAllClickedParams,
+  BulkCorrectionAppliedParams,
+  LongBoundaryMismatchParams,
+  LongErrorStage,
+  BulkAction,
 } from './analytics-event-types'
 
 type Event = (typeof GA_EVENT_TYPE)[keyof typeof GA_EVENT_TYPE]
@@ -110,6 +119,34 @@ const GAEvents: GAEventTrackerMap = {
   appInstallPromptResult: createTracker<AppInstallPromptResultParams>(
     GA_EVENT_TYPE.EVENT,
     GA_ACTIONS.APP_INSTALL_PROMPT_RESULT,
+  ),
+  longModeSuggested: createTracker<LongModeSuggestedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.LONG_MODE_SUGGESTED,
+  ),
+  longModeEntered: createTracker<LongModeEnteredParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.LONG_MODE_ENTERED,
+  ),
+  longCheckCompleted: createTracker<LongCheckCompletedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.LONG_CHECK_COMPLETED,
+  ),
+  longCheckFailed: createTracker<LongCheckFailedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.LONG_CHECK_FAILED,
+  ),
+  longCheckCheckAllClicked: createTracker<LongCheckCheckAllClickedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.LONG_CHECK_CHECK_ALL_CLICKED,
+  ),
+  bulkCorrectionApplied: createTracker<BulkCorrectionAppliedParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.BULK_CORRECTION_APPLIED,
+  ),
+  longBoundaryMismatch: createTracker<LongBoundaryMismatchParams>(
+    GA_EVENT_TYPE.EVENT,
+    GA_ACTIONS.LONG_BOUNDARY_MISMATCH,
   ),
 }
 
@@ -443,4 +480,141 @@ export const sendAppInstallPromptResultEvent = (
   outcome: AppInstallPromptResultParams['outcome'],
 ) => {
   GAEvents.appInstallPromptResult({ outcome })
+}
+
+/**
+ * 입력 화면에서 긴글 모드를 권하는 안내가 처음 보일 때 (긴 글인데 긴글 모드가 꺼져 있음)
+ *
+ * @param textLength 입력한 원문의 글자 수
+ * @param predictedPageCnt 원문을 서버 규칙으로 나눈 구간 수
+ */
+export const sendLongModeSuggestedEvent = ({
+  textLength,
+  predictedPageCnt,
+}: {
+  textLength: number
+  predictedPageCnt: number
+}) => {
+  GAEvents.longModeSuggested({
+    text_length: textLength,
+    predicted_page_cnt: predictedPageCnt,
+  })
+}
+
+/**
+ * 긴글 모드로 새 검사를 시작해 결과 화면에 들어왔을 때 (새로고침으로 돌아온 경우는 제외)
+ */
+export const sendLongModeEnteredEvent = ({
+  textLength,
+  totalPageCnt,
+  isStrictCheck,
+}: {
+  textLength: number
+  totalPageCnt: number
+  isStrictCheck: boolean
+}) => {
+  GAEvents.longModeEntered({
+    text_length: textLength,
+    total_page_cnt: totalPageCnt,
+    is_strict_check: isStrictCheck,
+  })
+}
+
+/**
+ * 긴글 모드의 모든 구간 검사를 마쳤을 때. 지연 검사라 끝까지 본 사용자만 도달한다
+ *
+ * @param elapsedTimeMs 검사 시작부터 마지막 구간을 마칠 때까지의 시간 (밀리초)
+ */
+export const sendLongCheckCompletedEvent = ({
+  totalPageCnt,
+  textLength,
+  elapsedTimeMs,
+}: {
+  totalPageCnt: number
+  textLength: number
+  elapsedTimeMs: number
+}) => {
+  GAEvents.longCheckCompleted({
+    total_page_cnt: totalPageCnt,
+    text_length: textLength,
+    elapsed_time_ms: elapsedTimeMs,
+  })
+}
+
+/**
+ * 긴글 모드의 한 구간 검사가 실패했을 때
+ *
+ * @param pageIdx 실패한 구간 번호 (0부터)
+ * @param errorMessage 앞 100자만 보낸다
+ */
+export const sendLongCheckFailedEvent = ({
+  pageIdx,
+  errorStage,
+  errorCode,
+  errorMessage,
+}: {
+  pageIdx: number
+  errorStage: LongErrorStage
+  errorCode: number
+  errorMessage: string
+}) => {
+  GAEvents.longCheckFailed({
+    page_idx: pageIdx,
+    error_stage: errorStage,
+    error_code: errorCode,
+    error_message: errorMessage.slice(0, 100),
+  })
+}
+
+/**
+ * 긴글 모드에서 "남은 부분 모두 검사"를 눌렀을 때
+ *
+ * @param remainingPageCnt 그 시점에 아직 검사를 요청하지 않은 구간 수
+ */
+export const sendLongCheckCheckAllClickedEvent = (remainingPageCnt: number) => {
+  GAEvents.longCheckCheckAllClicked({ remaining_page_cnt: remainingPageCnt })
+}
+
+/**
+ * 긴글 모드에서 같은 오류 모두 수정 · 모두 무시를 했을 때
+ *
+ * @param count 실제로 바꾼 곳의 수
+ * @param method 버튼(button) 또는 단축키(keyboard)
+ */
+export const sendBulkCorrectionAppliedEvent = ({
+  count,
+  correctedErrorType,
+  method,
+  bulkAction,
+}: {
+  count: number
+  correctedErrorType: CorrectedErrorType
+  method: 'button' | 'keyboard'
+  bulkAction: BulkAction
+}) => {
+  GAEvents.bulkCorrectionApplied({
+    count,
+    corrected_error_type: correctedErrorType,
+    method,
+    bulk_action: bulkAction,
+  })
+}
+
+/**
+ * 입력 화면에서 예측한 구간과 서버가 실제로 자른 구간이 달라 차례 검사로 바꿨을 때
+ *
+ * @param pageIdx 어긋난 구간 번호 (0부터)
+ * @param textLength 원문의 글자 수
+ */
+export const sendLongBoundaryMismatchEvent = ({
+  pageIdx,
+  textLength,
+}: {
+  pageIdx: number
+  textLength: number
+}) => {
+  GAEvents.longBoundaryMismatch({
+    page_idx: pageIdx,
+    text_length: textLength,
+  })
 }

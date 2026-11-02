@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { useKeyCombination } from '@frontend-opensource/use-react-hooks'
 import {
   useSpeller,
@@ -9,9 +9,15 @@ import {
   CheckPayload,
   checkText,
   CHECK_ERROR_MESSAGE,
+  splitPages,
+  startLongCheck,
   type CheckTextResult,
 } from '@/entities/speller'
 import { ContentLayout } from '@/shared/ui/content-layout'
+import { LONG_MODE_ENABLED, NORMAL_CHECK_QUERY } from '@/shared/config'
+import { useAppDispatch } from '@/shared/lib/use-redux'
+import { useBreakpoint } from '@/shared/lib/use-break-point'
+import { getBreakpoint } from '@/shared/lib/get-break-point'
 import {
   sendCheckCompletedEvent,
   sendCheckResultNoErrorEvent,
@@ -24,6 +30,11 @@ import { ResultsSkeleton } from './results-skeleton'
 import { SpellerControl } from './speller-control'
 import { VersionInfo } from './version-info'
 import { NoticeDialog } from './notice-dialog'
+import { useLongModePreference } from '../model/use-long-mode-preference'
+
+// 긴글 모드는 PC 전용 (1024px 이상)
+const isDesktop = (breakpoint: ReturnType<typeof getBreakpoint>) =>
+  breakpoint === 'desktop' || breakpoint === 'desktop-large'
 
 interface CheckState {
   result: CheckTextResult
@@ -44,8 +55,17 @@ const SpellerPage = () => {
   const [isPending, startTransition] = useTransition()
   const [checkState, setCheckState] = useState<CheckState | null>(null)
   const [isRedirectingToResult, setIsRedirectingToResult] = useState(false)
+  const dispatch = useAppDispatch()
+  const breakpoint = useBreakpoint()
+  const [longModeEnabled, setLongModeEnabled] = useLongModePreference()
+  const canUseLongMode = LONG_MODE_ENABLED && isDesktop(breakpoint)
+  // 원문은 저장할 때 줄바꿈을 정규화하므로 요청과 같은 기준으로 나뉜다
+  const pageCount = useMemo(
+    () => (canUseLongMode ? splitPages(originalText).length : 0),
+    [canUseLongMode, originalText],
+  )
 
-  const handleSpellCheck = () => {
+  const runNormalCheck = () => {
     const payload: CheckPayload = {
       text: originalText,
       isStrictCheck,
@@ -59,6 +79,42 @@ const SpellerPage = () => {
       })
     })
   }
+
+  const handleSpellCheck = () => {
+    // 긴글 모드: 요청 전에 결과 화면으로 이동하고, 구간 검사는 그 화면에서 한다
+    if (
+      LONG_MODE_ENABLED &&
+      longModeEnabled &&
+      isDesktop(getBreakpoint()) &&
+      splitPages(originalText).length >= 2
+    ) {
+      setIsRedirectingToResult(true)
+      dispatch(
+        startLongCheck({
+          text: originalText,
+          isStrictCheck,
+          startedAt: Date.now(),
+        }),
+      )
+      router.push('/results/long')
+      return
+    }
+    runNormalCheck()
+  }
+
+  // 긴글 화면에서 '일반 모드에서 검사'로 넘어온 경우: 긴글 모드를 건너뛰고 한 번 검사한다.
+  // 개발 모드에서 effect가 두 번 돌아도 요청은 한 번만 보낸다
+  const normalCheckRequestedRef = useRef(false)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (!params.has(NORMAL_CHECK_QUERY)) return
+    router.replace('/speller')
+    if (normalCheckRequestedRef.current || !originalText) return
+    normalCheckRequestedRef.current = true
+    runNormalCheck()
+    // 들어올 때 한 번만 본다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // 검사하기 단축키 설정
   useKeyCombination({
@@ -134,6 +190,7 @@ const SpellerPage = () => {
 
   useEffect(() => {
     router.prefetch('/results')
+    if (LONG_MODE_ENABLED) router.prefetch('/results/long')
   }, [router])
 
   if (isPending || isRedirectingToResult) {
@@ -154,7 +211,17 @@ const SpellerPage = () => {
           <div className='flex h-full w-full flex-col rounded-lg bg-white p-4 dark:bg-dark-surface tab:rounded-[1rem] tab:p-5 pc:p-6'>
             <SpellerTextInput />
             {/* 글자수 & 검사하기 버튼 */}
-            <SpellerControl />
+            <SpellerControl
+              longMode={
+                canUseLongMode
+                  ? {
+                      enabled: longModeEnabled,
+                      onChange: setLongModeEnabled,
+                      pageCount,
+                    }
+                  : undefined
+              }
+            />
           </div>
         </ContentLayout>
       </form>

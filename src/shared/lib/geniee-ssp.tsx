@@ -9,6 +9,10 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
  */
 export const INTERSTITIAL_ID = '1661649_nara-speller.co.kr_interstitial'
 
+/** 긴글 모드 페이지에 들어올 때 띄우는 PC 전면광고 슬롯 ID. 같은 래퍼(223680/3011)를 쓴다 */
+export const LONG_MODE_INTERSTITIAL_ID =
+  '1681177_nara-speller.co.kr_interstitial_pc'
+
 // Geniee SSP 광고 ID 상수 (guide에서 제공된 ads.ts 패턴 따름)
 export const ads = {
   overlay: '1597526_nara-speller.co.kr_overlay',
@@ -226,6 +230,18 @@ export const reloadAd = (slotId: string) => {
 }
 
 /**
+ * 화면 하단에 떠 있는 오버레이 광고를 걷어 낸다.
+ * 하단 광고를 두지 않는 페이지로 이동했을 때 사용
+ */
+export const removeOverlayAd = () => {
+  if (typeof window === 'undefined') return
+  window.gnshbrequest = window.gnshbrequest || { cmd: [] }
+  window.gnshbrequest.cmd.push(() => {
+    window.gnshbrequest.removeOverlay()
+  })
+}
+
+/**
  * ✅ 전면광고(인터스티셜) 렌더링 훅
  *
  * Geniee 제공 스니펫과 동일한 동작을 React 라이프사이클에 맞춰 옮긴 것:
@@ -235,36 +251,40 @@ export const reloadAd = (slotId: string) => {
  *
  * 첫 접속 시 1회만 송출하는 포맷이므로 라우팅 변경에 따른 재호출은 하지 않습니다.
  * (사용자별 24시간 1회 제한은 광고 플랫폼에서 처리)
+ *
+ * @param slotId 기본은 첫 접속용 슬롯. 긴글 모드는 LONG_MODE_INTERSTITIAL_ID
+ * @param enabled false면 송출하지 않음 (훅 인스턴스당 1회)
  */
-export const useRenderGenieeInterstitial = (isInitialized: boolean) => {
+export const useRenderGenieeInterstitial = (
+  isInitialized: boolean,
+  slotId: string = INTERSTITIAL_ID,
+  enabled = true,
+) => {
   const processedRef = useRef(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    if (!isInitialized) return
+    if (!isInitialized || !enabled) return
     if (processedRef.current) return // 세션 내 1회만 호출
 
     processedRef.current = true
 
     // ② 전면광고 컨테이너 생성
     const container = document.createElement('div')
-    container.setAttribute('data-cptid', INTERSTITIAL_ID)
+    container.setAttribute('data-cptid', slotId)
     document.body.appendChild(container)
 
     // ③ applyPassback 예약
     window.gnshbrequest = window.gnshbrequest || { cmd: [] }
     window.gnshbrequest.cmd.push(() => {
-      console.log('[Geniee] Executing applyPassback for interstitial.')
-      window.gnshbrequest.applyPassback(
-        INTERSTITIAL_ID,
-        `[data-cptid='${INTERSTITIAL_ID}']`,
-      )
+      console.log(`[Geniee] Executing applyPassback for ${slotId}.`)
+      window.gnshbrequest.applyPassback(slotId, `[data-cptid='${slotId}']`)
     })
 
     return () => {
       container.remove()
     }
-  }, [isInitialized])
+  }, [isInitialized, slotId, enabled])
 }
 
 /**

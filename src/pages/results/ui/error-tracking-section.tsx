@@ -5,12 +5,12 @@ import {
   useSpeller,
   CorrectMethodEnum,
   useSpellerRefs,
+  BulletBadge,
 } from '@/entities/speller'
 import { cn } from '@/shared/lib/tailwind-merge'
 import { ScrollContainer } from '@/shared/ui/scroll-container'
 import { ScrollGradientFade } from '@/shared/ui/scroll-gradient-fade'
 import { ErrorInfoSection } from './error-info-section'
-import { BulletBadge } from '../ui/bullet-badge'
 
 const ErrorTrackingSection = () => {
   const { errorRefs, errorScrollContainerRef, scrollSection } = useSpellerRefs()
