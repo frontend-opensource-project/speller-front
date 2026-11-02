@@ -99,7 +99,7 @@ const LongToolbar = ({
         </ActionButton>
         <ActionButton
           label='전체복사'
-          shortcut={`${mod} + ⇧ + C`}
+          shortcut={`${mod} + Shift + C`}
           onClick={onCopyAll}
         >
           <IconImage src='/icon/icon-copy-all.svg' />

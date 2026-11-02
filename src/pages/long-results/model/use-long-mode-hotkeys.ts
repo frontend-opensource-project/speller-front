@@ -12,7 +12,7 @@ interface LongModeHotkeyHandlers {
   editCustom: () => void // 5
   escape: () => void // 정보창이 닫혀 있을 때만 (열려 있으면 Radix가 닫는다)
   undo: () => void // Ctrl/⌘ + Z
-  copyAll: () => void // Ctrl/⌘ + ⇧ + C
+  copyAll: () => void // Ctrl/⌘ + Shift + C
   help: () => void // ?
 }
 
