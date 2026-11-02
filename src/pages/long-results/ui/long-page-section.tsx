@@ -53,7 +53,13 @@ const renderErrors = ({
         key={info.errorIdx}
         type='button'
         data-error-idx={info.errorIdx}
-        title={!isIgnored && firstCandidate ? `→ ${firstCandidate}` : undefined}
+        title={
+          isIgnored
+            ? '무시함'
+            : firstCandidate
+              ? `→ ${firstCandidate}`
+              : undefined
+        }
         aria-haspopup='dialog'
         aria-label={[
           `오류 ${info.orgStr}`,
@@ -68,8 +74,9 @@ const renderErrors = ({
         onClick={() => onSelectError(pageIdx, info.errorIdx)}
         className={cn(
           'inline whitespace-pre-wrap rounded-sm text-left',
+          // 직접 무시한 오류어는 일반 글자와 구분되도록 옅은 배경을 둔다
           isIgnored
-            ? 'hover:bg-slate-100 dark:hover:bg-dark-elevated'
+            ? 'bg-slate-200 hover:bg-slate-300/50 dark:bg-dark-elevated dark:hover:bg-dark-border'
             : isCorrected
               ? 'font-bold text-slate-600 dark:text-dark-text'
               : cn(
