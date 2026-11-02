@@ -23,6 +23,11 @@ import {
   type ErrorGroup,
   type ErrorGroupSort,
 } from '../lib/group-errors'
+import {
+  findAdjacentError,
+  findFirstError,
+  listPendingErrors,
+} from '../lib/error-nav'
 import { useVisiblePages } from '../model/use-visible-pages'
 import { useCheckQueue } from '../model/use-check-queue'
 import { useLongCorrections } from '../model/use-long-corrections'
@@ -47,6 +52,8 @@ const LongResultsPage = () => {
   const [sort, setSort] = useState<ErrorGroupSort>('document')
   const [hiddenMethods, setHiddenMethods] = useState<number[]>([])
   const [bulkCounts, setBulkCounts] = useState<Record<string, number>>({})
+  // 들어온 뒤 사용자가 스크롤하거나 오류를 고르기 전까지만 첫 오류를 자동으로 연다
+  const autoOpenRef = useRef(true)
 
   const { viewport, isScrolling } = useVisiblePages(containerRef, pages.length)
   const queue = useCheckQueue({ viewport, isScrolling })
@@ -107,11 +114,36 @@ const LongResultsPage = () => {
 
   const openError = useCallback(
     (pageIdx: number, errorIdx: number) => {
+      autoOpenRef.current = false
       anchorRef.current = findErrorElement(pageIdx, errorIdx)
       dispatch(selectLongError({ pageIdx, errorIdx }))
       setIsOverlayOpen(true)
     },
     [dispatch],
+  )
+
+  // 오류어가 문서 화면 밖에 있으면 가운데로 옮긴 뒤 정보창을 연다.
+  // scrollIntoView는 창 전체까지 움직이므로 문서 영역만 스크롤한다
+  const revealError = useCallback(
+    (pageIdx: number, errorIdx: number) => {
+      const container = containerRef.current
+      const el = findErrorElement(pageIdx, errorIdx)
+      if (container && el) {
+        const box = container.getBoundingClientRect()
+        const rect = el.getBoundingClientRect()
+        if (rect.top < box.top || rect.bottom > box.bottom) {
+          container.scrollTo({
+            top:
+              container.scrollTop +
+              rect.top -
+              box.top -
+              (container.clientHeight - rect.height) / 2,
+          })
+        }
+      }
+      openError(pageIdx, errorIdx)
+    },
+    [openError],
   )
 
   // 묶음을 누르면 아직 처리하지 않은 첫 위치로 문서를 옮기고 정보창을 연다
@@ -121,13 +153,39 @@ const LongResultsPage = () => {
         group.items.find(item => !isProcessed({ ignored }, item)) ??
         group.items[0]
       if (!target) return
-      findErrorElement(target.pageIdx, target.info.errorIdx)?.scrollIntoView({
-        block: 'center',
-      })
-      openError(target.pageIdx, target.info.errorIdx)
+      revealError(target.pageIdx, target.info.errorIdx)
     },
-    [ignored, openError],
+    [ignored, revealError],
   )
+
+  // 이전 · 다음 오류는 아직 처리하지 않았고 목록에서 숨기지 않은 오류만 오간다
+  const pendingErrors = useMemo(
+    () => listPendingErrors({ pages, ignored }, hiddenMethods),
+    [pages, ignored, hiddenMethods],
+  )
+  const currentPosition =
+    selected && selectedInfo
+      ? { pageIdx: selected.pageIdx, start: selectedInfo.start }
+      : null
+  const prevError = currentPosition
+    ? findAdjacentError(pendingErrors, currentPosition, -1)
+    : null
+  const nextError = currentPosition
+    ? findAdjacentError(pendingErrors, currentPosition, 1)
+    : null
+  const currentIndex = pendingErrors.findIndex(item => item.key === selectedKey)
+
+  // 첫 오류: 앞 구간 검사가 끝나 첫 오류가 정해지면 한 번만 연다
+  useEffect(() => {
+    if (isScrolling) autoOpenRef.current = false
+  }, [isScrolling])
+  useEffect(() => {
+    if (!autoOpenRef.current) return
+    const first = findFirstError({ pages, ignored }, hiddenMethods)
+    if (first === undefined) return
+    autoOpenRef.current = false
+    if (first) revealError(first.pageIdx, first.info.errorIdx)
+  }, [pages, ignored, hiddenMethods, revealError])
 
   const handleToggleMethod = useCallback((method: number) => {
     setHiddenMethods(prev =>
@@ -242,6 +300,21 @@ const LongResultsPage = () => {
           isIgnored={!!selectedKey && !!ignored[selectedKey]}
           group={selectedGroup}
           corrections={corrections}
+          onPrev={
+            prevError
+              ? () => revealError(prevError.pageIdx, prevError.info.errorIdx)
+              : null
+          }
+          onNext={
+            nextError
+              ? () => revealError(nextError.pageIdx, nextError.info.errorIdx)
+              : null
+          }
+          position={
+            currentIndex >= 0
+              ? { index: currentIndex, total: pendingErrors.length }
+              : null
+          }
         />
       )}
     </ContentLayout>

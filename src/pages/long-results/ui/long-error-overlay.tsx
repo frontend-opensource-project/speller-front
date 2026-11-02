@@ -2,7 +2,7 @@
 
 import { FormEvent, RefObject, useEffect, useState } from 'react'
 import * as PopoverPrimitive from '@radix-ui/react-popover'
-import { XIcon } from 'lucide-react'
+import { ChevronLeftIcon, ChevronRightIcon, XIcon } from 'lucide-react'
 import {
   BulletBadge,
   CorrectMethodEnum,
@@ -38,6 +38,9 @@ interface LongErrorOverlayProps {
   isIgnored: boolean
   group: ErrorGroup | null // 같은 묶음 (모두 수정 · 모두 무시)
   corrections: ReturnType<typeof useLongCorrections>
+  onPrev: (() => void) | null // 앞 오류가 없으면 null
+  onNext: (() => void) | null
+  position: { index: number; total: number } | null // 남은 오류 중 몇 번째인지
 }
 
 /** 오류어를 누르면 그 자리에 뜨는 오류 정보창 */
@@ -51,6 +54,9 @@ const LongErrorOverlay = ({
   isIgnored,
   group,
   corrections,
+  onPrev,
+  onNext,
+  position,
 }: LongErrorOverlayProps) => {
   const ref = { pageIdx, info }
   const candidates = parseCandidateWords(info.candWord).filter(c => c.word)
@@ -139,14 +145,41 @@ const LongErrorOverlay = ({
             {isCorrected && <span className='text-blue-500'>· 수정함</span>}
             {isIgnored && <span>· 무시함</span>}
           </div>
-          <button
-            type='button'
-            aria-label='닫기'
-            className='text-slate-400 hover:text-slate-600 dark:text-dark-subtle'
-            onClick={() => onOpenChange(false)}
-          >
-            <XIcon className='size-4' />
-          </button>
+          <div className='flex items-center gap-1 text-slate-400 dark:text-dark-subtle'>
+            {position && (
+              <span className='mr-1 text-sm tabular-nums'>
+                {position.index + 1}/{position.total}
+              </span>
+            )}
+            <button
+              type='button'
+              aria-label='이전 오류'
+              title='이전 오류'
+              className='rounded p-0.5 hover:text-slate-600 disabled:opacity-30 disabled:hover:text-slate-400'
+              disabled={!onPrev}
+              onClick={() => onPrev?.()}
+            >
+              <ChevronLeftIcon className='size-4' />
+            </button>
+            <button
+              type='button'
+              aria-label='다음 오류'
+              title='다음 오류'
+              className='rounded p-0.5 hover:text-slate-600 disabled:opacity-30 disabled:hover:text-slate-400'
+              disabled={!onNext}
+              onClick={() => onNext?.()}
+            >
+              <ChevronRightIcon className='size-4' />
+            </button>
+            <button
+              type='button'
+              aria-label='닫기'
+              className='ml-1 rounded p-0.5 hover:text-slate-600'
+              onClick={() => onOpenChange(false)}
+            >
+              <XIcon className='size-4' />
+            </button>
+          </div>
         </div>
 
         <p
