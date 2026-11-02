@@ -9,6 +9,7 @@ export {
 export { normalizeLineBreaks } from './lib/normalize-line-breaks'
 export { splitPages, PAGE_THRESHOLD, type PageRange } from './lib/split-pages'
 export { toUtf16ErrInfo } from './lib/server-offset'
+export { extractContext } from './lib/extract-context'
 export {
   getPageText,
   getCorrectedPageText,
@@ -56,3 +57,5 @@ export {
   type PageRef,
 } from './model/long-check-slice'
 export { SpellerSetting } from './ui/speller-setting'
+export { BulletBadge } from './ui/bullet-badge'
+export { HelpSection } from './ui/help-section'

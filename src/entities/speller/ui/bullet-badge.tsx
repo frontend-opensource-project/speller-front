@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { getBgMethodColor, CorrectMethodEnum } from '@/entities/speller'
+import { getBgMethodColor } from '../lib/get-method-color'
+import { CorrectMethodEnum } from '../model/speller-schema'
 import { cn } from '@/shared/lib/tailwind-merge'
 
 interface BulletBadgeProps {

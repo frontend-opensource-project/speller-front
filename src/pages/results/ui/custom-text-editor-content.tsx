@@ -1,9 +1,8 @@
-import { getTextMethodColor } from '@/entities/speller'
+import { getTextMethodColor, BulletBadge } from '@/entities/speller'
 import { cn } from '@/shared/lib/tailwind-merge'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { useUserReplace } from '../model/use-user-replace'
-import { BulletBadge } from '../ui/bullet-badge'
 import { sendManualCorrectionSubmittedEvent } from '@/shared/lib/send-ga-event'
 import { getCorrectedErrorType } from '@/entities/speller/lib/get-corrected-error-type'
 

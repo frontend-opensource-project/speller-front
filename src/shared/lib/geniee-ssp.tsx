@@ -226,6 +226,18 @@ export const reloadAd = (slotId: string) => {
 }
 
 /**
+ * 화면 하단에 떠 있는 오버레이 광고를 걷어 낸다.
+ * 하단 광고를 두지 않는 페이지로 이동했을 때 사용
+ */
+export const removeOverlayAd = () => {
+  if (typeof window === 'undefined') return
+  window.gnshbrequest = window.gnshbrequest || { cmd: [] }
+  window.gnshbrequest.cmd.push(() => {
+    window.gnshbrequest.removeOverlay()
+  })
+}
+
+/**
  * ✅ 전면광고(인터스티셜) 렌더링 훅
  *
  * Geniee 제공 스니펫과 동일한 동작을 React 라이프사이클에 맞춰 옮긴 것:

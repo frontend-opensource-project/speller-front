@@ -6,17 +6,17 @@ import {
   useSpeller,
   type ErrorInfo,
   parseCandidateWords,
+  extractContext,
+  BulletBadge,
+  HelpSection,
 } from '@/entities/speller'
 import { ReportForm } from '@/entities/report'
 import { Button } from '@/shared/ui/button'
 import { cn } from '@/shared/lib/tailwind-merge'
 import EditIcon from '@/shared/ui/icon/icon-edit.svg'
 import SendIcon from '@/shared/ui/icon/icon-send-gray.svg'
-import { HelpSection } from './help-section'
 import { CustomTextEditor } from './custom-text-editor'
 import { logClickReplaceAction } from '../api/log-click-replace-action'
-import { extractContext } from '../lib/extractContext'
-import { BulletBadge } from '../ui/bullet-badge'
 import {
   sendCorrectionFeedbackOpenedEvent,
   sendCorrectionWordClickedEvent,
