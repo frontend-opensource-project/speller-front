@@ -20,7 +20,7 @@ const LongAdblockNotice = ({ open, onNormalCheck }: LongAdblockNoticeProps) => (
         // Esc · 바깥 클릭으로 닫지 않는다
         onEscapeKeyDown={e => e.preventDefault()}
         onPointerDownOutside={e => e.preventDefault()}
-        className='fixed left-1/2 top-1/2 z-50 flex w-[calc(100%-2rem)] max-w-[28rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center rounded-[1.25rem] bg-white px-8 pb-7 pt-9 text-center text-slate-600 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 dark:bg-dark-surface dark:text-dark-text'
+        className='fixed left-1/2 top-1/2 z-50 flex w-[calc(100%-2rem)] max-w-[32rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center rounded-[1.25rem] bg-white px-8 pb-7 pt-9 text-center text-slate-600 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 dark:bg-dark-surface dark:text-dark-text'
       >
         <ShieldAlertIcon
           aria-hidden
@@ -30,10 +30,16 @@ const LongAdblockNotice = ({ open, onNormalCheck }: LongAdblockNoticeProps) => (
           광고 차단이 감지되었습니다
         </DialogPrimitive.Title>
         <DialogPrimitive.Description className='mt-3 break-keep text-base leading-relaxed text-slate-500 dark:text-dark-subtle'>
-          바른한글은 광고 수익으로 무료 검사를 운영합니다.
-          <br />
-          긴글 모드를 쓰시려면 광고 차단을 해제한 뒤 다시 검사해 주세요. 광고
-          차단을 유지하신 채로는 일반 모드에서 검사할 수 있습니다.
+          {/* 가운데 정렬이라 문장 중간에서 줄이 바뀌지 않도록 한 줄씩 나눈다 */}
+          <span className='block'>
+            바른한글은 광고 수익으로 무료 검사를 운영합니다.
+          </span>
+          <span className='block'>
+            긴글 모드는 광고 차단을 해제하면 쓸 수 있습니다.
+          </span>
+          <span className='block'>
+            광고 차단 중에는 일반 모드로 검사해 주세요.
+          </span>
         </DialogPrimitive.Description>
         <div className='mt-7 flex w-full flex-col gap-2'>
           <button
