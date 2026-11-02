@@ -11,6 +11,7 @@ import {
   getPageText,
   resetLongCheck,
   selectLongError,
+  undoLongCheck,
   useSpeller,
 } from '@/entities/speller'
 import { useAppDispatch, useAppSelector } from '@/shared/lib/use-redux'
@@ -25,6 +26,7 @@ import {
 } from '../lib/group-errors'
 import {
   findAdjacentError,
+  findUncheckedPageAfter,
   findFirstError,
   listPendingErrors,
   type ErrorPosition,
@@ -37,17 +39,27 @@ import {
 } from '../model/use-long-corrections'
 import { LongPageSection } from './long-page-section'
 import { LongErrorPanel } from './long-error-panel'
-import { LongErrorOverlay } from './long-error-overlay'
+import { useLongModeHotkeys } from '../model/use-long-mode-hotkeys'
+import {
+  LongErrorOverlay,
+  METHOD_LABEL,
+  type OverlayCommands,
+} from './long-error-overlay'
 import { LongToolbar } from './long-toolbar'
+import { LongHotkeyHelp } from './long-hotkey-help'
 
 // 시간 초과가 연달아 이만큼 나면 문단을 나눠 보라고 안내한다
 const TIMEOUT_HINT_COUNT = 3
+
+// 첫 진입 때 단축키 안내를 한 번만 보여 준다
+const HOTKEY_HINT_KEY = 'longModeHotkeyHint'
 
 const LongResultsPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const state = useAppSelector(state => state.longCheck)
-  const { originalText, pages, ignored, selected, isStrictCheck } = state
+  const { originalText, pages, ignored, selected, isStrictCheck, undoStack } =
+    state
   const { handleOriginalTextChange } = useSpeller()
   const { copyText } = useClipboard()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -58,9 +70,13 @@ const LongResultsPage = () => {
   const [bulkCounts, setBulkCounts] = useState<Record<string, number>>({})
   // 들어온 뒤 사용자가 스크롤하거나 오류를 고르기 전까지만 첫 오류를 자동으로 연다
   const autoOpenRef = useRef(true)
-  // 대치어 선택 · 무시를 하면 이 위치의 다음 오류로 넘어간다 (상태가 바뀐 뒤 처리)
+  // 이 위치의 다음 오류로 넘어간다 (상태가 바뀐 뒤 처리).
+  // 검사한 곳에 다음 오류가 없으면 다음 구간을 검사해 가며 기다린다
   const [advanceFrom, setAdvanceFrom] = useState<ErrorPosition | null>(null)
   const currentPositionRef = useRef<ErrorPosition | null>(null)
+  const overlayCommandsRef = useRef<OverlayCommands | null>(null)
+  const [isHelpOpen, setIsHelpOpen] = useState(false)
+  const [announcement, setAnnouncement] = useState('')
 
   const { viewport, isScrolling } = useVisiblePages(containerRef, pages.length)
   const queue = useCheckQueue({ viewport, isScrolling })
@@ -141,6 +157,7 @@ const LongResultsPage = () => {
   const openError = useCallback(
     (pageIdx: number, errorIdx: number) => {
       autoOpenRef.current = false
+      setAdvanceFrom(null)
       anchorRef.current = findErrorElement(pageIdx, errorIdx)
       dispatch(selectLongError({ pageIdx, errorIdx }))
       setIsOverlayOpen(true)
@@ -202,13 +219,94 @@ const LongResultsPage = () => {
   const currentIndex = pendingErrors.findIndex(item => item.key === selectedKey)
   currentPositionRef.current = currentPosition
 
-  // 처리한 오류 다음으로 넘어간다. 뒤에 남은 오류가 없으면 지금 정보창을 그대로 둔다
+  const { prioritize } = queue
+  const hasUncheckedAfter = (pageIdx: number) =>
+    findUncheckedPageAfter(pages, pageIdx) >= 0
+
+  // 다음 오류로 넘어간다. 검사한 곳에 없으면 뒤 구간을 하나씩 먼저 검사해 가며 기다리고,
+  // 끝까지 검사해도 없으면 지금 정보창을 그대로 둔다
   useEffect(() => {
     if (!advanceFrom) return
-    setAdvanceFrom(null)
     const next = findAdjacentError(pendingErrors, advanceFrom, 1)
-    if (next) revealError(next.pageIdx, next.info.errorIdx)
-  }, [advanceFrom, pendingErrors, revealError])
+    if (next) {
+      revealError(next.pageIdx, next.info.errorIdx)
+      return
+    }
+    const unchecked = findUncheckedPageAfter(pages, advanceFrom.pageIdx)
+    if (unchecked < 0) setAdvanceFrom(null)
+    else prioritize(unchecked)
+  }, [advanceFrom, pendingErrors, pages, revealError, prioritize])
+
+  // 선택한 오류가 없으면 문서 맨 앞에서 찾는다
+  const goNext = () => {
+    const from = currentPositionRef.current ?? { pageIdx: -1, start: -1 }
+    if (!findAdjacentError(pendingErrors, from, 1)) {
+      if (!hasUncheckedAfter(from.pageIdx)) {
+        toast({ description: '마지막 오류입니다.' })
+        return
+      }
+      toast({ description: '다음 구간을 검사하고 있습니다.' })
+    }
+    setAdvanceFrom(from)
+  }
+
+  const goPrev = () => {
+    const target = currentPositionRef.current
+      ? findAdjacentError(pendingErrors, currentPositionRef.current, -1)
+      : pendingErrors[pendingErrors.length - 1]
+    if (target) revealError(target.pageIdx, target.info.errorIdx)
+  }
+
+  const handleOverlayOpenChange = useCallback((open: boolean) => {
+    setIsOverlayOpen(open)
+    if (!open) setAdvanceFrom(null)
+  }, [])
+
+  // 화면 상태만 되돌린다. 이미 보낸 /notChange는 취소하지 않는다
+  const handleUndo = () => {
+    const entry = undoStack[undoStack.length - 1]
+    if (!entry) return
+    dispatch(undoLongCheck())
+    toast({
+      description:
+        entry.keys.length > 1
+          ? `${entry.keys.length}곳을 되돌렸습니다.`
+          : '되돌렸습니다.',
+    })
+    const [pageIdx, errorIdx] = entry.keys[0].split(':').map(Number)
+    revealError(pageIdx, errorIdx)
+  }
+
+  // 오류를 고르면 스크린리더에 위치와 대치어를 알린다
+  useEffect(() => {
+    if (!selectedInfo) return
+    const candidate = selectedGroup?.firstCandidate
+    setAnnouncement(
+      [
+        currentIndex >= 0 && `오류 ${currentIndex + 1}/${pendingErrors.length}`,
+        METHOD_LABEL[selectedInfo.correctMethod],
+        selectedInfo.orgStr,
+        candidate && `대치어 ${candidate}`,
+      ]
+        .filter(Boolean)
+        .join(', '),
+    )
+    // 선택이 바뀔 때만 알린다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedKey])
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(HOTKEY_HINT_KEY)) return
+      localStorage.setItem(HOTKEY_HINT_KEY, 'seen')
+    } catch {
+      return
+    }
+    toast({
+      description:
+        '키보드로도 교정할 수 있습니다.\n? 키를 눌러 단축키를 확인해 보세요.',
+    })
+  }, [])
 
   // 첫 오류: 앞 구간 검사가 끝나 첫 오류가 정해지면 한 번만 연다
   useEffect(() => {
@@ -234,6 +332,7 @@ const LongResultsPage = () => {
   const handleRetry = useCallback((pageIdx: number) => retry(pageIdx), [retry])
 
   const handleCopyAll = () => {
+    if (!originalText) return
     copyText(getCorrectedText(state))
     toast({
       description:
@@ -242,6 +341,41 @@ const LongResultsPage = () => {
           : '복사 완료!\n원하는 곳에 붙여넣어 보세요.',
     })
   }
+
+  // 정보창이 닫혀 있어도 선택한 오류에 동작한다. 선택한 오류가 없으면 첫 오류를 고른다
+  const runOnSelected = (command: keyof OverlayCommands) => {
+    if (!selected || !selectedInfo) {
+      goNext()
+      return
+    }
+    setIsOverlayOpen(true)
+    if (command === 'focusCustom') {
+      // 정보창이 닫혀 있었다면 그려진 뒤에 입력 칸이 생긴다
+      setTimeout(() => overlayCommandsRef.current?.focusCustom())
+    } else {
+      overlayCommandsRef.current?.[command]()
+    }
+  }
+
+  useLongModeHotkeys(
+    {
+      next: goNext,
+      prev: goPrev,
+      correctFirst: () => runOnSelected('correctFirst'),
+      ignore: () => runOnSelected('ignore'),
+      ignoreGroup: () => runOnSelected('ignoreGroup'),
+      correctGroup: () => runOnSelected('correctGroup'),
+      editCustom: () => runOnSelected('focusCustom'),
+      // 정보창이 열려 있으면 Radix가 Esc로 닫으므로 여기에는 닫힌 뒤에만 온다
+      escape: () => {
+        if (selected) dispatch(selectLongError(null))
+      },
+      undo: handleUndo,
+      copyAll: handleCopyAll,
+      help: () => setIsHelpOpen(true),
+    },
+    !!originalText && !isHelpOpen,
+  )
 
   const handleNewText = () => {
     handleOriginalTextChange('')
@@ -267,6 +401,9 @@ const LongResultsPage = () => {
         onCopyAll={handleCopyAll}
         onNewText={handleNewText}
         onBack={() => router.push('/speller')}
+        canUndo={undoStack.length > 0}
+        onUndo={handleUndo}
+        onHelp={() => setIsHelpOpen(true)}
       />
       <div className='flex min-h-0 gap-3'>
         <div className='flex min-w-0 flex-1 flex-col gap-2'>
@@ -292,9 +429,12 @@ const LongResultsPage = () => {
               될 수 있습니다.
             </div>
           )}
+          {/* 광고 iframe으로 포커스가 넘어갔어도 문서를 누르면 단축키가 다시 동작하도록 포커스를 받는다 */}
           <div
             ref={containerRef}
-            className='min-h-0 flex-1 overflow-y-auto rounded-[1rem] bg-white p-6 dark:bg-dark-surface'
+            tabIndex={-1}
+            aria-label='교정 문서'
+            className='min-h-0 flex-1 overflow-y-auto rounded-[1rem] bg-white p-6 outline-none dark:bg-dark-surface'
           >
             {pages.map((page, pageIdx) => (
               <LongPageSection
@@ -328,7 +468,7 @@ const LongResultsPage = () => {
         <LongErrorOverlay
           anchorRef={anchorRef}
           open={isOverlayOpen}
-          onOpenChange={setIsOverlayOpen}
+          onOpenChange={handleOverlayOpenChange}
           pageIdx={selected.pageIdx}
           info={selectedInfo}
           pageText={getPageText(state, selected.pageIdx)}
@@ -341,8 +481,8 @@ const LongResultsPage = () => {
               : null
           }
           onNext={
-            nextError
-              ? () => revealError(nextError.pageIdx, nextError.info.errorIdx)
+            nextError || (selected && hasUncheckedAfter(selected.pageIdx))
+              ? goNext
               : null
           }
           position={
@@ -350,8 +490,13 @@ const LongResultsPage = () => {
               ? { index: currentIndex, total: pendingErrors.length }
               : null
           }
+          commandsRef={overlayCommandsRef}
         />
       )}
+      <LongHotkeyHelp open={isHelpOpen} onOpenChange={setIsHelpOpen} />
+      <div aria-live='polite' className='sr-only'>
+        {announcement}
+      </div>
     </ContentLayout>
   )
 }

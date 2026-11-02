@@ -54,6 +54,17 @@ const renderErrors = ({
         type='button'
         data-error-idx={info.errorIdx}
         title={!isIgnored && firstCandidate ? `→ ${firstCandidate}` : undefined}
+        aria-haspopup='dialog'
+        aria-label={[
+          `오류 ${info.orgStr}`,
+          isIgnored
+            ? '무시함'
+            : isCorrected
+              ? `${info.crtStr}(으)로 수정함`
+              : firstCandidate && `대치어 ${firstCandidate}`,
+        ]
+          .filter(Boolean)
+          .join(', ')}
         onClick={() => onSelectError(pageIdx, info.errorIdx)}
         className={cn(
           'inline whitespace-pre-wrap rounded-sm text-left',

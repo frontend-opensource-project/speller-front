@@ -1,6 +1,13 @@
 'use client'
 
-import { FormEvent, RefObject, useEffect, useState } from 'react'
+import {
+  FormEvent,
+  MutableRefObject,
+  RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import * as PopoverPrimitive from '@radix-ui/react-popover'
 import { ChevronLeftIcon, ChevronRightIcon, XIcon } from 'lucide-react'
 import {
@@ -20,12 +27,22 @@ import { cn } from '@/shared/lib/tailwind-merge'
 import type { ErrorGroup } from '../lib/group-errors'
 import type { useLongCorrections } from '../model/use-long-corrections'
 import { sendReport } from '../api/long-logs'
+import { Kbd } from './kbd'
 
 const METHOD_LABEL: Record<number, string> = {
   [CorrectMethodEnum.enum.어법]: '어법 오류',
   [CorrectMethodEnum.enum.문맥]: '문맥상 오류',
   [CorrectMethodEnum.enum.흔한실수]: '흔한 실수',
   [CorrectMethodEnum.enum.분석실패]: '분석 실패',
+}
+
+// 단축키가 지금 정보창의 동작을 부를 때 쓰는 함수들
+interface OverlayCommands {
+  correctFirst: () => void
+  ignore: () => void
+  ignoreGroup: () => void
+  correctGroup: () => void
+  focusCustom: () => void
 }
 
 interface LongErrorOverlayProps {
@@ -41,6 +58,7 @@ interface LongErrorOverlayProps {
   onPrev: (() => void) | null // 앞 오류가 없으면 null
   onNext: (() => void) | null
   position: { index: number; total: number } | null // 남은 오류 중 몇 번째인지
+  commandsRef: MutableRefObject<OverlayCommands | null>
 }
 
 /** 오류어를 누르면 그 자리에 뜨는 오류 정보창 */
@@ -57,6 +75,7 @@ const LongErrorOverlay = ({
   onPrev,
   onNext,
   position,
+  commandsRef,
 }: LongErrorOverlayProps) => {
   const ref = { pageIdx, info }
   const candidates = parseCandidateWords(info.candWord).filter(c => c.word)
@@ -65,6 +84,7 @@ const LongErrorOverlay = ({
   const [confirmBulk, setConfirmBulk] = useState(false)
   const [isReporting, setIsReporting] = useState(false)
   const [comment, setComment] = useState('')
+  const customInputRef = useRef<HTMLInputElement>(null)
 
   // 다른 오류로 바뀌면 입력 중이던 값을 비운다
   useEffect(() => {
@@ -96,6 +116,24 @@ const LongErrorOverlay = ({
     if (!group) return
     const count = corrections.ignoreGroup(group)
     toast({ description: `${count}곳을 무시했습니다.` })
+  }
+
+  // 무시한 오류는 다시 무시하지 않는다 (/notChange 중복 전송)
+  const handleIgnore = () => {
+    if (!isIgnored) corrections.ignore([ref])
+  }
+
+  const handleCorrectFirst = () => {
+    if (candidates[0]) corrections.choose(ref, candidates[0].word)
+  }
+
+  commandsRef.current = {
+    correctFirst: handleCorrectFirst,
+    ignore: handleIgnore,
+    ignoreGroup: () => showGroupActions && handleIgnoreGroup(),
+    correctGroup: () =>
+      showGroupActions && !!group?.firstCandidate && handleCorrectGroup(),
+    focusCustom: () => customInputRef.current?.focus(),
   }
 
   const handleCustomSubmit = (e: FormEvent) => {
@@ -137,6 +175,15 @@ const LongErrorOverlay = ({
           if (target?.closest('[data-error-idx]')) e.preventDefault()
         }}
         onOpenAutoFocus={e => e.preventDefault()}
+        // 직접 수정 칸에서 Esc를 누르면 먼저 그 칸만 닫는다
+        onEscapeKeyDown={e => {
+          if (document.activeElement === customInputRef.current) {
+            e.preventDefault()
+            setCustomWord('')
+            customInputRef.current?.blur()
+          }
+        }}
+        aria-label='오류 정보'
       >
         <div className='flex items-start justify-between gap-2'>
           <div className='flex items-center gap-2 text-sm text-slate-500 dark:text-dark-subtle'>
@@ -154,7 +201,7 @@ const LongErrorOverlay = ({
             <button
               type='button'
               aria-label='이전 오류'
-              title='이전 오류'
+              title='이전 오류 (←)'
               className='rounded p-0.5 hover:text-slate-600 disabled:opacity-30 disabled:hover:text-slate-400'
               disabled={!onPrev}
               onClick={() => onPrev?.()}
@@ -164,7 +211,7 @@ const LongErrorOverlay = ({
             <button
               type='button'
               aria-label='다음 오류'
-              title='다음 오류'
+              title='다음 오류 (→)'
               className='rounded p-0.5 hover:text-slate-600 disabled:opacity-30 disabled:hover:text-slate-400'
               disabled={!onNext}
               onClick={() => onNext?.()}
@@ -195,15 +242,17 @@ const LongErrorOverlay = ({
           <h3 className='mb-1 text-sm font-semibold'>대치어</h3>
           {candidates.length > 0 ? (
             <div className='flex flex-wrap gap-2'>
-              {candidates.map(({ id, word }) => (
+              {candidates.map(({ id, word }, idx) => (
                 <Button
                   key={id}
                   size='sm'
                   variant={info.crtStr === word ? 'default' : 'outline'}
                   className='h-auto min-h-8 whitespace-pre-wrap break-all text-left text-base'
                   onClick={() => corrections.choose(ref, word)}
+                  aria-keyshortcuts={idx === 0 ? 'Enter 2' : undefined}
                 >
                   {word}
+                  {idx === 0 && <Kbd>Enter</Kbd>}
                 </Button>
               ))}
             </div>
@@ -214,9 +263,11 @@ const LongErrorOverlay = ({
           )}
           <form onSubmit={handleCustomSubmit} className='mt-2 flex gap-2'>
             <Input
+              ref={customInputRef}
               value={customWord}
               onChange={e => setCustomWord(e.target.value)}
-              placeholder='직접 수정해 보세요'
+              placeholder='직접 수정해 보세요 (5)'
+              aria-keyshortcuts='5'
               aria-label='대치어 직접 입력'
               className='h-8 text-base'
             />
@@ -239,9 +290,11 @@ const LongErrorOverlay = ({
             <Button
               size='sm'
               variant='outline'
-              onClick={() => corrections.ignore([ref])}
+              onClick={handleIgnore}
+              aria-keyshortcuts='1'
             >
               무시
+              <Kbd>1</Kbd>
             </Button>
           )}
           {showGroupActions && (
@@ -251,13 +304,21 @@ const LongErrorOverlay = ({
                 variant={confirmBulk ? 'default' : 'secondary'}
                 onClick={handleCorrectGroup}
                 disabled={!group.firstCandidate}
+                aria-keyshortcuts='4'
               >
                 {confirmBulk
                   ? `정말 ${remaining}곳을 모두 바꿀까요?`
                   : `같은 오류 모두 수정 (${remaining}곳)`}
+                <Kbd>4</Kbd>
               </Button>
-              <Button size='sm' variant='secondary' onClick={handleIgnoreGroup}>
+              <Button
+                size='sm'
+                variant='secondary'
+                onClick={handleIgnoreGroup}
+                aria-keyshortcuts='3'
+              >
                 모두 무시 ({remaining}곳)
+                <Kbd>3</Kbd>
               </Button>
             </>
           )}
@@ -316,4 +377,4 @@ const LongErrorOverlay = ({
   )
 }
 
-export { LongErrorOverlay, METHOD_LABEL }
+export { LongErrorOverlay, METHOD_LABEL, type OverlayCommands }
