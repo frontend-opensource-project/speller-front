@@ -224,7 +224,7 @@ const LongErrorOverlay = ({
               disabled={!onPrev}
               onClick={() => onPrev?.()}
             >
-              <i className='size-[22px] bg-icon-circle-arrow bg-contain bg-center bg-no-repeat' />
+              <CircleArrowIcon />
             </IconButton>
             <IconButton
               label='다음 오류'
@@ -232,7 +232,7 @@ const LongErrorOverlay = ({
               disabled={!onNext}
               onClick={() => onNext?.()}
             >
-              <i className='size-[22px] rotate-180 bg-icon-circle-arrow bg-contain bg-center bg-no-repeat' />
+              <CircleArrowIcon className='rotate-180' />
             </IconButton>
             <IconButton
               label='닫기'
@@ -425,6 +425,26 @@ const DIVIDER = 'mb-[14px] mt-4 border-slate-200 dark:border-dark-border'
 
 const PRIMARY_BUTTON =
   'h-9 shrink-0 rounded-md bg-blue-500 px-[14px] text-[14px] font-semibold text-white hover:bg-blue-500/90 disabled:bg-slate-300 dark:disabled:bg-dark-border'
+
+// icon-circle-arrow.svg와 같은 모양. 파일은 원 배경이 흰색으로 고정이라 다크 모드에서 튀므로 색을 테마로 준다
+const CircleArrowIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox='0 0 24 24'
+    aria-hidden
+    className={cn('size-[22px] shrink-0', className)}
+  >
+    <rect
+      width='24'
+      height='24'
+      rx='12'
+      className='fill-white dark:fill-dark-elevated'
+    />
+    <path
+      d='M8.50489 11.3794C8.13295 11.6555 8.12329 12.209 8.48537 12.4979L12.9142 16.0321C13.3721 16.3974 14.0501 16.0783 14.0603 15.4926L14.1809 8.58108C14.1911 7.9954 13.5247 7.65283 13.0544 8.00199L8.50489 11.3794Z'
+      className='fill-slate-400 dark:fill-dark-subtle'
+    />
+  </svg>
+)
 
 // 머리의 이전 · 다음 · 닫기 버튼
 const IconButton = ({
