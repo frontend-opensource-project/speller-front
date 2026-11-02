@@ -204,7 +204,9 @@ const LongErrorOverlay = ({
           <div className='flex items-center gap-2 text-[14px] font-medium text-slate-500 dark:text-dark-subtle'>
             <BulletBadge method={info.correctMethod} className='size-[10px]' />
             {METHOD_LABEL[info.correctMethod] ?? '오류'}
-            {isCorrected && <span className='text-blue-500'>· 수정함</span>}
+            {isCorrected && (
+              <span className='text-blue-500 dark:text-blue-200'>· 수정함</span>
+            )}
             {isIgnored && <span>· 무시함</span>}
           </div>
           <div className='flex items-center gap-[6px]'>
@@ -267,12 +269,12 @@ const LongErrorOverlay = ({
               aria-keyshortcuts='Enter 2'
               onClick={() => corrections.choose(ref, firstCandidate.word)}
               className={cn(
-                'flex w-full items-center justify-between gap-2 rounded-md bg-white px-[10px] py-2 text-left shadow-sm hover:ring-1 hover:ring-inset hover:ring-blue-500 dark:bg-dark-surface',
+                'flex w-full items-center justify-between gap-2 rounded-md bg-white px-[10px] py-2 text-left shadow-sm hover:ring-1 hover:ring-inset hover:ring-blue-500 dark:bg-dark-surface dark:hover:ring-blue-300',
                 info.crtStr === firstCandidate.word &&
-                  'ring-1 ring-inset ring-blue-500',
+                  'ring-1 ring-inset ring-blue-500 dark:ring-blue-300',
               )}
             >
-              <span className='whitespace-pre-wrap break-all text-[16px] font-bold text-blue-500'>
+              <span className='whitespace-pre-wrap break-all text-[16px] font-bold text-blue-500 dark:text-blue-200'>
                 {firstCandidate.word}
               </span>
               <Kbd>Enter</Kbd>
@@ -292,9 +294,9 @@ const LongErrorOverlay = ({
                   aria-pressed={info.crtStr === word}
                   onClick={() => corrections.choose(ref, word)}
                   className={cn(
-                    'h-8 max-w-full truncate rounded-md bg-white px-[10px] text-[14px] font-semibold text-slate-600 shadow-sm hover:text-blue-500 hover:ring-1 hover:ring-inset hover:ring-blue-500 dark:bg-dark-surface dark:text-dark-text',
+                    'h-8 max-w-full truncate rounded-md bg-white px-[10px] text-[14px] font-semibold text-slate-600 shadow-sm hover:text-blue-500 hover:ring-1 hover:ring-inset hover:ring-blue-500 dark:bg-dark-surface dark:text-dark-text dark:hover:text-blue-200 dark:hover:ring-blue-300',
                     info.crtStr === word &&
-                      'text-blue-500 ring-1 ring-inset ring-blue-500',
+                      'text-blue-500 ring-1 ring-inset ring-blue-500 dark:text-blue-200 dark:ring-blue-300',
                   )}
                 >
                   {word}
@@ -476,7 +478,8 @@ const Chip = ({
     aria-keyshortcuts={shortcut}
     className={cn(
       'inline-flex h-8 items-center gap-2 rounded-md border border-slate-200 bg-white px-[10px] text-[13px] font-medium text-slate-600 hover:bg-slate-100 disabled:cursor-default disabled:opacity-50 dark:border-dark-border dark:bg-dark-surface dark:text-dark-text dark:hover:bg-dark-elevated',
-      active && 'border-blue-500 text-blue-500 dark:border-blue-500',
+      active &&
+        'border-blue-500 text-blue-500 dark:border-blue-300 dark:text-blue-200',
     )}
   >
     {children}

@@ -183,7 +183,7 @@ const LongErrorPanel = memo(
                       ? '완료'
                       : `${group.remaining}/${group.items.length}`}
                     {newCount > 0 && (
-                      <span className='block text-blue-500'>
+                      <span className='block text-blue-500 dark:text-blue-200'>
                         새로 {newCount}곳
                       </span>
                     )}
