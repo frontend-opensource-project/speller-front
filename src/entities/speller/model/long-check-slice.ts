@@ -26,6 +26,7 @@ interface UndoEntry {
 
 interface LongCheckState {
   checkId: number // 검사를 새로 시작할 때마다 증가. 이전 검사의 늦은 응답을 버리는 데 쓴다
+  startedAt: number | null // 검사를 시작한 시각 (ms). 이전 버전에서 저장된 상태에는 없다
   originalText: string // 정규화된 원문
   isStrictCheck: boolean
   boundaryMode: 'predicted' | 'chained' // 대조 실패 시 'chained'로 전환
@@ -47,6 +48,7 @@ const UNDO_LIMIT = 100
 
 const initialState: LongCheckState = {
   checkId: 0,
+  startedAt: null,
   originalText: '',
   isStrictCheck: true,
   boundaryMode: 'predicted',
@@ -98,7 +100,11 @@ const longCheckSlice = createSlice({
   reducers: {
     startLongCheck: (
       state,
-      action: PayloadAction<{ text: string; isStrictCheck: boolean }>,
+      action: PayloadAction<{
+        text: string
+        isStrictCheck: boolean
+        startedAt: number // 리듀서는 시각을 직접 읽지 않으므로 부르는 쪽에서 넘긴다
+      }>,
     ) => {
       const text = normalizeLineBreaks(action.payload.text)
       return {
@@ -106,6 +112,7 @@ const longCheckSlice = createSlice({
         checkId: state.checkId + 1,
         originalText: text,
         isStrictCheck: action.payload.isStrictCheck,
+        startedAt: action.payload.startedAt,
         pages: splitPages(text).map(({ start, end }) =>
           createPage(text, start, end),
         ),

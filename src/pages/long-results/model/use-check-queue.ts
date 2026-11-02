@@ -3,6 +3,10 @@
 import { useEffect, useMemo, useReducer, useRef } from 'react'
 import { useStore } from 'react-redux'
 import type { ViewportPages } from '../lib/order-pages'
+import {
+  sendLongBoundaryMismatchEvent,
+  sendLongCheckFailedEvent,
+} from '@/shared/lib/send-ga-event'
 import { CheckQueue } from './check-queue'
 
 interface UseCheckQueueParams {
@@ -24,6 +28,18 @@ const useCheckQueue = ({ viewport, isScrolling }: UseCheckQueueParams) => {
       getState: () => store.getState().longCheck,
       dispatch: store.dispatch,
       onChange: rerender,
+      onPageFailed: (pageIdx, error) =>
+        sendLongCheckFailedEvent({
+          pageIdx,
+          errorStage: error.kind,
+          errorCode: error.errorCode ?? error.httpStatus ?? 9999,
+          errorMessage: error.errorMessage,
+        }),
+      onBoundaryMismatch: pageIdx =>
+        sendLongBoundaryMismatchEvent({
+          pageIdx,
+          textLength: store.getState().longCheck.originalText.length,
+        }),
     })
   }
   const queue = queueRef.current

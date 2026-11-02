@@ -1,13 +1,16 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import { Button } from '@/shared/ui/button'
 import { TextCounter } from '@/shared/ui/text-counter'
 import { Switch } from '@/shared/ui/switch'
 import { useSpeller } from '@/entities/speller'
 import { cn } from '@/shared/lib/tailwind-merge'
-import { sendCheckTriggeredEvent } from '@/shared/lib/send-ga-event'
+import {
+  sendCheckTriggeredEvent,
+  sendLongModeSuggestedEvent,
+} from '@/shared/lib/send-ga-event'
 
 interface LongModeControl {
   enabled: boolean
@@ -24,6 +27,20 @@ const SpellerControl = ({ longMode }: SpellerControlProps) => {
   const textLength = originalText?.length ?? 0
   const isButtonDisabled = textLength <= 0
   const isLongText = !!longMode && longMode.pageCount >= 2
+
+  // 긴글 모드를 권하는 안내가 처음 보일 때 한 번 보낸다
+  const isSuggesting = isLongText && !longMode.enabled
+  const suggestedRef = useRef(false)
+  useEffect(() => {
+    if (!isSuggesting || suggestedRef.current) return
+    suggestedRef.current = true
+    sendLongModeSuggestedEvent({
+      textLength,
+      predictedPageCnt: longMode.pageCount,
+    })
+    // 처음 보일 때만 본다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuggesting])
 
   return (
     <div className='mt-2 flex flex-shrink-0 justify-between tab:mt-[0.625rem]'>
