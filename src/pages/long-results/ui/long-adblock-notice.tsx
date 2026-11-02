@@ -32,13 +32,13 @@ const LongAdblockNotice = ({ open, onNormalCheck }: LongAdblockNoticeProps) => (
         <DialogPrimitive.Description className='mt-3 break-keep text-base leading-relaxed text-slate-500 dark:text-dark-subtle'>
           {/* 가운데 정렬이라 문장 중간에서 줄이 바뀌지 않도록 한 줄씩 나눈다 */}
           <span className='block'>
-            바른한글은 광고 수익으로 무료 검사를 운영합니다.
+            바른한글은 광고 수익으로 무료 검사를 제공하고 있습니다.
           </span>
           <span className='block'>
-            긴글 모드는 광고 차단을 해제하면 쓸 수 있습니다.
+            광고 차단을 해제해 주시면 긴글 모드를 사용할 수 있습니다.
           </span>
           <span className='block'>
-            광고 차단 중에는 일반 모드로 검사해 주세요.
+            광고 차단 중에도 일반 모드에서 검사는 가능합니다.
           </span>
         </DialogPrimitive.Description>
         <div className='mt-7 flex w-full flex-col gap-2'>

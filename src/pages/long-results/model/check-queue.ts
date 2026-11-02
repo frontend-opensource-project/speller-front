@@ -41,6 +41,7 @@ class CheckQueue {
   #allRequested = false // "남은 부분 모두 검사": 범위 밖이어도 빼지 않는다
   #scrolling = false
   #paused = false // 429를 받으면 멈춘다
+  #held = false // 광고 차단 확인 전 · 차단 중에는 보내지 않는다
   #consecutiveTimeouts = 0
 
   constructor(deps: CheckQueueDeps) {
@@ -68,6 +69,12 @@ class CheckQueue {
   updateViewport(viewport: ViewportPages) {
     this.#viewport = viewport
     this.#replan()
+  }
+
+  // 풀면 쌓아 둔 순서대로 보낸다
+  setHeld(held: boolean) {
+    this.#held = held
+    if (!held) this.#pump()
   }
 
   setScrolling(scrolling: boolean) {
@@ -169,7 +176,11 @@ class CheckQueue {
 
   #pump() {
     const state = this.#deps.getState()
-    while (!this.#paused && this.#inFlight.size < MAX_IN_FLIGHT) {
+    while (
+      !this.#held &&
+      !this.#paused &&
+      this.#inFlight.size < MAX_IN_FLIGHT
+    ) {
       // 스크롤 중에는 우선 구간만 보낸다
       const next = this.#order.find(
         i =>
