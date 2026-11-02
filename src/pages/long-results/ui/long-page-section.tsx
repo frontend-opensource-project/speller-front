@@ -3,6 +3,7 @@
 import { memo, ReactNode } from 'react'
 import {
   CHECK_ERROR_MESSAGE,
+  CorrectMethodEnum,
   errorKey,
   getTextMethodColor,
   parseCandidateWords,
@@ -21,6 +22,14 @@ interface LongPageSectionProps {
   selectedErrorIdx: number | null // 이 구간에서 선택된 오류
   onSelectError: (pageIdx: number, errorIdx: number) => void
   onRetry: (pageIdx: number) => void
+}
+
+// 다크 모드에서 선택한 오류어는 그 오류 유형의 글자색으로 옅게 칠한다 (파란 배경은 어두워 잘 안 보임)
+const DARK_SELECTED_BG: Record<number, string> = {
+  [CorrectMethodEnum.enum.어법]: 'dark:bg-red-100/30',
+  [CorrectMethodEnum.enum.문맥]: 'dark:bg-green-100/30',
+  [CorrectMethodEnum.enum.흔한실수]: 'dark:bg-yellow-600/30',
+  [CorrectMethodEnum.enum.분석실패]: 'dark:bg-blue-400/30',
 }
 
 // 구간은 '\n' 자리에서 잘려 다음 구간이 '\n'으로 시작한다.
@@ -84,8 +93,10 @@ const renderErrors = ({
                   getTextMethodColor(info.correctMethod),
                 ),
           selectedErrorIdx === info.errorIdx &&
-            // 다크 모드는 배경만 밝히면 오류어 글자색이 묻히므로 옅은 배경에 밝은 테두리를 둔다
-            'bg-blue-100/60 box-decoration-clone dark:bg-blue-300/25 dark:ring-2 dark:ring-blue-200',
+            cn(
+              'bg-blue-100/60',
+              DARK_SELECTED_BG[info.correctMethod] ?? 'dark:bg-blue-400/30',
+            ),
         )}
       >
         {isCorrected ? info.crtStr : text.slice(info.start, info.end)}
