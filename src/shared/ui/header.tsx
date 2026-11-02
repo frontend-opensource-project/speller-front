@@ -51,6 +51,9 @@ const Header = () => {
           <Link href='/about' className={classes.linkButton}>
             소개
           </Link>
+          <Link href='/notice' className={classes.linkButton}>
+            알리는 글
+          </Link>
           <Link href='/guide' className={classes.linkButton}>
             사용법
           </Link>
@@ -96,6 +99,14 @@ const Header = () => {
                     className={`${classes.popoverIcon} bg-icon-question group-hover:bg-icon-question-white`}
                   />
                   소개
+                </Link>
+              </li>
+              <li className='group'>
+                <Link href='/notice' className={classes.popoverButton}>
+                  <i
+                    className={`${classes.popoverIcon} bg-icon-info group-hover:bg-icon-info-white`}
+                  />
+                  알리는 글
                 </Link>
               </li>
               <li className='group'>

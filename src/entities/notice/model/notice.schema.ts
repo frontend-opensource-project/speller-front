@@ -13,6 +13,12 @@ export const noticeDetailSchema = z.object({
 
   /** 공지 본문 (마크다운) */
   body: z.string(),
+
+  /**
+   * 목록에 보여 줄 한 줄 요약.
+   * 생략하면 본문 앞부분에서 자동으로 만든다 (`summarizeNotice`).
+   */
+  summary: z.string().optional(),
 })
 
 export type NoticeDetail = z.infer<typeof noticeDetailSchema>
