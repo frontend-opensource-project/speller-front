@@ -65,7 +65,9 @@ const LongErrorPanel = memo(
     return (
       <aside
         aria-label='오류어 묶음'
-        className='flex min-h-0 w-[17.5rem] shrink-0 flex-col rounded-[1rem] bg-white p-4 dark:bg-dark-surface pc-lg:w-[20rem]'
+        // 광고 iframe으로 포커스가 넘어갔어도 패널을 누르면 단축키가 다시 동작하도록 포커스를 받는다
+        tabIndex={-1}
+        className='flex min-h-0 w-[17.5rem] shrink-0 flex-col rounded-[1rem] bg-white p-4 outline-none dark:bg-dark-surface pc-lg:w-[20rem]'
       >
         <div className='flex items-baseline justify-between'>
           <h2 className='text-lg font-semibold'>오류어 묶음</h2>
@@ -152,6 +154,7 @@ const LongErrorPanel = memo(
                 <button
                   type='button'
                   data-group-key={group.key}
+                  aria-current={selectedGroupKey === group.key || undefined}
                   onClick={() => onSelectGroup(group)}
                   className={cn(
                     'flex w-full items-start gap-2 border-b border-slate-200 px-1 py-2 text-left dark:border-dark-border',
@@ -180,7 +183,7 @@ const LongErrorPanel = memo(
                       ? '완료'
                       : `${group.remaining}/${group.items.length}`}
                     {newCount > 0 && (
-                      <span className='block text-blue-500'>
+                      <span className='block text-blue-500 dark:text-blue-200'>
                         새로 {newCount}곳
                       </span>
                     )}

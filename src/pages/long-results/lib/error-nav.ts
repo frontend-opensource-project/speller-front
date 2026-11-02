@@ -69,7 +69,18 @@ const findFirstError = (
   return null
 }
 
+/** 이 구간 뒤에서 아직 검사를 마치지 않은 첫 구간 (실패한 구간은 건너뜀). 없으면 -1 */
+const findUncheckedPageAfter = (
+  pages: NavState['pages'],
+  pageIdx: number,
+): number =>
+  pages.findIndex(
+    (page, idx) =>
+      idx > pageIdx && page.status !== 'done' && page.status !== 'failed',
+  )
+
 export {
+  findUncheckedPageAfter,
   listPendingErrors,
   findAdjacentError,
   findFirstError,
