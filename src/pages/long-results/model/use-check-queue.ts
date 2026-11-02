@@ -12,6 +12,7 @@ import { CheckQueue } from './check-queue'
 interface UseCheckQueueParams {
   viewport: ViewportPages // 스크롤이 멈춘 순간의 화면 범위 (use-visible-pages)
   isScrolling: boolean
+  held: boolean // true면 요청을 보내지 않는다 (광고 차단 확인 전 · 차단 중)
   onRequestSent?: () => void // 구간 검사 요청을 보냄 (배너 갱신)
 }
 
@@ -22,6 +23,7 @@ interface UseCheckQueueParams {
 const useCheckQueue = ({
   viewport,
   isScrolling,
+  held,
   onRequestSent,
 }: UseCheckQueueParams) => {
   const store = useStore<RootState>()
@@ -52,6 +54,11 @@ const useCheckQueue = ({
     })
   }
   const queue = queueRef.current
+
+  // 화면 범위를 넣으면 바로 보내므로 먼저 건다
+  useEffect(() => {
+    queue.setHeld(held)
+  }, [queue, held])
 
   useEffect(() => {
     queue.updateViewport(viewport)
