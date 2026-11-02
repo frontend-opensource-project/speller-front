@@ -11,21 +11,14 @@ interface LongCheckIntroProps {
   open: boolean
   onClose: () => void
   progress: { done: number; total: number }
-  notice?: string | null // 안내 문구 자리 (config/intro-notice.ts)
 }
 
 /**
  * 긴글 모드에 들어오면 전면 광고와 함께 띄우는 "맞춤법 검사 중" 안내창.
  * 뒤에서 검사는 계속되고, 3초 뒤 저절로 닫힌다 (사용자는 광고만 닫으면 된다).
  * 전면 광고가 가운데에 뜨므로 아래쪽에 가로로 넓게 둔다.
- * 머리(상태 · 설명) · 진행 · 안내 문구 칸으로 나눠, 안내 문구를 넣어도 다른 칸이 밀리지 않게 했다.
  */
-const LongCheckIntro = ({
-  open,
-  onClose,
-  progress,
-  notice,
-}: LongCheckIntroProps) => {
+const LongCheckIntro = ({ open, onClose, progress }: LongCheckIntroProps) => {
   // 진행이 바뀔 때마다 다시 그려지므로 onClose가 바뀌어도 타이머를 다시 걸지 않는다
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
@@ -99,13 +92,6 @@ const LongCheckIntro = ({
               {progress.done}/{progress.total}구간
             </span>
           </div>
-
-          {/* 안내 문구 자리: 넣으면 진행 아래에 붙고 창이 위로 늘어난다 */}
-          {notice && (
-            <div className='mt-4 whitespace-pre-line rounded-xl bg-slate-100 px-5 py-3 text-base leading-relaxed dark:bg-dark-elevated'>
-              {notice}
-            </div>
-          )}
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
