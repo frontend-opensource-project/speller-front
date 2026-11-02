@@ -197,6 +197,8 @@ const LongResultsPage = () => {
         group.items[0]
       if (!target) return
       revealError(target.pageIdx, target.info.errorIdx)
+      // 포커스가 묶음 버튼에 남으면 Enter가 그 버튼을 다시 눌러 단축키로 쓰이지 않는다
+      containerRef.current?.focus({ preventScroll: true })
     },
     [ignored, revealError],
   )
