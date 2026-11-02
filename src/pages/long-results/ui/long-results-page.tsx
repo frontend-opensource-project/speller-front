@@ -47,6 +47,9 @@ import {
 } from './long-error-overlay'
 import { LongToolbar } from './long-toolbar'
 import { LongHotkeyHelp } from './long-hotkey-help'
+import { LongCheckIntro } from './long-check-intro'
+import { LongInterstitial } from './long-interstitial'
+import { LONG_INTRO_NOTICE } from '../config/intro-notice'
 
 // 시간 초과가 연달아 이만큼 나면 문단을 나눠 보라고 안내한다
 const TIMEOUT_HINT_COUNT = 3
@@ -54,12 +57,30 @@ const TIMEOUT_HINT_COUNT = 3
 // 첫 진입 때 단축키 안내를 한 번만 보여 준다
 const HOTKEY_HINT_KEY = 'longModeHotkeyHint'
 
+// 진입 안내창 · 전면 광고를 띄운 검사. 새로고침 · 뒤로 가기로 같은 검사에 돌아오면 다시 띄우지 않는다
+const INTRO_SHOWN_KEY = 'longModeIntroCheckId'
+
+const shouldShowIntro = (checkId: number) => {
+  try {
+    return sessionStorage.getItem(INTRO_SHOWN_KEY) !== String(checkId)
+  } catch {
+    return true
+  }
+}
+
 const LongResultsPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const state = useAppSelector(state => state.longCheck)
-  const { originalText, pages, ignored, selected, isStrictCheck, undoStack } =
-    state
+  const {
+    checkId,
+    originalText,
+    pages,
+    ignored,
+    selected,
+    isStrictCheck,
+    undoStack,
+  } = state
   const { handleOriginalTextChange } = useSpeller()
   const { copyText } = useClipboard()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -77,6 +98,21 @@ const LongResultsPage = () => {
   const overlayCommandsRef = useRef<OverlayCommands | null>(null)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
   const [announcement, setAnnouncement] = useState('')
+  // 이 화면은 PersistGate 안에서 브라우저에서만 그려지므로 처음 값을 바로 정한다.
+  // 광고는 한 번 정하면 바꾸지 않는다 (바꾸면 광고 컨테이너가 지워짐)
+  const [showIntroAd] = useState(
+    () => !!originalText && shouldShowIntro(checkId),
+  )
+  const [isIntroOpen, setIsIntroOpen] = useState(showIntroAd)
+
+  useEffect(() => {
+    if (!showIntroAd) return
+    try {
+      sessionStorage.setItem(INTRO_SHOWN_KEY, String(checkId))
+    } catch {
+      // 저장하지 못하면 다음에 또 보일 뿐이다
+    }
+  }, [showIntroAd, checkId])
 
   const { viewport, isScrolling } = useVisiblePages(containerRef, pages.length)
   const queue = useCheckQueue({ viewport, isScrolling })
@@ -297,7 +333,9 @@ const LongResultsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedKey])
 
+  // 진입 안내창이 닫힌 뒤에 보여 준다
   useEffect(() => {
+    if (isIntroOpen) return
     try {
       if (localStorage.getItem(HOTKEY_HINT_KEY)) return
       localStorage.setItem(HOTKEY_HINT_KEY, 'seen')
@@ -308,19 +346,20 @@ const LongResultsPage = () => {
       description:
         '키보드로도 교정할 수 있습니다.\n? 키를 눌러 단축키를 확인해 보세요.',
     })
-  }, [])
+  }, [isIntroOpen])
 
   // 첫 오류: 앞 구간 검사가 끝나 첫 오류가 정해지면 한 번만 연다
   useEffect(() => {
     if (isScrolling) autoOpenRef.current = false
   }, [isScrolling])
+  // 진입 안내창이 열려 있으면 닫힌 뒤에 연다
   useEffect(() => {
-    if (!autoOpenRef.current) return
+    if (!autoOpenRef.current || isIntroOpen) return
     const first = findFirstError({ pages, ignored }, hiddenMethods)
     if (first === undefined) return
     autoOpenRef.current = false
     if (first) revealError(first.pageIdx, first.info.errorIdx)
-  }, [pages, ignored, hiddenMethods, revealError])
+  }, [pages, ignored, hiddenMethods, revealError, isIntroOpen])
 
   const handleToggleMethod = useCallback((method: number) => {
     setHiddenMethods(prev =>
@@ -376,7 +415,7 @@ const LongResultsPage = () => {
       copyAll: handleCopyAll,
       help: () => setIsHelpOpen(true),
     },
-    !!originalText && !isHelpOpen,
+    !!originalText && !isHelpOpen && !isIntroOpen,
   )
 
   const handleNewText = () => {
@@ -496,6 +535,13 @@ const LongResultsPage = () => {
         />
       )}
       <LongHotkeyHelp open={isHelpOpen} onOpenChange={setIsHelpOpen} />
+      <LongCheckIntro
+        open={isIntroOpen}
+        onClose={() => setIsIntroOpen(false)}
+        progress={progress}
+        notice={LONG_INTRO_NOTICE}
+      />
+      {showIntroAd && <LongInterstitial />}
       <div aria-live='polite' className='sr-only'>
         {announcement}
       </div>

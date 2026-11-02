@@ -1,0 +1,126 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import * as DialogPrimitive from '@radix-ui/react-dialog'
+import { Loader2Icon } from 'lucide-react'
+
+// 이 시간 동안은 닫을 수 없다 (전면 광고와 함께 보여 주는 시간)
+const LOCK_SECONDS = 3
+
+interface LongCheckIntroProps {
+  open: boolean
+  onClose: () => void
+  progress: { done: number; total: number }
+  notice?: string | null // 안내 문구 자리 (config/intro-notice.ts)
+}
+
+/**
+ * 긴글 모드에 들어오면 전면 광고와 함께 띄우는 "맞춤법 검사 중" 안내창.
+ * 뒤에서 검사는 계속되고, 3초 뒤 닫기 버튼이 나온다.
+ * 머리(상태) · 진행 · 안내 문구 · 닫기 네 칸으로 나눠, 안내 문구를 넣어도 다른 칸이 밀리지 않게 했다.
+ */
+const LongCheckIntro = ({
+  open,
+  onClose,
+  progress,
+  notice,
+}: LongCheckIntroProps) => {
+  const [remaining, setRemaining] = useState(LOCK_SECONDS)
+  const canClose = remaining <= 0
+
+  useEffect(() => {
+    if (!open || canClose) return
+    const timer = setTimeout(() => setRemaining(prev => prev - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [open, remaining, canClose])
+
+  const isDone = progress.total > 0 && progress.done >= progress.total
+  const percent =
+    progress.total === 0
+      ? 0
+      : Math.round((progress.done / progress.total) * 100)
+
+  return (
+    <DialogPrimitive.Root
+      open={open}
+      onOpenChange={next => {
+        if (!next && canClose) onClose()
+      }}
+    >
+      <DialogPrimitive.Portal>
+        {/* 전면 광고가 이 위에 뜨므로 광고를 가리지 않는다 */}
+        <DialogPrimitive.Overlay className='fixed inset-0 z-50 bg-black/60 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0' />
+        <DialogPrimitive.Content
+          // 닫을 수 있게 되기 전에는 Esc로도 닫지 않는다. 바깥 클릭으로는 닫지 않는다
+          onEscapeKeyDown={e => {
+            if (!canClose) e.preventDefault()
+          }}
+          onPointerDownOutside={e => e.preventDefault()}
+          onOpenAutoFocus={e => e.preventDefault()}
+          className='fixed left-1/2 top-1/2 z-50 flex w-[calc(100%-2rem)] max-w-[28rem] -translate-x-1/2 -translate-y-1/2 flex-col rounded-[1.25rem] bg-white px-8 pb-7 pt-9 text-slate-600 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 dark:bg-dark-surface dark:text-dark-text'
+        >
+          {/* 머리: 상태 */}
+          <div className='flex flex-col items-center text-center'>
+            <Loader2Icon
+              aria-hidden
+              className='size-11 animate-spin text-blue-500 dark:text-blue-200'
+            />
+            <DialogPrimitive.Title className='mt-5 text-2xl font-semibold tracking-[-0.03rem]'>
+              {isDone ? '맞춤법 검사 완료' : '맞춤법 검사 중'}
+            </DialogPrimitive.Title>
+            <DialogPrimitive.Description className='mt-2 text-base leading-relaxed text-slate-500 dark:text-dark-subtle'>
+              긴 글은 나누어 검사합니다.
+              <br />
+              화면에 보이는 부분부터 차례로 결과가 나타납니다.
+            </DialogPrimitive.Description>
+          </div>
+
+          {/* 진행 */}
+          <div className='mt-6'>
+            <div
+              role='progressbar'
+              aria-label='검사한 구간'
+              aria-valuemin={0}
+              aria-valuemax={progress.total}
+              aria-valuenow={progress.done}
+              className='h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-dark-elevated'
+            >
+              <div
+                className='h-full bg-blue-500 transition-[width] duration-300 dark:bg-blue-300'
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+            <p className='mt-2 text-right text-sm tabular-nums text-slate-400 dark:text-dark-subtle'>
+              {progress.done}/{progress.total}구간
+            </p>
+          </div>
+
+          {/* 안내 문구 자리 */}
+          {notice && (
+            <div className='mt-5 whitespace-pre-line rounded-xl bg-slate-100 px-5 py-4 text-base leading-relaxed dark:bg-dark-elevated'>
+              {notice}
+            </div>
+          )}
+
+          {/* 닫기: 버튼이 나타나도 높이가 바뀌지 않도록 자리를 잡아 둔다 */}
+          <div className='mt-6 flex h-11 items-center justify-center'>
+            {canClose ? (
+              <DialogPrimitive.Close className='h-11 w-full rounded-lg bg-blue-500 text-lg font-semibold text-white hover:bg-blue-500/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300'>
+                닫기
+              </DialogPrimitive.Close>
+            ) : (
+              <p
+                aria-live='polite'
+                className='text-sm tabular-nums text-slate-400 dark:text-dark-subtle'
+              >
+                {remaining}초 뒤에 닫을 수 있습니다
+              </p>
+            )}
+          </div>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  )
+}
+
+export { LongCheckIntro }
