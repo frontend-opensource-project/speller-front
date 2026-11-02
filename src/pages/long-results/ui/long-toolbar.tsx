@@ -135,7 +135,8 @@ const ActionButton = ({
     onClick={onClick}
     disabled={disabled}
     title={shortcut ? `${label} (${shortcut})` : undefined}
-    className='size-fit rounded-lg p-2'
+    // 공용 Button의 disabled 배경(slate-300) 대신 배경 없이 흐리게 둔다
+    className='size-fit rounded-lg p-2 disabled:bg-transparent disabled:opacity-40'
   >
     <span className='flex flex-col items-center'>
       <span className='flex size-6 items-center justify-center'>
