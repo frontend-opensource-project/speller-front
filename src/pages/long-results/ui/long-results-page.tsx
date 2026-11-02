@@ -106,12 +106,10 @@ const LongResultsPage = () => {
     () => !!originalText && shouldShowIntro(checkId),
   )
   const [isIntroOpen, setIsIntroOpen] = useState(showIntroAd)
-  // 광고 차단이면 검사 중 안내창 대신 광고 차단 안내를 띄운다 (닫을 때까지)
+  // 광고 차단이면 검사 중 안내창 대신 광고 차단 안내를 띄우고 일반 모드로만 넘어가게 한다.
+  // 새로고침으로 넘어가지 않도록 새 검사가 아니어도 띄운다
   const adBlockDetected = useDetectAdBlock()
-  const [isAdblockNoticeDismissed, setIsAdblockNoticeDismissed] =
-    useState(false)
-  const isAdblockNoticeOpen =
-    showIntroAd && adBlockDetected && !isAdblockNoticeDismissed
+  const isAdblockNoticeOpen = adBlockDetected
   const isIntroVisible = isIntroOpen && !adBlockDetected
   // 진입 안내가 떠 있는 동안 첫 오류 자동 열기 · 단축키 · 단축키 안내를 미룬다
   const isEntryOverlayOpen = isIntroVisible || isAdblockNoticeOpen
@@ -559,7 +557,6 @@ const LongResultsPage = () => {
       />
       <LongAdblockNotice
         open={isAdblockNoticeOpen}
-        onContinue={() => setIsAdblockNoticeDismissed(true)}
         onNormalCheck={handleNormalCheck}
       />
       {showIntroAd && <LongInterstitial />}
