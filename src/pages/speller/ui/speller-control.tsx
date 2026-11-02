@@ -58,7 +58,7 @@ const SpellerControl = ({ longMode }: SpellerControlProps) => {
             {isLongText && (
               <span className='text-base text-slate-600 dark:text-dark-text'>
                 {longMode.enabled
-                  ? `긴글 모드로 검사합니다 (${longMode.pageCount}구간)`
+                  ? '긴글 모드로 검사합니다'
                   : '긴 글은 긴글 모드로 보이는 부분부터 빠르게 검사해 보세요'}
               </span>
             )}
