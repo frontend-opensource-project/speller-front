@@ -23,6 +23,7 @@ interface CheckQueueDeps {
   onChange?: () => void // 멈춤 · 요청 수 등 화면에 보여줄 값이 바뀜
   onPageFailed?: (pageIdx: number, error: CheckError) => void // 지금 검사의 구간이 실패함 (429 포함)
   onBoundaryMismatch?: (pageIdx: number) => void // 예측한 구간과 서버 응답이 달라 차례 검사로 바뀜
+  onRequestSent?: (pageIdx: number) => void // 구간 검사 요청을 보냄
 }
 
 /**
@@ -199,6 +200,7 @@ class CheckQueue {
       setPagesStatus({ pageIdxList: [pageIdx], status: 'loading' }),
     )
     this.#notify()
+    this.#deps.onRequestSent?.(pageIdx)
 
     const result = await this.#deps.check({
       text: getPageText(state, pageIdx),
