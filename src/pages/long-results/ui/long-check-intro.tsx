@@ -41,21 +41,31 @@ const LongCheckIntro = ({
       : Math.round((progress.done / progress.total) * 100)
 
   return (
+    // 모달로 열면 Radix가 창 바깥의 클릭을 막고 포커스를 가둔다.
+    // 전면 광고는 body 끝에 따로 붙는 요소라 그러면 광고의 닫기 버튼을 누를 수 없으므로 모달로 열지 않는다
     <DialogPrimitive.Root
+      modal={false}
       open={open}
       onOpenChange={next => {
         if (!next && canClose) onClose()
       }}
     >
       <DialogPrimitive.Portal>
-        {/* 전면 광고가 이 위에 뜨므로 광고를 가리지 않는다 */}
-        <DialogPrimitive.Overlay className='fixed inset-0 z-50 bg-black/60 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0' />
+        {/* 모달이 아니면 Radix가 배경을 그리지 않으므로 직접 그린다.
+            아래 교정 화면만 덮고, 전면 광고는 이 위에 떠서 가리지 않는다.
+            Portal이 자식마다 열림 상태에 맞춰 붙이고 떼므로 조건 없이 둔다 */}
+        <div
+          aria-hidden
+          className='fixed inset-0 z-50 bg-black/60 duration-200 animate-in fade-in-0'
+        />
         <DialogPrimitive.Content
-          // 닫을 수 있게 되기 전에는 Esc로도 닫지 않는다. 바깥 클릭으로는 닫지 않는다
+          aria-modal
+          // 닫을 수 있게 되기 전에는 Esc로도 닫지 않는다.
+          // 광고를 누르거나 포커스가 광고로 가도 닫지 않는다 (닫기 버튼으로만)
           onEscapeKeyDown={e => {
             if (!canClose) e.preventDefault()
           }}
-          onPointerDownOutside={e => e.preventDefault()}
+          onInteractOutside={e => e.preventDefault()}
           onOpenAutoFocus={e => e.preventDefault()}
           className='fixed left-1/2 top-1/2 z-50 flex w-[calc(100%-2rem)] max-w-[28rem] -translate-x-1/2 -translate-y-1/2 flex-col rounded-[1.25rem] bg-white px-8 pb-7 pt-9 text-slate-600 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 dark:bg-dark-surface dark:text-dark-text'
         >
