@@ -196,9 +196,11 @@ const LongResultsPage = () => {
         group.items.find(item => !isProcessed({ ignored }, item)) ??
         group.items[0]
       if (!target) return
-      revealError(target.pageIdx, target.info.errorIdx)
-      // 포커스가 묶음 버튼에 남으면 Enter가 그 버튼을 다시 눌러 단축키로 쓰이지 않는다
+      // 포커스가 묶음 버튼에 남으면 Enter가 그 버튼을 다시 눌러 단축키로 쓰이지 않는다.
+      // 정보창을 연 뒤에 옮기면, 닫히는 중인 이전 정보창이 '바깥으로 포커스가 나감'으로
+      // 닫기를 요청해 새로 연 것까지 닫히므로 먼저 옮긴다
       containerRef.current?.focus({ preventScroll: true })
+      revealError(target.pageIdx, target.info.errorIdx)
     },
     [ignored, revealError],
   )
