@@ -69,4 +69,9 @@ const findFirstError = (
   return null
 }
 
-export { listPendingErrors, findAdjacentError, findFirstError }
+export {
+  listPendingErrors,
+  findAdjacentError,
+  findFirstError,
+  type ErrorPosition,
+}

@@ -27,10 +27,14 @@ import {
   findAdjacentError,
   findFirstError,
   listPendingErrors,
+  type ErrorPosition,
 } from '../lib/error-nav'
 import { useVisiblePages } from '../model/use-visible-pages'
 import { useCheckQueue } from '../model/use-check-queue'
-import { useLongCorrections } from '../model/use-long-corrections'
+import {
+  useLongCorrections,
+  type ErrorRef,
+} from '../model/use-long-corrections'
 import { LongPageSection } from './long-page-section'
 import { LongErrorPanel } from './long-error-panel'
 import { LongErrorOverlay } from './long-error-overlay'
@@ -54,26 +58,48 @@ const LongResultsPage = () => {
   const [bulkCounts, setBulkCounts] = useState<Record<string, number>>({})
   // 들어온 뒤 사용자가 스크롤하거나 오류를 고르기 전까지만 첫 오류를 자동으로 연다
   const autoOpenRef = useRef(true)
+  // 대치어 선택 · 무시를 하면 이 위치의 다음 오류로 넘어간다 (상태가 바뀐 뒤 처리)
+  const [advanceFrom, setAdvanceFrom] = useState<ErrorPosition | null>(null)
+  const currentPositionRef = useRef<ErrorPosition | null>(null)
 
   const { viewport, isScrolling } = useVisiblePages(containerRef, pages.length)
   const queue = useCheckQueue({ viewport, isScrolling })
   const baseCorrections = useLongCorrections()
 
   // 모두 수정 · 모두 무시를 한 묶음은 그 뒤에 새로 나온 곳을 따로 표시한다
-  const corrections = useMemo(
-    () => ({
+  const corrections = useMemo(() => {
+    const advance = ({ pageIdx, info }: ErrorRef) =>
+      setAdvanceFrom({ pageIdx, start: info.start })
+    const advanceFromCurrent = () => setAdvanceFrom(currentPositionRef.current)
+
+    return {
       ...baseCorrections,
+      choose: (ref: ErrorRef, word: string) => {
+        baseCorrections.choose(ref, word)
+        advance(ref)
+      },
+      replaceByUser: (ref: ErrorRef, word: string) => {
+        baseCorrections.replaceByUser(ref, word)
+        advance(ref)
+      },
+      ignore: (refs: ErrorRef[]) => {
+        baseCorrections.ignore(refs)
+        if (refs.length === 1) advance(refs[0])
+      },
       correctGroup: (group: ErrorGroup) => {
         setBulkCounts(prev => ({ ...prev, [group.key]: group.items.length }))
-        return baseCorrections.correctGroup(group)
+        const count = baseCorrections.correctGroup(group)
+        advanceFromCurrent()
+        return count
       },
       ignoreGroup: (group: ErrorGroup) => {
         setBulkCounts(prev => ({ ...prev, [group.key]: group.items.length }))
-        return baseCorrections.ignoreGroup(group)
+        const count = baseCorrections.ignoreGroup(group)
+        advanceFromCurrent()
+        return count
       },
-    }),
-    [baseCorrections],
-  )
+    }
+  }, [baseCorrections])
 
   // 입력 화면을 거치지 않고 들어온 경우
   useEffect(() => {
@@ -174,6 +200,15 @@ const LongResultsPage = () => {
     ? findAdjacentError(pendingErrors, currentPosition, 1)
     : null
   const currentIndex = pendingErrors.findIndex(item => item.key === selectedKey)
+  currentPositionRef.current = currentPosition
+
+  // 처리한 오류 다음으로 넘어간다. 뒤에 남은 오류가 없으면 지금 정보창을 그대로 둔다
+  useEffect(() => {
+    if (!advanceFrom) return
+    setAdvanceFrom(null)
+    const next = findAdjacentError(pendingErrors, advanceFrom, 1)
+    if (next) revealError(next.pageIdx, next.info.errorIdx)
+  }, [advanceFrom, pendingErrors, revealError])
 
   // 첫 오류: 앞 구간 검사가 끝나 첫 오류가 정해지면 한 번만 연다
   useEffect(() => {
