@@ -169,11 +169,16 @@ const LongErrorOverlay = ({
         sideOffset={6}
         collisionPadding={16}
         className='max-h-[min(36rem,70vh)] w-[22rem] overflow-y-auto rounded-2xl p-4'
-        // 문서의 다른 오류어를 누르면 닫히지 않고 그 오류로 바뀐다
-        onInteractOutside={e => {
+        // 문서의 다른 오류어나 묶음 목록의 행을 누르면 닫지 않고 그 오류로 바뀐다.
+        // 닫았다 다시 열면 닫는 요청과 여는 요청의 순서에 따라 정보창이 깜빡이거나 닫힌다
+        onPointerDownOutside={e => {
           const target = e.target as HTMLElement | null
-          if (target?.closest('[data-error-idx]')) e.preventDefault()
+          if (target?.closest('[data-error-idx], [data-group-key]')) {
+            e.preventDefault()
+          }
         }}
+        // 단축키를 쓰도록 포커스를 문서로 옮기므로 포커스가 나가는 것으로는 닫지 않는다
+        onFocusOutside={e => e.preventDefault()}
         onOpenAutoFocus={e => e.preventDefault()}
         // 직접 수정 칸에서 Esc를 누르면 먼저 그 칸만 닫는다
         onEscapeKeyDown={e => {
