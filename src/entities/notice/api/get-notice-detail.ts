@@ -1,10 +1,7 @@
 import 'server-only'
 import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
-import {
-  noticeDetailSchema,
-  type NoticeDetail,
-} from '../model/notice-detail.schema'
+import { noticeDetailSchema, type NoticeDetail } from '../model/notice.schema'
 
 /**
  * public/notice/details/<id>.json 을 읽어 검증된 공지 상세 데이터를 반환한다.

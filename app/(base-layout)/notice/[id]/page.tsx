@@ -6,7 +6,8 @@ import {
   dynamicSeoMetadata,
 } from '@/shared/config'
 import { ArticleJsonLd, BreadcrumbJsonLd } from '@/shared/ui/json-ld'
-import { NoticeDetailPage, getNoticeDetail } from '@/pages/notice-detail'
+import { getNoticeDetail } from '@/entities/notice'
+import { NoticeDetailPage } from '@/pages/notice-detail'
 
 interface PageProps {
   params: Promise<{
@@ -21,7 +22,7 @@ export async function generateMetadata({
   const notice = await getNoticeDetail(id)
 
   if (!notice) {
-    return { title: '공지사항' }
+    return { title: '알리는 글' }
   }
 
   return {
@@ -49,6 +50,7 @@ export default async function Page({ params }: PageProps) {
           <BreadcrumbJsonLd
             items={[
               { name: SITE_SHORT_NAME, path: ROUTES.speller.path },
+              { name: '알리는 글', path: ROUTES.notice.path },
               { name: notice.title, path },
             ]}
           />

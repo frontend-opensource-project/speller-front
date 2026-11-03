@@ -6,7 +6,7 @@ import {
   SITE_URL,
   type SiteRoute,
 } from '@/shared/config'
-import { getNoticeDetails } from '@/pages/notice-detail'
+import { getNoticeDetails } from '@/entities/notice'
 
 /**
  * 공지 JSON 이 배포 없이도 반영되도록 1시간마다 다시 만든다.

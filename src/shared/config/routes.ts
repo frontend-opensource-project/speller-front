@@ -41,6 +41,14 @@ export const ROUTES = {
     description:
       '바른한글은 1994년부터 무료로 제공되어 온 ‘한국어 맞춤법/문법 검사기’의 새 이름입니다. 부산대 인공지능연구실과 ㈜나라인포테크가 함께 만들어 왔습니다.',
   },
+  notice: {
+    path: '/notice',
+    index: true,
+    priority: 0.8,
+    changeFrequency: 'monthly',
+    description:
+      '바른한글 맞춤법 검사기의 점검과 장애, 기능 변경 소식을 알려드립니다. 서비스에 생긴 변화와 그 경위를 글로 정리해 두었습니다.',
+  },
   guide: {
     path: '/guide',
     index: true,
@@ -92,6 +100,7 @@ export const ROUTES = {
  *
  * @description
  * 공지 상세만 색인 대상이며, 사이트맵은 `app/sitemap.ts` 에서 개별 URL 을 만들어 붙인다.
+ * 목록(`/notice`)은 정적 경로라 `ROUTES.notice` 에 있고, 여기 값과 같은 경로를 가리킨다.
  * 묻고 답하기 상세(`/qa-board/[id]`)는 글마다 메타데이터가 같아 noindex 이므로 여기 없다.
  */
 export const DYNAMIC_ROUTE_PREFIX = {
