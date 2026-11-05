@@ -10,6 +10,7 @@ import {
   checkText,
   CHECK_ERROR_MESSAGE,
   splitPages,
+  findLongParagraphs,
   startLongCheck,
   type CheckTextResult,
 } from '@/entities/speller'
@@ -25,7 +26,11 @@ import {
   sendCheckResultResponseUnknownEvent,
 } from '@/shared/lib/send-ga-event'
 import { toast } from '@/shared/lib/use-toast'
-import { SpellerTextInput } from './speller-text-input'
+import {
+  SpellerTextInput,
+  type SpellerTextInputHandle,
+} from './speller-text-input'
+import { LongParagraphDialog } from './long-paragraph-dialog'
 import { ResultsSkeleton } from './results-skeleton'
 import { SpellerControl } from './speller-control'
 import { VersionInfo } from './version-info'
@@ -56,6 +61,11 @@ const SpellerPage = () => {
   const [checkState, setCheckState] = useState<CheckState | null>(null)
   const [isRedirectingToResult, setIsRedirectingToResult] = useState(false)
   const dispatch = useAppDispatch()
+  const textInputRef = useRef<SpellerTextInputHandle>(null)
+  // 너무 긴 문단이 있으면 검사 전에 경고를 띄운다.
+  // 문단 확인은 창이 닫힌 뒤에 커서를 옮기므로 그 문단의 시작 위치를 따로 둔다
+  const [isLongParagraphOpen, setIsLongParagraphOpen] = useState(false)
+  const longParagraphStartRef = useRef(0)
   const breakpoint = useBreakpoint()
   const [longModeEnabled, setLongModeEnabled] = useLongModePreference()
   const canUseLongMode = LONG_MODE_ENABLED && isDesktop(breakpoint)
@@ -80,7 +90,7 @@ const SpellerPage = () => {
     })
   }
 
-  const handleSpellCheck = () => {
+  const startSpellCheck = () => {
     // 긴글 모드: 요청 전에 결과 화면으로 이동하고, 구간 검사는 그 화면에서 한다
     if (
       LONG_MODE_ENABLED &&
@@ -101,6 +111,25 @@ const SpellerPage = () => {
     }
     runNormalCheck()
   }
+
+  const handleSpellCheck = () => {
+    if (isLongParagraphOpen) return
+    const [longParagraph] = findLongParagraphs(originalText)
+    if (longParagraph) {
+      longParagraphStartRef.current = longParagraph.start
+      setIsLongParagraphOpen(true)
+      return
+    }
+    startSpellCheck()
+  }
+
+  const handleLongParagraphContinue = () => {
+    setIsLongParagraphOpen(false)
+    startSpellCheck()
+  }
+
+  const handleLongParagraphLocate = () =>
+    textInputRef.current?.focusAt(longParagraphStartRef.current)
 
   // 긴글 화면에서 '일반 모드에서 검사'로 넘어온 경우: 긴글 모드를 건너뛰고 한 번 검사한다.
   // 개발 모드에서 effect가 두 번 돌아도 요청은 한 번만 보낸다
@@ -199,7 +228,15 @@ const SpellerPage = () => {
 
   return (
     <>
-      <form action={handleSpellCheck} className='flex-1'>
+      {/* action으로 넘기면 React가 처리 후 폼을 비우므로(입력창은 비제어) onSubmit을 쓴다.
+          긴 문단 경고로 화면에 남을 때 입력한 글이 사라진다 */}
+      <form
+        onSubmit={e => {
+          e.preventDefault()
+          handleSpellCheck()
+        }}
+        className='flex-1'
+      >
         <ContentLayout className='min-h-[35.75rem] pb-4 pc:pb-5'>
           {/* 화면에는 로고가 제목 역할을 하므로, 문서 구조상의 제목만 따로 둔다 */}
           <h1 className='sr-only'>바른한글 - 한국어 맞춤법·문법 검사기</h1>
@@ -209,7 +246,7 @@ const SpellerPage = () => {
             <SpellerSetting />
           </div>
           <div className='flex h-full w-full flex-col rounded-lg bg-white p-4 dark:bg-dark-surface tab:rounded-[1rem] tab:p-5 pc:p-6'>
-            <SpellerTextInput />
+            <SpellerTextInput ref={textInputRef} />
             {/* 글자수 & 검사하기 버튼 */}
             <SpellerControl
               longMode={
@@ -226,6 +263,12 @@ const SpellerPage = () => {
         </ContentLayout>
       </form>
       <NoticeDialog />
+      <LongParagraphDialog
+        open={isLongParagraphOpen}
+        onContinue={handleLongParagraphContinue}
+        onLocate={handleLongParagraphLocate}
+        onCancel={() => setIsLongParagraphOpen(false)}
+      />
     </>
   )
 }

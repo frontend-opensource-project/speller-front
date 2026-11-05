@@ -2,13 +2,14 @@
 
 import { forwardRef, useImperativeHandle, useRef } from 'react'
 
-import { ScrollContainer } from './scroll-container'
+import { ScrollContainer, ScrollContainerHandle } from './scroll-container'
 import { cn } from '../lib/tailwind-merge'
 
 export interface TextareaHandle {
   textClear: () => void
   hydrateText: (payload: string) => void
   focus: () => void
+  focusAt: (position: number) => void // 커서를 position에 두고 그 줄이 보이게 스크롤
 }
 
 interface TextareaProps {
@@ -19,9 +20,54 @@ interface TextareaProps {
   onScroll?: (isScrolling: boolean) => void
 }
 
+// 입력창 안에서 position 글자가 놓이는 줄의 위쪽 위치(px).
+// 같은 글꼴 · 폭으로 글을 그린 숨은 div에서 잰다
+const MIRRORED_STYLES = [
+  'boxSizing',
+  'width',
+  'paddingTop',
+  'paddingRight',
+  'paddingBottom',
+  'paddingLeft',
+  'borderTopWidth',
+  'borderRightWidth',
+  'borderBottomWidth',
+  'borderLeftWidth',
+  'fontFamily',
+  'fontSize',
+  'fontWeight',
+  'letterSpacing',
+  'lineHeight',
+  'textAlign',
+  'whiteSpace',
+  'wordBreak',
+  'overflowWrap',
+] as const
+
+const measureCaretTop = (textarea: HTMLTextAreaElement, position: number) => {
+  const style = getComputedStyle(textarea)
+  const mirror = document.createElement('div')
+  MIRRORED_STYLES.forEach(prop => {
+    mirror.style[prop] = style[prop]
+  })
+  mirror.style.position = 'absolute'
+  mirror.style.visibility = 'hidden'
+  mirror.style.top = '0'
+  mirror.style.left = '-9999px'
+  mirror.textContent = textarea.value.slice(0, position)
+  const marker = document.createElement('span')
+  marker.textContent = '\u200b'
+  mirror.appendChild(marker)
+  document.body.appendChild(mirror)
+  const top = marker.offsetTop
+  mirror.remove()
+  return top
+}
+
 const Textarea = forwardRef<TextareaHandle, TextareaProps>(
   ({ className, onScroll, onChange, placeholder, name }, ref) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
+    const scrollRef = useRef<ScrollContainerHandle>(null)
 
     const syncTextareaHeight = () => {
       const textarea = textareaRef.current
@@ -65,6 +111,19 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(
           const length = textarea.value.length
           textarea.setSelectionRange(length, length)
         },
+        focusAt: position => {
+          const textarea = textareaRef.current
+          if (!textarea) return
+
+          // 입력창은 글 높이만큼 늘어나고 바깥 스크롤 영역이 움직이므로 직접 스크롤한다
+          textarea.focus({ preventScroll: true })
+          textarea.setSelectionRange(position, position)
+          const lineHeight = parseFloat(getComputedStyle(textarea).lineHeight)
+          scrollRef.current?.scrollTo({
+            top: Math.max(0, measureCaretTop(textarea, position) - lineHeight),
+            behavior: 'smooth',
+          })
+        },
       }),
       [onChange],
     )
@@ -72,6 +131,7 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(
     return (
       <div className='relative h-full'>
         <ScrollContainer
+          ref={scrollRef}
           onScrollStatusChange={onScroll}
           className='absolute inset-0 overflow-hidden'
         >
