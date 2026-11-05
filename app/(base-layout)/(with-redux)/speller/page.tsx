@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { ROUTES, SITE_NAME, seoMetadata } from '@/shared/config'
 import { SpellerAppJsonLd } from '@/shared/ui/json-ld'
 import { SpellerPage } from '@/pages/speller'
+import { getRecentNotices } from '@/entities/notice'
 
 // 이 페이지의 Metadata 객체
 export const metadata: Metadata = {
@@ -39,11 +40,15 @@ export const metadata: Metadata = {
   ...seoMetadata(ROUTES.speller),
 }
 
-const Page = () => (
-  <>
-    <SpellerAppJsonLd />
-    <SpellerPage />
-  </>
-)
+const Page = async () => {
+  const recentNotices = await getRecentNotices()
+
+  return (
+    <>
+      <SpellerAppJsonLd />
+      <SpellerPage recentNotices={recentNotices} />
+    </>
+  )
+}
 
 export default Page
