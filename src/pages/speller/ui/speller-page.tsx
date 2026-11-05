@@ -228,7 +228,15 @@ const SpellerPage = () => {
 
   return (
     <>
-      <form action={handleSpellCheck} className='flex-1'>
+      {/* action으로 넘기면 React가 처리 후 폼을 비우므로(입력창은 비제어) onSubmit을 쓴다.
+          긴 문단 경고로 화면에 남을 때 입력한 글이 사라진다 */}
+      <form
+        onSubmit={e => {
+          e.preventDefault()
+          handleSpellCheck()
+        }}
+        className='flex-1'
+      >
         <ContentLayout className='min-h-[35.75rem] pb-4 pc:pb-5'>
           {/* 화면에는 로고가 제목 역할을 하므로, 문서 구조상의 제목만 따로 둔다 */}
           <h1 className='sr-only'>바른한글 - 한국어 맞춤법·문법 검사기</h1>
