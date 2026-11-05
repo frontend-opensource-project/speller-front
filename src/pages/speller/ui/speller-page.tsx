@@ -14,6 +14,7 @@ import {
   startLongCheck,
   type CheckTextResult,
 } from '@/entities/speller'
+import type { RecentNotice } from '@/entities/notice'
 import { ContentLayout } from '@/shared/ui/content-layout'
 import { LONG_MODE_ENABLED, NORMAL_CHECK_QUERY } from '@/shared/config'
 import { useAppDispatch } from '@/shared/lib/use-redux'
@@ -26,6 +27,7 @@ import {
   sendCheckResultResponseUnknownEvent,
 } from '@/shared/lib/send-ga-event'
 import { toast } from '@/shared/lib/use-toast'
+import { cn } from '@/shared/lib/tailwind-merge'
 import {
   SpellerTextInput,
   type SpellerTextInputHandle,
@@ -35,6 +37,7 @@ import { ResultsSkeleton } from './results-skeleton'
 import { SpellerControl } from './speller-control'
 import { VersionInfo } from './version-info'
 import { NoticeDialog } from './notice-dialog'
+import { RecentNoticeTicker } from './recent-notice-ticker'
 import { useLongModePreference } from '../model/use-long-mode-preference'
 
 // 긴글 모드는 PC 전용 (1024px 이상)
@@ -47,7 +50,12 @@ interface CheckState {
   textLength: number
 }
 
-const SpellerPage = () => {
+interface SpellerPageProps {
+  /** 본문 맨 위 전광판에 보여 줄 최근 알리는 글 */
+  recentNotices?: RecentNotice[]
+}
+
+const SpellerPage = ({ recentNotices = [] }: SpellerPageProps) => {
   const router = useRouter()
   const {
     originalText,
@@ -240,10 +248,22 @@ const SpellerPage = () => {
         <ContentLayout className='min-h-[35.75rem] pb-4 pc:pb-5'>
           {/* 화면에는 로고가 제목 역할을 하므로, 문서 구조상의 제목만 따로 둔다 */}
           <h1 className='sr-only'>바른한글 - 한국어 맞춤법·문법 검사기</h1>
-          {/* 강한 검사 및 버전*/}
-          <div className='mb-2 mt-[0.94rem] flex min-h-[1.625rem] items-center justify-between tab:mt-[1.75rem] pc:mb-[0.78rem] pc:mt-[1.97rem] pc:min-h-8'>
-            <VersionInfo />
-            <SpellerSetting />
+          {/* 레이아웃의 첫 행(auto)에 전광판과 설정 줄을 함께 둔다 */}
+          <div>
+            {/* 최근 알리는 글 전광판 */}
+            <RecentNoticeTicker notices={recentNotices} />
+            {/* 강한 검사 및 버전*/}
+            <div
+              className={cn(
+                'mb-2 flex min-h-[1.625rem] items-center justify-between pc:mb-[0.78rem] pc:min-h-8',
+                recentNotices.length > 0
+                  ? 'mt-2 tab:mt-3'
+                  : 'mt-[0.94rem] tab:mt-[1.75rem] pc:mt-[1.97rem]',
+              )}
+            >
+              <VersionInfo />
+              <SpellerSetting />
+            </div>
           </div>
           <div className='flex h-full w-full flex-col rounded-lg bg-white p-4 dark:bg-dark-surface tab:rounded-[1rem] tab:p-5 pc:p-6'>
             <SpellerTextInput ref={textInputRef} />
