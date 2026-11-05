@@ -1,7 +1,14 @@
 'use client'
 
 import Image from 'next/image'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react'
 import { useSpeller } from '@/entities/speller'
 import { usePersistRehydrated } from '@/shared/lib/use-redux'
 import { ScrollGradientFade } from '@/shared/ui/scroll-gradient-fade'
@@ -9,7 +16,11 @@ import { Textarea, TextareaHandle } from '@/shared/ui/textarea'
 import { Button } from '@/shared/ui/button'
 import { sendButtonClickedEvent } from '@/shared/lib/send-ga-event'
 
-const SpellerTextInput = () => {
+export interface SpellerTextInputHandle {
+  focusAt: (position: number) => void
+}
+
+const SpellerTextInput = forwardRef<SpellerTextInputHandle>((_, ref) => {
   const textareaRef = useRef<TextareaHandle>(null)
   const { originalText, handleOriginalTextChange } = useSpeller()
   const isRehydrated = usePersistRehydrated()
@@ -24,6 +35,14 @@ const SpellerTextInput = () => {
       buttonType: 'remove',
     })
   }, [])
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      focusAt: position => textareaRef.current?.focusAt(position),
+    }),
+    [],
+  )
 
   const handleScroll = useCallback(
     (isScrolling: boolean) => setShowGradient(isScrolling),
@@ -76,6 +95,8 @@ const SpellerTextInput = () => {
       </div>
     </>
   )
-}
+})
+
+SpellerTextInput.displayName = 'SpellerTextInput'
 
 export { SpellerTextInput }

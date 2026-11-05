@@ -8,6 +8,10 @@ export {
 } from './api/check-text'
 export { normalizeLineBreaks } from './lib/normalize-line-breaks'
 export { splitPages, PAGE_THRESHOLD, type PageRange } from './lib/split-pages'
+export {
+  findLongParagraphs,
+  LONG_PARAGRAPH_LIMIT,
+} from './lib/find-long-paragraphs'
 export { toUtf16ErrInfo } from './lib/server-offset'
 export { extractContext } from './lib/extract-context'
 export {
