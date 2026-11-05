@@ -1,17 +1,20 @@
 import type { ErrorInfo } from '../model/speller-schema'
 
-// 서버의 start/end는 코드 포인트 기준이고, 서식 문자(\p{Cf}: ZWSP·BOM·소프트 하이픈 등)는 세지 않는다.
+// 서버의 start/end는 UTF-16 단위이고, 서식 문자(\p{Cf}: ZWSP·BOM·소프트 하이픈 등)는 세지 않는다.
+// (검사 속도 개선 전 서버는 코드 포인트 단위였다)
 const FORMAT_CHAR = /\p{Cf}/u
 
-// index: 서버 위치, value: 그 글자의 UTF-16 시작 · 끝 위치
+// index: 서버 위치, value: 그 UTF-16 단위의 시작 · 끝 위치
 const buildServerToUtf16Map = (text: string) => {
   const starts: number[] = []
   const ends: number[] = []
   let i = 0
   for (const ch of text) {
     if (!FORMAT_CHAR.test(ch)) {
-      starts.push(i)
-      ends.push(i + ch.length)
+      for (let j = 0; j < ch.length; j++) {
+        starts.push(i + j)
+        ends.push(i + j + 1)
+      }
     }
     i += ch.length
   }
