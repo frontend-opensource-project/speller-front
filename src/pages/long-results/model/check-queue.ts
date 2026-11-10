@@ -2,6 +2,7 @@ import type { UnknownAction } from '@reduxjs/toolkit'
 import {
   checkText,
   getPageText,
+  LONG_PAGE_SIZE,
   type CheckError,
   pageCheckFailed,
   pageCheckSucceeded,
@@ -217,6 +218,7 @@ class CheckQueue {
       text: getPageText(state, pageIdx),
       isStrictCheck: state.isStrictCheck,
       pageIdx: pageIdx + 1,
+      pageSize: LONG_PAGE_SIZE,
     })
 
     // 그사이 새 검사가 시작됐으면 이 응답은 슬라이스가 버린다

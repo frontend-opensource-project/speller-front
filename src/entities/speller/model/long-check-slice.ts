@@ -5,7 +5,7 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { CorrectInfo, ErrorInfo } from './speller-schema'
 import type { CheckError } from '../api/check-text'
 import { normalizeLineBreaks } from '../lib/normalize-line-breaks'
-import { splitPages } from '../lib/split-pages'
+import { splitPages, LONG_PAGE_SIZE } from '../lib/split-pages'
 
 type LongPageStatus = 'idle' | 'queued' | 'loading' | 'done' | 'failed'
 
@@ -113,7 +113,7 @@ const longCheckSlice = createSlice({
         originalText: text,
         isStrictCheck: action.payload.isStrictCheck,
         startedAt: action.payload.startedAt,
-        pages: splitPages(text).map(({ start, end }) =>
+        pages: splitPages(text, LONG_PAGE_SIZE).map(({ start, end }) =>
           createPage(text, start, end),
         ),
       }

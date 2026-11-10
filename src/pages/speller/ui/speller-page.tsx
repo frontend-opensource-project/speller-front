@@ -10,6 +10,8 @@ import {
   checkText,
   CHECK_ERROR_MESSAGE,
   splitPages,
+  LONG_PAGE_SIZE,
+  NORMAL_PAGE_SIZE,
   findLongParagraphs,
   startLongCheck,
   type CheckTextResult,
@@ -79,7 +81,8 @@ const SpellerPage = ({ recentNotices = [] }: SpellerPageProps) => {
   const canUseLongMode = LONG_MODE_ENABLED && isDesktop(breakpoint)
   // 원문은 저장할 때 줄바꿈을 정규화하므로 요청과 같은 기준으로 나뉜다
   const pageCount = useMemo(
-    () => (canUseLongMode ? splitPages(originalText).length : 0),
+    () =>
+      canUseLongMode ? splitPages(originalText, LONG_PAGE_SIZE).length : 0,
     [canUseLongMode, originalText],
   )
 
@@ -87,6 +90,7 @@ const SpellerPage = ({ recentNotices = [] }: SpellerPageProps) => {
     const payload: CheckPayload = {
       text: originalText,
       isStrictCheck,
+      pageSize: NORMAL_PAGE_SIZE,
     }
     startTransition(async () => {
       const result = await checkText(payload)
@@ -104,7 +108,7 @@ const SpellerPage = ({ recentNotices = [] }: SpellerPageProps) => {
       LONG_MODE_ENABLED &&
       longModeEnabled &&
       isDesktop(getBreakpoint()) &&
-      splitPages(originalText).length >= 2
+      splitPages(originalText, LONG_PAGE_SIZE).length >= 2
     ) {
       setIsRedirectingToResult(true)
       dispatch(
