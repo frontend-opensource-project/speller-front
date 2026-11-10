@@ -7,7 +7,12 @@ export {
   type CheckTextResult,
 } from './api/check-text'
 export { normalizeLineBreaks } from './lib/normalize-line-breaks'
-export { splitPages, PAGE_THRESHOLD, type PageRange } from './lib/split-pages'
+export {
+  splitPages,
+  NORMAL_PAGE_SIZE,
+  LONG_PAGE_SIZE,
+  type PageRange,
+} from './lib/split-pages'
 export {
   findLongParagraphs,
   LONG_PARAGRAPH_LIMIT,

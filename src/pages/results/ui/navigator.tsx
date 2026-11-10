@@ -6,6 +6,7 @@ import {
   CheckPayload,
   checkText,
   CHECK_ERROR_MESSAGE,
+  NORMAL_PAGE_SIZE,
   type SpellerState,
   useSpeller,
   useSpellerRefs,
@@ -39,8 +40,14 @@ const Navigator = () => {
   }
 
   // 성공하면 결과를 responseMap에 저장한다. 실패해도 예외를 던지지 않는다
-  const fetchSpellCheck = async (payload: Required<CheckPayload>) => {
-    const { data, error } = await checkText(payload)
+  const fetchSpellCheck = async (
+    payload: Required<Omit<CheckPayload, 'pageSize'>>,
+  ) => {
+    // 첫 검사와 같은 기준으로 나눠야 페이지 수가 맞는다
+    const { data, error } = await checkText({
+      ...payload,
+      pageSize: NORMAL_PAGE_SIZE,
+    })
     if (error) return { data: null, error }
 
     const response = {

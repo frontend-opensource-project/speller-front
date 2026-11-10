@@ -27,6 +27,7 @@ export const checkPayloadSchema = z.object({
   text: z.string(), // 검사할 텍스트 내용
   isStrictCheck: z.boolean().optional(), // 강한 검사 여부
   pageIdx: z.number().optional(), // 현재 페이지 번호
+  pageSize: z.number().int().min(500).max(2000).optional(), // 페이지 분할 기준 글자 수
 })
 
 export const checkResponseSchema = z.object({
